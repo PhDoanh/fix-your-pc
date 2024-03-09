@@ -3,9 +3,6 @@
 #include "../inc/SDL_ttf.h"
 #include <bits/stdc++.h>
 
-#define NUM_BG_PATHS 5
-#define STANDARD_FONT_SIZE 24
-
 #ifndef INTERFACE_HPP
 #define INTERFACE_HPP
 
