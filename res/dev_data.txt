@@ -1,0 +1,6 @@
+22:47:30| Some thing to be logged!
+22:47:30| Some dev data to be logged!
+22:47:30| Some game data to be logged!
+22:47:30| Some dev data!
+22:47:30| Game data!
+22:47:30| game!
