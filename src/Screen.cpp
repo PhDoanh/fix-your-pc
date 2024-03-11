@@ -15,7 +15,7 @@ Screen::~Screen()
 
 void Screen::loadSprite(const std::string &name, const std::string &path, Vector real_size, int max_frame)
 {
-	console.log("Trying to load " + path + " ... ");
+	console.info("Trying to load " + path + " ... ");
 	sprites[name] = new Sprite();
 	SDL_Surface *surface = IMG_Load(path.c_str());
 	sprites[name]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
@@ -25,10 +25,10 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vector
 		delete sprites[name];
 		sprites[name] = nullptr;
 		sprites.erase(name);
-		console.error("Texture could not be created!");
+		console.error(path + " - fail.");
 	}
 
-	console.log("Texture created!");
+	console.info(path + " - done.");
 	sprites[name]->path = path;
 	sprites[name]->real_size = real_size;
 	sprites[name]->max_frame = max_frame;
@@ -50,16 +50,16 @@ void Screen::drawSprite(Sprite &sprite, const Vector &pos, const Vector &size, f
 void Screen::deleteSprite()
 {
 	std::string path;
-	console.log("Deleting all sprites ...");
+	console.info("Deleting all sprites ...");
 	for (auto &&sprite : sprites)
 	{
 		path = sprite.second->path;
 		delete sprite.second;
 		sprite.second = nullptr;
 		if (sprite.second)
-			console.error(path + " - fail");
+			console.error(path + " - fail.");
 		else
-			console.log(path + " - done");
+			console.info(path + " - done.");
 	}
 }
 
@@ -69,11 +69,11 @@ void Screen::deleteSprite()
 // 	if (!player_texture)
 // 		console.error("Player image could not be loaded!");
 // 	else
-// 		console.log("Player image loaded!");
+// 		console.info("Player image loaded!");
 // 	if (SDL_QueryTexture(player_texture, NULL, NULL, &player_rect.w, &player_rect.h) != 0)
 // 		console.error("Could not get player info");
 // 	else
-// 		console.log("Player info getted!");
+// 		console.info("Player info getted!");
 // }
 
 // void Screen::showFont()
@@ -82,6 +82,6 @@ void Screen::deleteSprite()
 // 	if (SDL_RenderCopy(Game::renderer, player_texture, nullptr, &player_rect) != 0)
 // 		console.error("Player image could not be displayed!");
 // 	else
-// 		console.log("Player image displayed!");
+// 		console.info("Player image displayed!");
 // 	SDL_RenderPresent(Game::renderer);
 // }

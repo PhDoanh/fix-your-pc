@@ -7,6 +7,9 @@
 #include "Sound.hpp"
 #include "Utility.hpp"
 
+#define NUM_BG 10
+#define MAX_NUM_ENEMY 50
+
 bool Game::running = true;
 std::string Game::title = "Fix Your PC";
 int Game::win_w = 0;
@@ -61,8 +64,9 @@ void Game::updateScreen()
 {
 	SDL_RenderClear(Game::renderer);
 
-	Sprite bg = *sprites["background"];
+	Sprite bg = *sprites["bg1"];
 	Sprite arrow = *sprites["arrow"];
+	// Sprite enemy1 = *sprites[""];
 
 	screen.drawSprite(bg, Vector(), Vector(win_w, win_h), 1, 1, false);
 	screen.drawSprite(arrow, Vector(player.x, player.y), Vector(arrow.real_size.x, arrow.real_size.y), 1, 1, false);
@@ -72,46 +76,46 @@ void Game::updateScreen()
 
 void Game::prepareSDL2()
 {
-	console.log("[ SDL2 preparation ]");
+	console.info("Initializing SDL2 ...");
 
 	// Base init
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-		console.error("SDL could not be initialized!");
+		console.error("SDL_Init - fail.");
 	else
-		console.log("SDL initialized!");
+		console.info("SDL_Init - done.");
 
 	// Image init
 	if (!IMG_Init(IMG_INIT_PNG))
-		console.error("IMG could not be initialized!");
+		console.error("IMG_Init - fail.");
 	else
-		console.log("IMG initialized!");
+		console.info("IMG_Init - done.");
 
 	// Font init
 	if (TTF_Init() != 0)
-		console.error("TTF could not be initialized!");
+		console.error("TTF_Init - fail.");
 	else
-		console.log("TTF initialized!");
+		console.info("TTF_Init - done.");
 
 	// Sound init
 	if (!Mix_Init(MIX_INIT_MP3) || Mix_OpenAudio(44100, AUDIO_S32SYS, 2, 4096) != 0)
-		console.error("MIX could not be initialized!");
+		console.error("Mix_Init - fail.");
 	else
-		console.log("MIX initialized!");
+		console.info("MIX_Init - done.");
 
 	// Create window and renderer
 	window = SDL_CreateWindow(title.c_str(), 0, 0, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (!window)
-		console.error("Window could not be created!");
+		console.error("SDL_CreateWindow - fail.");
 	else
-		console.log("Window created!");
+		console.info("SDL_CreateWindow - done.");
 
 	SDL_GetWindowSize(window, &win_w, &win_h);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
-		console.error("Renderer could not be created!");
+		console.error("SDL_CreateRenderer - fail.");
 	else
-		console.log("Renderer created!");
+		console.info("SDL_CreateRenderer - done.");
 
 	// some fixed set up
 	SDL_ShowCursor(SDL_DISABLE);
@@ -119,16 +123,30 @@ void Game::prepareSDL2()
 
 void Game::prepareMedia()
 {
-	console.log("[ Media game preparation ]");
+	console.info("Loading media ...");
 
-	// load ui
-	screen.loadSprite("background", "res/backgrounds/bg1_blur.png", Vector(3840, 2400));
-	screen.loadSprite("arrow", "res/cursors/arrow.png", Vector(64));
+	// Load UI
+	std::string name;
+	name = "bg";
+	for (int i = 1; i <= NUM_BG; i++)
+		screen.loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").png", Vector(3840, 2400));
 
-	// load ux
-	// sound.loadMusic("endgame", "");
-	sound.loadSoundEffect("right click", "res/sounds/rclick.wav");
-	sound.loadSoundEffect("left click", "res/sounds/lclick.wav");
+	name = "enemy";
+	for (int i = 1; i <= MAX_NUM_ENEMY; i++)
+		screen.loadSprite(name + std::to_string(i), "res/enemy/" + name + " (" + std::to_string(i) + ").png", Vector(256, 256));
+
+	screen.loadSprite("arrow", "res/player/arrow.png", Vector(64, 64));
+	screen.loadSprite("beam", "res/player/beam.png", Vector(64, 44));
+	screen.loadSprite("busy", "res/player/busy.png", Vector(1152, 64), 18);
+	screen.loadSprite("helpsel", "res/player/helpsel.png", Vector(64, 64));
+	screen.loadSprite("link", "res/player/link.png", Vector(64, 64));
+	screen.loadSprite("move", "res/player/move.png", Vector(64, 64));
+	screen.loadSprite("unvail", "res/player/unavail.png", Vector(64, 64));
+	screen.loadSprite("working", "res/player/working.png", Vector(1152, 64), 18);
+
+	// Load UX
+	sound.loadSoundEffect("rclick", "res/sound_effects/rclick.wav");
+	sound.loadSoundEffect("lclick", "res/sound_effects/lclick.wav");
 }
 
 void Game::quitSDL2()

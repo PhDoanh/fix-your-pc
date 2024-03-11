@@ -19,26 +19,26 @@ Console::~Console()
 void Console::log(const std::string &txt)
 {
 	if (txt == "logged!")
-		std::clog << "    Log| " << txt << '\n';
+		std::clog << "    log| " << txt << '\n';
 	else
 	{
-		std::clog << "    Log| " << txt << '\n';
+		std::clog << "    log| " << txt << '\n';
 		file << ltm->tm_hour << ':' << ltm->tm_min << ':' << ltm->tm_sec << "| " << txt << '\n';
 	}
 }
 
 void Console::info(const std::string &txt)
 {
-	std::clog << "   Info| " << txt << '\n';
+	std::clog << "   info| " << txt << '\n';
 }
 
 void Console::warn(const std::string &txt)
 {
-	std::cout << "Warning| " << txt << '\n';
+	std::cout << "warning| " << txt << '\n';
 }
 
 void Console::error(const std::string &txt)
 {
-	std::cerr << "  Error| " << txt << '\n';
+	std::cerr << "  error| " << txt << '\n';
 	exit(1);
 }

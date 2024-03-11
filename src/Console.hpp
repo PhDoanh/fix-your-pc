@@ -14,10 +14,10 @@ public:
 	~Console(); // destructor
 
 	// a member function
-	void log(const std::string &txt = "logged!");		// logging data (saved)
-	void info(const std::string &txt = "information!"); // show messages (not saved)
-	void warn(const std::string &txt = "warning!");		// show warnings
-	void error(const std::string &txt = "error!");		// show errors (stop program)
+	void log(const std::string &txt = "logged data");  // logging dev data (saved)
+	void info(const std::string &txt = "information"); // show messages (not saved)
+	void warn(const std::string &txt = "warning");	   // show warnings
+	void error(const std::string &txt = "error");	   // show errors (stop program)
 };
 
 extern Console console;
