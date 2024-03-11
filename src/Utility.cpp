@@ -99,3 +99,13 @@ Vector Rect::getCenter(const Vector &pos, const Vector &size)
 {
 	return pos + size / 2;
 }
+
+SDL_Rect Rect::reScale(const Vector &pos, const Vector &size, float scale)
+{
+	SDL_Rect new_rect;
+	new_rect.x = pos.x + (1 - scale) * size.x / 2;
+	new_rect.y = pos.y + (1 - scale) * size.y / 2;
+	new_rect.w = scale * size.x;
+	new_rect.h = scale * size.y;
+	return new_rect;
+}

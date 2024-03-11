@@ -24,7 +24,7 @@ public:
 
 	// image
 	void loadSprite(const std::string &, const std::string &, Vector, int max_frame = 1);
-	void showSprite(const std::string &);
+	void drawSprite(Sprite &, const Vector &, const Vector &, float, int, bool);
 	void deleteSprite();
 
 	// font

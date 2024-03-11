@@ -12,9 +12,7 @@ std::string Game::title = "Fix Your PC";
 int Game::win_w = 0;
 int Game::win_h = 0;
 float Game::fps = 60.0;
-float Game::player_speed = 0;
 float Game::enemy_speed = 0;
-int Game::player_score = 0;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
 
@@ -27,7 +25,7 @@ Game::Game()
 Game::~Game()
 {
 	quitMedia();
-	quitSDl2();
+	quitSDL2();
 }
 
 void Game::start()
@@ -48,10 +46,28 @@ void Game::start()
 
 void Game::handleEvent()
 {
+	while (SDL_PollEvent(&Event::e))
+	{
+		if (Event::e.type == SDL_KEYDOWN && Event::e.key.keysym.sym == SDLK_ESCAPE)
+		{
+			running = false;
+		}
+		event.handleMouse();
+		event.handleKeyboard();
+	}
 }
 
 void Game::updateScreen()
 {
+	SDL_RenderClear(Game::renderer);
+
+	Sprite bg = *sprites["background"];
+	Sprite arrow = *sprites["arrow"];
+
+	screen.drawSprite(bg, Vector(), Vector(win_w, win_h), 1, 1, false);
+	screen.drawSprite(arrow, Vector(player.x, player.y), Vector(arrow.real_size.x, arrow.real_size.y), 1, 1, false);
+
+	SDL_RenderPresent(Game::renderer);
 }
 
 void Game::prepareSDL2()
@@ -98,10 +114,7 @@ void Game::prepareSDL2()
 		console.log("Renderer created!");
 
 	// some fixed set up
-	// if (SDL_ShowCursor(SDL_DISABLE) != 0)
-	// 	console.error("Real cursor not to be hide!");
-	// else
-	// 	console.log("Real cursor is hidden!");
+	SDL_ShowCursor(SDL_DISABLE);
 }
 
 void Game::prepareMedia()
@@ -118,7 +131,7 @@ void Game::prepareMedia()
 	sound.loadSoundEffect("left click", "res/sounds/lclick.wav");
 }
 
-void Game::quitSDl2()
+void Game::quitSDL2()
 {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

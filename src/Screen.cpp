@@ -36,8 +36,15 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vector
 	SDL_FreeSurface(surface);
 }
 
-void Screen::showSprite(const std::string &name)
+void Screen::drawSprite(Sprite &sprite, const Vector &pos, const Vector &size, float scale, int cur_frame, bool flip)
 {
+	int x = (cur_frame % sprite.max_frame) * sprite.real_size.x;
+	int y = 0;
+	int w = sprite.real_size.x;
+	int h = sprite.real_size.y;
+	SDL_Rect src_rect = {x, y, w, h};
+	SDL_Rect dst_rect = Rect::reScale(pos, size, scale);
+	SDL_RenderCopyEx(Game::renderer, sprite.texture, &src_rect, &dst_rect, 0, NULL, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
 }
 
 void Screen::deleteSprite()

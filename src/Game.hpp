@@ -15,9 +15,7 @@ public:
 	static int win_w;
 	static int win_h;
 	static float fps;
-	static float player_speed;
 	static float enemy_speed;
-	static int player_score;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 
@@ -35,7 +33,7 @@ public:
 
 	// quit game
 	void quitMedia();
-	void quitSDl2();
+	void quitSDL2();
 };
 
 #endif // GAME_HPP

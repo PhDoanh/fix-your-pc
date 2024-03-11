@@ -59,6 +59,7 @@ struct Rect
 	static SDL_Rect square(int size) { return {0, 0, size, size}; }
 	static bool isCollide(const Vector &, const Vector &, const Vector &, const Vector &);
 	static Vector getCenter(const Vector &, const Vector &);
+	static SDL_Rect reScale(const Vector &, const Vector &, float);
 };
 
 #endif // UTILITY_HPP
