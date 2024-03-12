@@ -10,17 +10,14 @@ class Player
 private:
 protected:
 public:
-	int x;
-	int y;
-	int w;
-	int h;
-	float speed = 0;
+	float speed = 8.5;
 	int score = 0;
-	static SDL_Rect player_rect;
+	static SDL_Rect rect;
 	Player();  // constructor
 	~Player(); // destructor
 
 	void updatePosition(SDL_MouseMotionEvent); // a member function
+	void move();
 };
 
 extern Player player;

@@ -46,4 +46,15 @@ void Event::handleMouse()
 
 void Event::handleKeyboard()
 {
+	switch (e.type)
+	{
+	case SDL_KEYDOWN:
+		keyboard[e.key.keysym.sym] = true;
+		break;
+	case SDL_KEYUP:
+		keyboard[e.key.keysym.sym] = false;
+		break;
+	default:
+		break;
+	}
 }

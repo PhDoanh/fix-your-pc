@@ -63,12 +63,13 @@ void Game::updateScreen()
 {
 	SDL_RenderClear(Game::renderer);
 
-	Sprite bg = *sprites["bg1"];
-	Sprite arrow = *sprites["arrow"];
+	// Sprite bg = *sprites["bg1"];
+	// Sprite arrow = *sprites["arrow"];
+	player.move();
 
-	screen.drawSprite(bg, Vector(), Vector(win_w, win_h), 1, 1, false);
+	screen.drawSprite(*sprites["bg1"], Vector(), Vector(win_w, win_h), 1, 1, false);
 	screen.drawTileMap();
-	screen.drawSprite(arrow, Vector(player.x, player.y), Vector(arrow.real_size.x, arrow.real_size.y), 1, 1, false);
+	screen.drawSprite(*sprites["arrow"], Vector(player.rect.x, player.rect.y), Vector(player.rect.w, player.rect.h), 1, 1, false);
 
 	SDL_RenderPresent(Game::renderer);
 }
@@ -109,7 +110,7 @@ void Game::prepareSDL2()
 		console.info("SDL_CreateWindow - done.");
 
 	SDL_GetWindowSize(window, &win_w, &win_h);
-	console.log("window size: " std::to_string(win_w) + "x" + std::to_string(win_h));
+	console.log("window size: " + std::to_string(win_w) + "x" + std::to_string(win_h));
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
