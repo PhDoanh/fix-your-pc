@@ -2,7 +2,6 @@
 
 int main(int argc, char *argv[])
 {
-    std::srand(std::time(NULL));
     Game FixYourPC;
     FixYourPC.start();
 

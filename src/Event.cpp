@@ -28,10 +28,10 @@ void Event::handleMouse()
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			sound.playSoundEffect("left click", left_click);
+			sound.playSoundEffect("lclick", left_click);
 			break;
 		case SDL_BUTTON_RIGHT:
-			sound.playSoundEffect("right click", right_click);
+			sound.playSoundEffect("rclick", right_click);
 			break;
 		default:
 			break;

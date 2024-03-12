@@ -33,6 +33,7 @@ Game::~Game()
 
 void Game::start()
 {
+	std::srand(std::time(NULL));
 	float frame_start, frame_time, frame_delay = 1000.0 / Game::fps;
 	while (running)
 	{
@@ -52,9 +53,7 @@ void Game::handleEvent()
 	while (SDL_PollEvent(&Event::e))
 	{
 		if (Event::e.type == SDL_KEYDOWN && Event::e.key.keysym.sym == SDLK_ESCAPE)
-		{
 			running = false;
-		}
 		event.handleMouse();
 		event.handleKeyboard();
 	}
@@ -66,9 +65,9 @@ void Game::updateScreen()
 
 	Sprite bg = *sprites["bg1"];
 	Sprite arrow = *sprites["arrow"];
-	// Sprite enemy1 = *sprites[""];
 
 	screen.drawSprite(bg, Vector(), Vector(win_w, win_h), 1, 1, false);
+	screen.drawTileMap();
 	screen.drawSprite(arrow, Vector(player.x, player.y), Vector(arrow.real_size.x, arrow.real_size.y), 1, 1, false);
 
 	SDL_RenderPresent(Game::renderer);
@@ -110,6 +109,7 @@ void Game::prepareSDL2()
 		console.info("SDL_CreateWindow - done.");
 
 	SDL_GetWindowSize(window, &win_w, &win_h);
+	console.log("window size: " std::to_string(win_w) + "x" + std::to_string(win_h));
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)

@@ -1,12 +1,33 @@
 #include "Screen.hpp"
 #include "Console.hpp"
 #include "Game.hpp"
+#include "Utility.hpp"
 
 Screen screen;
 std::map<std::string, Sprite *> sprites;
 
 Screen::Screen()
 {
+	std::vector<int> index(50);
+	std::iota(index.begin(), index.end(), 1);
+	for (int x = 0; x < 16; x++)
+		for (int y = 0; y < 8; y++)
+		{
+			if (tilemap[x][y])
+			{
+				tilemap[x][y] = index[rand() % index.size()];
+				index.erase(std::find(index.begin(), index.end(), tilemap[x][y]));
+			}
+		}
+
+	for (int x = 0; x < 16; x++)
+		for (int y = 0; y < 8; y++)
+		{
+			tile[x][y].x = x * 96;
+			tile[x][y].y = y * 96;
+			tile[x][y].w = 96;
+			tile[x][y].h = 96;
+		}
 }
 
 Screen::~Screen()
@@ -61,6 +82,18 @@ void Screen::deleteSprite()
 		else
 			console.info(path + " - done.");
 	}
+}
+
+void Screen::drawTileMap()
+{
+	for (int x = 0; x < 16; x++)
+		for (int y = 0; y < 8; y++)
+			if (tilemap[x][y])
+				SDL_RenderCopy(
+					Game::renderer,
+					sprites["enemy" + std::to_string(tilemap[x][y])]->texture,
+					NULL,
+					&tile[x][y]);
 }
 
 // void Screen::loadFont(const std::string &path)

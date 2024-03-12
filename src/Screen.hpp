@@ -19,6 +19,25 @@ class Screen // Player Screen
 {
 
 public:
+	int tilemap[16][8] = {
+		{1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1, 0},
+		{1, 1, 1, 0, 1, 1, 0, 0},
+		{1, 1, 1, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 1, 1, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{1, 1, 1, 1, 1, 1, 0, 0},
+		{1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1, 1}};
+	SDL_Rect tile[16][8];
+
 	Screen();  // constructor
 	~Screen(); // destructor
 
@@ -26,7 +45,7 @@ public:
 	void loadSprite(const std::string &, const std::string &, Vector, int max_frame = 1);
 	void drawSprite(Sprite &, const Vector &, const Vector &, float, int, bool);
 	void deleteSprite();
-
+	void drawTileMap();
 	// font
 };
 
