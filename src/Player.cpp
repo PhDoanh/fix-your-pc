@@ -58,3 +58,23 @@ void Player::move()
 	if (rect.y + rect.h > Game::win_h)
 		rect.y = Game::win_h - rect.h;
 }
+
+void Player::enableDialog()
+{
+	for (int x = 0; x < 16; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			if (screen.tilemap[x][y] && Rect::isCollide(
+											Vector(player.rect.x, player.rect.y),
+											Vector(player.rect.w, player.rect.h),
+											Vector(screen.tile[x][y].x, screen.tile[x][y].y),
+											Vector(screen.tile[x][y].w, screen.tile[x][y].h)))
+			{
+				sound.playSoundEffect("win error", win_error);
+				screen.dialog_flag = true;
+				console.log("collision detected.");
+			}
+		}
+	}
+}

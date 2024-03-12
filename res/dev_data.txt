@@ -1,1 +1,7 @@
-15:41:29| window size: 1536x864
+22:53:5| window size: 1536x864
+22:53:5| collision detected.
+22:53:5| collision detected.
+22:53:5| collision detected.
+22:53:5| collision detected.
+22:53:5| collision detected.
+22:53:5| collision detected.

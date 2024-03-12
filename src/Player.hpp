@@ -18,6 +18,7 @@ public:
 
 	void updatePosition(SDL_MouseMotionEvent); // a member function
 	void move();
+	void enableDialog();
 };
 
 extern Player player;

@@ -66,10 +66,11 @@ void Game::updateScreen()
 	// Sprite bg = *sprites["bg1"];
 	// Sprite arrow = *sprites["arrow"];
 	player.move();
-
 	screen.drawSprite(*sprites["bg1"], Vector(), Vector(win_w, win_h), 1, 1, false);
 	screen.drawTileMap();
+	// screen.drawDialog(screen.dialog_flag);
 	screen.drawSprite(*sprites["arrow"], Vector(player.rect.x, player.rect.y), Vector(player.rect.w, player.rect.h), 1, 1, false);
+	screen.renderFont("Hello World", Vector(), Vector(100, 18));
 
 	SDL_RenderPresent(Game::renderer);
 }
@@ -85,7 +86,7 @@ void Game::prepareSDL2()
 		console.info("SDL_Init - done.");
 
 	// Image init
-	if (!IMG_Init(IMG_INIT_PNG))
+	if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
 		console.error("IMG_Init - fail.");
 	else
 		console.info("IMG_Init - done.");
@@ -130,11 +131,13 @@ void Game::prepareMedia()
 	std::string name;
 	name = "bg";
 	for (int i = 1; i <= NUM_BG; i++)
-		screen.loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").png", Vector(3840, 2400));
+		screen.loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").jpg", Vector(3840, 2400));
+	screen.loadSprite("window crash", "res/backgrounds/win_crash.jpg", Vector(5120, 2880));
 
 	name = "enemy";
 	for (int i = 1; i <= MAX_NUM_ENEMY; i++)
 		screen.loadSprite(name + std::to_string(i), "res/enemy/" + name + " (" + std::to_string(i) + ").png", Vector(256, 256));
+	screen.loadSprite("boss", "res/enemy/boss.png", Vector(879, 501));
 
 	screen.loadSprite("arrow", "res/player/arrow.png", Vector(64, 64));
 	screen.loadSprite("beam", "res/player/beam.png", Vector(64, 44));
@@ -144,10 +147,17 @@ void Game::prepareMedia()
 	screen.loadSprite("move", "res/player/move.png", Vector(64, 64));
 	screen.loadSprite("unvail", "res/player/unavail.png", Vector(64, 64));
 	screen.loadSprite("working", "res/player/working.png", Vector(1152, 64), 18);
+	screen.loadFont("thin", "res/fonts/Sarabun-Thin.ttf");
+	screen.loadFont("light", "res/fonts/Sarabun-Light.ttf");
+	screen.loadFont("medium", "res/fonts/Sarabun-Medium.ttf");
+	screen.loadFont("regular", "res/fonts/Sarabun-Regular.ttf");
+	screen.loadFont("bold", "res/fonts/Sarabun-Bold.ttf");
+	screen.loadFont("italic", "res/fonts/Sarabun-Italic.ttf");
 
 	// Load UX
-	sound.loadSoundEffect("rclick", "res/sound_effects/rclick.wav");
-	sound.loadSoundEffect("lclick", "res/sound_effects/lclick.wav");
+	sound.loadSoundEffect("right click", "res/sound_effects/rclick.wav");
+	sound.loadSoundEffect("left click", "res/sound_effects/lclick.wav");
+	sound.loadSoundEffect("win error", "res/sound_effects/Windows Error.wav");
 }
 
 void Game::quitSDL2()

@@ -5,6 +5,7 @@
 
 Screen screen;
 std::map<std::string, Sprite *> sprites;
+std::map<std::string, TTF_Font *> fonts;
 
 Screen::Screen()
 {
@@ -96,25 +97,38 @@ void Screen::drawTileMap()
 					&tile[x][y]);
 }
 
-// void Screen::loadFont(const std::string &path)
-// {
-// 	player_texture = IMG_LoadTexture(Game::renderer, path.c_str());
-// 	if (!player_texture)
-// 		console.error("Player image could not be loaded!");
-// 	else
-// 		console.info("Player image loaded!");
-// 	if (SDL_QueryTexture(player_texture, NULL, NULL, &player_rect.w, &player_rect.h) != 0)
-// 		console.error("Could not get player info");
-// 	else
-// 		console.info("Player info getted!");
-// }
+void Screen::drawDialog(bool flag)
+{
+	if (flag)
+	{
+		Sprite *dialog = sprites["boss"];
+		int w = dialog->real_size.x;
+		int h = dialog->real_size.y;
+		int x = (Game::win_w - w) / 2.0;
+		int y = (Game::win_h - h) / 2.0;
+		screen.drawSprite(*dialog, Vector(x, y), Vector(w, h), 1, 1, false);
+	}
+}
 
-// void Screen::showFont()
-// {
+void Screen::loadFont(const std::string &name, const std::string &path, int font_size)
+{
+	console.info("Trying to load " + path + " ... ");
+	fonts[name] = TTF_OpenFont(path.c_str(), font_size);
+	if (!fonts[name])
+	{
+		TTF_CloseFont(fonts[name]);
+		fonts[name] = nullptr;
+		fonts.erase(name);
+		console.error(path + " - fail.");
+	}
+	console.info(path + " - done.");
+}
 
-// 	if (SDL_RenderCopy(Game::renderer, player_texture, nullptr, &player_rect) != 0)
-// 		console.error("Player image could not be displayed!");
-// 	else
-// 		console.info("Player image displayed!");
-// 	SDL_RenderPresent(Game::renderer);
-// }
+void Screen::renderFont(const std::string &content, const Vector &pos, const Vector &size, SDL_Color color, float scale, const std::string &name)
+{
+	SDL_Surface *surface = TTF_RenderText_Blended(fonts[name], content.c_str(), color);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
+	SDL_FreeSurface(surface);
+	SDL_Rect dst_rect = Rect::reScale(pos, size, scale);
+	SDL_RenderCopy(Game::renderer, texture, NULL, &dst_rect);
+}

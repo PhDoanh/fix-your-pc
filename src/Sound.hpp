@@ -10,6 +10,7 @@ enum sound_chanels
 	music,
 	left_click,
 	right_click,
+	win_error,
 	shoot,
 	damaged,
 	healing,

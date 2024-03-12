@@ -32,12 +32,12 @@ void Sound::loadSoundEffect(const std::string &name, const std::string &path)
 void Sound::playSoundEffect(const std::string &name, int chanel, int loop)
 {
 	stopSoundEffect(chanel);
-	Mix_FadeInChannel(chanel, sounds[name], loop, 50);
+	Mix_FadeInChannel(chanel, sounds[name], loop, 10);
 }
 
 void Sound::stopSoundEffect(int chanel)
 {
-	Mix_FadeOutChannel(chanel, 50);
+	Mix_FadeOutChannel(chanel, 10);
 }
 
 void Sound::loadMusic(const std::string &name, const std::string &path)
