@@ -1,48 +1,21 @@
 #include "Event.hpp"
 #include "Player.hpp"
-#include "Enemy.hpp"
+#include "Enemies.hpp"
 #include "Screen.hpp"
-#include "Console.hpp"
+#include "Game.hpp"
+#include "util.hpp"
 
-Event event;
 SDL_Event Event::e;
+const Uint8 *Event::state;
 
-Event::Event()
+Event::Event(/* args */)
 {
-	// constructor implementation
+	info("Event constructor called!");
 }
 
 Event::~Event()
 {
-	// destructor implementation
-}
-
-void Event::handleMouse()
-{
-	switch (e.type)
-	{
-	case SDL_MOUSEMOTION:
-		player.updatePosition(e.motion);
-		break;
-	case SDL_MOUSEBUTTONDOWN:
-		switch (e.button.button)
-		{
-		case SDL_BUTTON_LEFT:
-			sound.playSoundEffect("left click", left_click);
-			player.enableDialog();
-			break;
-		case SDL_BUTTON_RIGHT:
-			sound.playSoundEffect("right click", right_click);
-			break;
-		default:
-			break;
-		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		break;
-	default:
-		break;
-	}
+	info("Event destructor called!");
 }
 
 void Event::handleKeyboard()
@@ -50,10 +23,44 @@ void Event::handleKeyboard()
 	switch (e.type)
 	{
 	case SDL_KEYDOWN:
-		keyboard[e.key.keysym.sym] = true;
+		switch (e.key.keysym.sym)
+		{
+		case SDLK_ESCAPE:
+			Game::running = false;
+			break;
+		default:
+			break;
+		}
 		break;
 	case SDL_KEYUP:
-		keyboard[e.key.keysym.sym] = false;
+		break;
+	default:
+		break;
+	}
+}
+
+void Event::handleMouse()
+{
+	switch (e.type)
+	{
+	case SDL_MOUSEMOTION:
+		// player.mouseMovement(e.motion);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		switch (e.button.button)
+		{
+		case SDL_BUTTON_LEFT:
+			// sound.playSoundEffect("left click", left_click);
+			// player.enableDialog();
+			break;
+		case SDL_BUTTON_RIGHT:
+			// sound.playSoundEffect("right click", right_click);
+			break;
+		default:
+			break;
+		}
+		break;
+	case SDL_MOUSEBUTTONUP:
 		break;
 	default:
 		break;

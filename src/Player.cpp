@@ -2,39 +2,31 @@
 #include "Screen.hpp"
 #include "Game.hpp"
 #include "Sound.hpp"
-#include "Console.hpp"
-#include "Utility.hpp"
+#include "util.hpp"
 #include "Event.hpp"
-
-Player player;
-SDL_Rect Player::rect = Rect::square(64);
 
 Player::Player()
 {
+	info("Player constructor called!");
 }
 
 Player::~Player()
 {
-	// destructor implementation
+	info("Player destructor called!");
 }
 
-void Player::updatePosition(SDL_MouseMotionEvent mouse)
+void Player::update()
 {
-	rect.x = mouse.x;
-	rect.y = mouse.y;
-}
 
-void Player::move()
-{
 	float dx = 0, dy = 0;
 
-	if (event.keyboard[SDLK_RIGHT])
+	if (Event::state[SDL_SCANCODE_RIGHT])
 		dx += speed;
-	if (event.keyboard[SDLK_LEFT])
+	if (Event::state[SDL_SCANCODE_LEFT])
 		dx -= speed;
-	if (event.keyboard[SDLK_UP])
+	if (Event::state[SDL_SCANCODE_UP])
 		dy -= speed;
-	if (event.keyboard[SDLK_DOWN])
+	if (Event::state[SDL_SCANCODE_DOWN])
 		dy += speed;
 
 	// vector standardized
@@ -46,35 +38,15 @@ void Player::move()
 	}
 
 	// update player position
-	rect.x += dx * speed;
-	rect.y += dy * speed;
+	x += dx * speed;
+	y += dy * speed;
 
-	if (rect.x <= 0)
-		rect.x = 0;
-	if (rect.x + rect.w > Game::win_w)
-		rect.x = Game::win_w - rect.w;
-	if (rect.y <= 0)
-		rect.y = 0;
-	if (rect.y + rect.h > Game::win_h)
-		rect.y = Game::win_h - rect.h;
-}
-
-void Player::enableDialog()
-{
-	for (int x = 0; x < 16; x++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			if (screen.tilemap[x][y] && Rect::isCollide(
-											Vector(player.rect.x, player.rect.y),
-											Vector(player.rect.w, player.rect.h),
-											Vector(screen.tile[x][y].x, screen.tile[x][y].y),
-											Vector(screen.tile[x][y].w, screen.tile[x][y].h)))
-			{
-				sound.playSoundEffect("win error", win_error);
-				screen.dialog_flag = true;
-				console.log("collision detected.");
-			}
-		}
-	}
+	if (x <= 0)
+		x = 0;
+	if (x + w - 10 > Game::win_w)
+		x = Game::win_w + 10 - w;
+	if (y <= 0)
+		y = 0;
+	if (y + h > Game::win_h)
+		y = Game::win_h - h;
 }

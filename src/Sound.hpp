@@ -20,21 +20,23 @@ enum sound_chanels
 class Sound
 {
 private:
-protected:
+	/* data */
 public:
-	Sound();														// constructor
-	~Sound();														// destructor
-	void loadSoundEffect(const std::string &, const std::string &); // a member function
-	void playSoundEffect(const std::string &name, int chanel, int loop = 0);
-	void stopSoundEffect(int);
+	Sound(/* args */);
+	~Sound();
+
+	void loadSoundEffect(const std::string &, const std::string &);
+	static void playSoundEffect(const std::string &name, int chanel, int loop = 0);
+	static void stopSoundEffect(int);
+
 	void loadMusic(const std::string &, const std::string &);
-	void playMusic(const std::string &name, int loop = -1);
-	void stopMusic();
-	void deleteSoundEffect();
-	void deleteMusic();
+	static void playMusic(const std::string &name, int loop = -1);
+	static void stopMusic();
+
+	void deleteSoundEffects();
+	void deleteMusics();
 };
 
-extern Sound sound;
 extern std::map<std::string, Mix_Chunk *> sounds;
 extern std::map<std::string, Mix_Music *> musics;
 

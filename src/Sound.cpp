@@ -1,32 +1,31 @@
 #include "Sound.hpp"
-#include "Console.hpp"
+#include "util.hpp"
 
-Sound sound;
 std::map<std::string, Mix_Chunk *> sounds;
 std::map<std::string, Mix_Music *> musics;
 
-Sound::Sound()
+Sound::Sound(/* args */)
 {
-	// constructor implementation
+	info("Sound constructor called!");
 }
 
 Sound::~Sound()
 {
-	// destructor implementation
+	info("Sound destructor called!");
 }
 
 void Sound::loadSoundEffect(const std::string &name, const std::string &path)
 {
-	console.info("Trying to load " + path + " ... ");
+	info("Trying to load " + path + " ... ");
 	sounds[name] = Mix_LoadWAV(path.c_str());
 	if (!sounds[name])
 	{
 		Mix_FreeChunk(sounds[name]);
 		sounds[name] = nullptr;
 		sounds.erase(name);
-		console.error(path + " - fail.");
+		error(path + " - fail.");
 	}
-	console.info(path + " - done.");
+	info(path + " - done.");
 }
 
 void Sound::playSoundEffect(const std::string &name, int chanel, int loop)
@@ -42,16 +41,16 @@ void Sound::stopSoundEffect(int chanel)
 
 void Sound::loadMusic(const std::string &name, const std::string &path)
 {
-	console.info("Trying to load " + path + " ... ");
+	info("Trying to load " + path + " ... ");
 	musics[name] = Mix_LoadMUS(path.c_str());
 	if (!musics[name])
 	{
 		Mix_FreeMusic(musics[name]);
 		musics[name] = nullptr;
 		musics.erase(name);
-		console.error(path + " - fail.");
+		error(path + " - fail.");
 	}
-	console.info(path + " - done.");
+	info(path + " - done.");
 }
 
 void Sound::playMusic(const std::string &name, int loop)
@@ -64,30 +63,30 @@ void Sound::stopMusic()
 	Mix_HaltMusic();
 }
 
-void Sound::deleteSoundEffect()
+void Sound::deleteSoundEffects()
 {
-	console.info("Deleting all sound effects ...");
+	info("Deleting all sound effects ...");
 	for (auto &&sound : sounds)
 	{
 		Mix_FreeChunk(sound.second);
 		sound.second = nullptr;
 		if (sound.second)
-			console.error(sound.first + " - fail.");
+			error(sound.first + " - fail.");
 		else
-			console.info(sound.first + " - done.");
+			info(sound.first + " - done.");
 	}
 }
 
-void Sound::deleteMusic()
+void Sound::deleteMusics()
 {
-	console.info("Deleting all musics ...");
+	info("Deleting all musics ...");
 	for (auto &&music : musics)
 	{
 		Mix_FreeMusic(music.second);
 		music.second = nullptr;
 		if (music.second)
-			console.error(music.first + " - fail.");
+			error(music.first + " - fail.");
 		else
-			console.info(music.first + " - done.");
+			info(music.first + " - done.");
 	}
 }

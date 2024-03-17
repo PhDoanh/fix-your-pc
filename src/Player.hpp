@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 #include "../inc/SDL.h"
-#include "Sound.hpp"
 
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
@@ -12,15 +11,12 @@ protected:
 public:
 	float speed = 8.5;
 	int score = 0;
-	static SDL_Rect rect;
+	int x, y, w = 64, h = 64;
+
 	Player();  // constructor
 	~Player(); // destructor
 
-	void updatePosition(SDL_MouseMotionEvent); // a member function
-	void move();
-	void enableDialog();
+	void update();
 };
-
-extern Player player;
 
 #endif // PLAYER_HPP

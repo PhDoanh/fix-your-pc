@@ -1,9 +1,25 @@
-#include "Utility.hpp"
+#include "util.hpp"
 
 Vector left_vec(-1, 0);
 Vector right_vec(1, 0);
 Vector up_vec(0, -1);
 Vector down_vec(0, 1);
+
+void log(const std::string &msg)
+{
+	std::clog << "  log| " << msg << '\n';
+}
+
+void info(const std::string &msg)
+{
+	std::cout << " info| " << msg << '\n';
+}
+
+void error(const std::string &msg)
+{
+	std::cerr << "error| " << msg << '\n';
+	exit(1);
+}
 
 std::ostream &operator<<(std::ostream &out, const Vector &v)
 {

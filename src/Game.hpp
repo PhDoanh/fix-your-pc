@@ -3,37 +3,45 @@
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
 #include "../inc/SDL_mixer.h"
+#include "Screen.hpp"
+#include "Sound.hpp"
+#include "Event.hpp"
 
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#define NUM_BG 10
+#define MAX_NUM_ENEMY 50
+
 class Game
 {
+private:
+	void initSDL2();
+	void loadMedia();
+
+	void handleEvent();
+	void updateScreen();
+
+	void quitMedia();
+	void quitSDL2();
+
+	Screen screen;
+	Sound sound;
+	Event event;
+
 public:
 	static bool running;
 	static std::string title;
 	static int win_w;
 	static int win_h;
 	static float fps;
-	static float enemy_speed;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 
 	Game();
 	~Game();
 
-	// prepare game
-	void prepareSDL2();
-	void prepareMedia();
-
-	// play game
-	void start(); // core function
-	void handleEvent();
-	void updateScreen();
-
-	// quit game
-	void quitMedia();
-	void quitSDL2();
+	void start();
 };
 
 #endif // GAME_HPP

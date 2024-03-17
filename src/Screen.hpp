@@ -2,7 +2,9 @@
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
-#include "Utility.hpp"
+#include "Player.hpp"
+#include "Enemies.hpp"
+#include "util.hpp"
 
 #ifndef SCREEN_HPP
 #define SCREEN_HPP
@@ -15,10 +17,9 @@ struct Sprite
 	int max_frame;
 };
 
-class Screen // Player Screen
+class Screen
 {
-
-public:
+private:
 	int tilemap[16][8] = {
 		{1, 1, 1, 1, 1, 1, 1, 1},
 		{1, 1, 1, 1, 1, 1, 1, 0},
@@ -36,26 +37,34 @@ public:
 		{1, 1, 1, 1, 1, 1, 0, 0},
 		{1, 1, 1, 1, 1, 1, 1, 1},
 		{1, 1, 1, 1, 1, 1, 1, 1}};
-	SDL_Rect tile[16][8];
-	bool dialog_flag = false;
+	std::string bg_name;
 
-	Screen();  // constructor
-	~Screen(); // destructor
+public:
+	Player player;
+	Enemies enemies;
+
+	Screen(/* args */);
+	~Screen();
 
 	// image
 	void loadSprite(const std::string &, const std::string &, Vector, int max_frame = 1);
 	void drawSprite(Sprite &, const Vector &, const Vector &, float, int, bool);
-	void deleteSprite();
-	void drawTileMap();
-	void drawDialog(bool);
+	void deleteSprites();
 
 	// font
-	void loadFont(const std::string &, const std::string &, int font_size = 18);
-	void renderFont(const std::string &, const Vector &, const Vector &, SDL_Color color = Color::white(0), float scale = 1.0, const std::string &name = "regular");
+	// void loadFont(const std::string &, const std::string &, int font_size = 18);
+	// void renderFont(const std::string &, const Vector &, const Vector &, SDL_Color color = Color::white(0), float scale = 1.0, const std::string &name = "regular");
+
+	void updateEnemies();
+	void updatePlayer();
+
+	void drawBackground();
+	void drawEnemies();
+	void drawPlayer();
+	void drawDialog();
 };
 
 extern std::map<std::string, Sprite *> sprites;
 extern std::map<std::string, TTF_Font *> fonts;
-extern Screen screen;
 
 #endif // SCREEN_HPP

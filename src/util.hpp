@@ -1,8 +1,12 @@
 #include <bits/stdc++.h>
 #include "../inc/SDL.h"
 
-#ifndef UTILITY_HPP
-#define UTILITY_HPP
+#ifndef UTIL_HPP
+#define UTIL_HPP
+
+void log(const std::string &msg);
+void info(const std::string &msg);
+void error(const std::string &msg);
 
 struct Vector // Vector 2D
 {
@@ -62,4 +66,4 @@ struct Rect
 	static SDL_Rect reScale(const Vector &, const Vector &, float);
 };
 
-#endif // UTILITY_HPP
+#endif // UTIL_HPP
