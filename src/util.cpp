@@ -1,9 +1,9 @@
 #include "util.hpp"
 
-Vector left_vec(-1, 0);
-Vector right_vec(1, 0);
-Vector up_vec(0, -1);
-Vector down_vec(0, 1);
+Vec2D left_vec(-1, 0);
+Vec2D right_vec(1, 0);
+Vec2D up_vec(0, -1);
+Vec2D down_vec(0, 1);
 
 void log(const std::string &msg)
 {
@@ -21,102 +21,100 @@ void error(const std::string &msg)
 	exit(1);
 }
 
-std::ostream &operator<<(std::ostream &out, const Vector &v)
+std::ostream &operator<<(std::ostream &out, const Vec2D &v)
 {
 	out << '(' << v.x << ", " << v.y << ')' << '\n';
 	return out;
 }
 
-Vector operator+(const Vector &v1, const Vector &v2)
+Vec2D operator+(const Vec2D &v1, const Vec2D &v2)
 {
-	return Vector(v1.x + v2.x, v1.y + v2.y);
+	return Vec2D(v1.x + v2.x, v1.y + v2.y);
 }
 
-Vector operator-(const Vector &v1, const Vector &v2)
+Vec2D operator-(const Vec2D &v1, const Vec2D &v2)
 {
-	return Vector(v1.x - v2.x, v1.y - v2.y);
+	return Vec2D(v1.x - v2.x, v1.y - v2.y);
 }
 
-Vector operator*(const Vector &v, float k)
+Vec2D operator*(const Vec2D &v, float k)
 {
-	return Vector(v.x * k, v.y * k);
+	return Vec2D(v.x * k, v.y * k);
 }
 
-Vector operator/(const Vector &v, float k)
+Vec2D operator/(const Vec2D &v, float k)
 {
-	return Vector(v.x / k, v.y / k);
+	return Vec2D(v.x / k, v.y / k);
 }
 
-Vector operator-(const Vector &v)
+Vec2D operator-(const Vec2D &v)
 {
-	return Vector(-v.x, -v.y);
+	return Vec2D(-v.x, -v.y);
 }
 
-void operator+=(Vector &v1, const Vector &v2)
+void operator+=(Vec2D &v1, const Vec2D &v2)
 {
 	v1.x += v2.x;
 	v1.y += v2.y;
 }
 
-void operator-=(Vector &v1, const Vector &v2)
+void operator-=(Vec2D &v1, const Vec2D &v2)
 {
 	v1.x -= v2.x;
 	v1.y -= v2.y;
 }
 
-void operator*=(Vector &v, float k)
+void operator*=(Vec2D &v, float k)
 {
 	v.x *= k;
 	v.y *= k;
 }
 
-void operator/=(Vector &v, float k)
+void operator/=(Vec2D &v, float k)
 {
 	v.x /= k;
 	v.y /= k;
 }
 
-// basic Vector functions
-Vector max(const Vector &v1, const Vector &v2)
+Vec2D max(const Vec2D &v1, const Vec2D &v2)
 {
 	return {std::max(v1.x, v2.x), std::max(v1.y, v2.y)};
 }
 
-Vector min(const Vector &v1, const Vector &v2)
+Vec2D min(const Vec2D &v1, const Vec2D &v2)
 {
 	return {std::min(v1.x, v2.x), std::min(v1.y, v2.y)};
 }
 
-Vector toInt(const Vector &v)
+Vec2D toInt(const Vec2D &v)
 {
-	return Vector(int(v.x), int(v.y));
+	return Vec2D(int(v.x), int(v.y));
 }
 
-float Vector::distance(const Vector &v)
+float Vec2D::distance(const Vec2D &v)
 {
-	float dx = v.x - x;
-	float dy = v.y - y;
+	float dx = v.x - x, dy = v.y - y;
 	return sqrt(dx * dx + dy * dy);
 }
 
-bool Vector::between(const Vector &v1, const Vector &v2)
+bool Vec2D::between(const Vec2D &v1, const Vec2D &v2)
 {
 	return x >= v1.x && x <= v2.x && y >= v1.y && y <= v2.y;
 }
 
-bool Rect::isCollide(const Vector &pos1st, const Vector &size1st, const Vector &pos2nd, const Vector &size2nd)
+bool Rect::isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos, const Vec2D &v2size)
 {
-	float c_x = abs(pos1st.x - pos2nd.x) - size1st.x / 2 - size2nd.x / 2;
-	float c_y = abs(pos1st.y - pos2nd.y) - size1st.y / 2 - size2nd.y / 2;
+	float c_x = abs(v1pos.x - v2pos.x) - v1size.x / 2 - v2size.x / 2;
+	float c_y = abs(v1pos.y - v2pos.y) - v1size.y / 2 - v2size.y / 2;
 	return c_x <= 0 && c_y <= 0;
 }
 
-Vector Rect::getCenter(const Vector &pos, const Vector &size)
+Vec2D Rect::getCenter(const Vec2D &pos, const Vec2D &size)
 {
 	return pos + size / 2;
 }
 
-SDL_Rect Rect::reScale(const Vector &pos, const Vector &size, float scale)
+SDL_Rect Rect::reScale(const Vec2D &pos, const Vec2D &size, float scale)
 {
 	SDL_Rect new_rect;
 	new_rect.x = pos.x + (1 - scale) * size.x / 2;

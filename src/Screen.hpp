@@ -13,7 +13,7 @@ struct Sprite
 {
 	SDL_Texture *texture;
 	std::string path;
-	Vector real_size;
+	Vec2D real_size;
 	int max_frame;
 };
 
@@ -47,13 +47,13 @@ public:
 	~Screen();
 
 	// image
-	void loadSprite(const std::string &, const std::string &, Vector, int max_frame = 1);
-	void drawSprite(Sprite &, const Vector &, const Vector &, float, int, bool);
+	void loadSprite(const std::string &, const std::string &, Vec2D, int max_frame = 1);
+	void drawSprite(Sprite &, const Vec2D &, const Vec2D &, float, int, bool);
 	void deleteSprites();
 
 	// font
 	// void loadFont(const std::string &, const std::string &, int font_size = 18);
-	// void renderFont(const std::string &, const Vector &, const Vector &, SDL_Color color = Color::white(0), float scale = 1.0, const std::string &name = "regular");
+	// void renderFont(const std::string &, const Vec2D &, const Vec2D &, SDL_Color color = Color::white(0), float scale = 1.0, const std::string &name = "regular");
 
 	void updateEnemies();
 	void updatePlayer();

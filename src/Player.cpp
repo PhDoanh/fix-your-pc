@@ -2,8 +2,12 @@
 #include "Screen.hpp"
 #include "Game.hpp"
 #include "Sound.hpp"
-#include "util.hpp"
 #include "Event.hpp"
+#include "util.hpp"
+
+float Player::speed = 8.5;
+int Player::score = 0;
+SDL_Rect Player::rect = Rect::square(64);
 
 Player::Player()
 {
@@ -15,7 +19,7 @@ Player::~Player()
 	info("Player destructor called!");
 }
 
-void Player::update()
+void Player::move()
 {
 
 	float dx = 0, dy = 0;
@@ -38,15 +42,15 @@ void Player::update()
 	}
 
 	// update player position
-	x += dx * speed;
-	y += dy * speed;
+	rect.x += dx * speed;
+	rect.y += dy * speed;
 
-	if (x <= 0)
-		x = 0;
-	if (x + w - 10 > Game::win_w)
-		x = Game::win_w + 10 - w;
-	if (y <= 0)
-		y = 0;
-	if (y + h > Game::win_h)
-		y = Game::win_h - h;
+	if (rect.x <= 0)
+		rect.x = 0;
+	if (rect.x + rect.w - 10 > Game::win_w)
+		rect.x = Game::win_w + 10 - rect.w;
+	if (rect.y <= 0)
+		rect.y = 0;
+	if (rect.y + rect.h > Game::win_h)
+		rect.y = Game::win_h - rect.h;
 }

@@ -27,10 +27,8 @@ Screen::Screen(/* args */)
 			int index = tilemap[x][y];
 			if (index)
 			{
-				enemy[index]->x = x * 96;
-				enemy[index]->y = y * 96;
-				enemy[index]->w = 96;
-				enemy[index]->h = 96;
+				enemy[index - 1].rect.x = x * 96;
+				enemy[index - 1].rect.y = y * 96;
 			}
 		}
 }
@@ -40,7 +38,7 @@ Screen::~Screen()
 	info("Screen destructor called!");
 }
 
-void Screen::loadSprite(const std::string &name, const std::string &path, Vector real_size, int max_frame)
+void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame)
 {
 	info("Trying to load " + path + " ... ");
 	sprites[name] = new Sprite();
@@ -63,7 +61,7 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vector
 	SDL_FreeSurface(surface);
 }
 
-void Screen::drawSprite(Sprite &sprite, const Vector &pos, const Vector &size, float scale, int cur_frame, bool flip)
+void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, float scale, int cur_frame, bool flip)
 {
 	int x = (cur_frame % sprite.max_frame) * sprite.real_size.x;
 	int y = 0;
@@ -92,38 +90,45 @@ void Screen::deleteSprites()
 
 void Screen::updateEnemies()
 {
-	for (int i = 1; i <= 50; i++)
-		enemies.bounceMotion(i);
+	if (enemy.size() <= 3)
+		enemies.spawn();
+	enemies.move();
 }
 
 void Screen::updatePlayer()
 {
-	player.update();
+	player.move();
 }
 
 void Screen::drawBackground()
 {
-	drawSprite(*sprites["bg1"], Vector(), Vector(Game::win_w, Game::win_h), 1, 1, false);
+	drawSprite(
+		*sprites["bg1"],
+		Vec2D(),
+		Vec2D(Game::win_w, Game::win_h),
+		1, 1, false);
 }
 
 void Screen::drawEnemies()
 {
-	for (int x = 0; x < 16; x++)
-		for (int y = 0; y < 8; y++)
-		{
-			int index = tilemap[x][y];
-			if (index)
-				drawSprite(
-					*sprites["enemy" + std::to_string(index)],
-					Vector(enemy[index]->x, enemy[index]->y),
-					Vector(enemy[index]->w, enemy[index]->h),
-					1, 1, false);
-		}
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		drawSprite(
+			*sprites["enemy" + std::to_string(i + 1)],
+			Vec2D(enemy[i].rect.x, enemy[i].rect.y),
+			Vec2D(enemy[i].rect.w, enemy[i].rect.h),
+			1, 1, false);
+	}
 }
 
 void Screen::drawPlayer()
 {
-	drawSprite(*sprites["arrow"], Vector(player.x, player.y), Vector(player.w, player.h), 1, 1, false);
+	const SDL_Rect &player_rect = player.rect;
+	drawSprite(
+		*sprites["arrow"],
+		Vec2D(player_rect.x, player_rect.y),
+		Vec2D(player_rect.w, player_rect.h),
+		1, 1, false);
 }
 
 // void Screen::drawDialog()
@@ -135,7 +140,7 @@ void Screen::drawPlayer()
 // 		int h = dialog->real_size.y;
 // 		int x = (Game::win_w - w) / 2.0;
 // 		int y = (Game::win_h - h) / 2.0;
-// 	 rawSprite(*dialog, Vector(x, y), Vector(w, h), 1, 1, false);
+// 	 rawSprite(*dialog, Vec2D(x, y), Vec2D(w, h), 1, 1, false);
 // 	}
 // }
 
@@ -153,7 +158,7 @@ void Screen::drawPlayer()
 // 	info(path + " - done.");
 // }
 
-// void Screen::renderFont(const std::string &content, const Vector &pos, const Vector &size, SDL_Color color, float scale, const std::string &name)
+// void Screen::renderFont(const std::string &content, const Vec2D &pos, const Vec2D &size, SDL_Color color, float scale, const std::string &name)
 // {
 // 	SDL_Surface *surface = TTF_RenderText_Blended(fonts[name], content.c_str(), color);
 // 	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);

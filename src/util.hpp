@@ -4,39 +4,38 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+// track game states on the console
 void log(const std::string &msg);
 void info(const std::string &msg);
 void error(const std::string &msg);
 
-struct Vector // Vector 2D
+// manage 2d objects more easily
+struct Vec2D
 {
 	float x, y;
-	Vector() : x(0.0), y(0.0) {}
-	Vector(float val) : x(val), y(val) {}
-	Vector(float x, float y) : x(x), y(y) {}
-	float distance(const Vector &);
-	bool between(const Vector &, const Vector &);
+	Vec2D() : x(0.0), y(0.0) {}
+	Vec2D(float val) : x(val), y(val) {}
+	Vec2D(float x, float y) : x(x), y(y) {}
+	float distance(const Vec2D &v);
+	bool between(const Vec2D &v1, const Vec2D &v2);
 };
 
-// basic Vector operators
-std::ostream &
-operator<<(std::ostream &, const Vector &);
-Vector operator+(const Vector &, const Vector &);
-Vector operator-(const Vector &, const Vector &);
-Vector operator*(const Vector &, float);
-Vector operator/(const Vector &, float);
-Vector operator-(const Vector &);
-void operator+=(Vector &v1, const Vector &v2);
-void operator-=(Vector &v1, const Vector &v2);
-void operator*=(Vector &v1, float);
-void operator/=(Vector &v1, float);
+std::ostream &operator<<(std::ostream &out, const Vec2D &v);
+Vec2D operator+(const Vec2D &v1, const Vec2D &v2);
+Vec2D operator-(const Vec2D &v1, const Vec2D &v2);
+Vec2D operator*(const Vec2D &v, float k);
+Vec2D operator/(const Vec2D &v, float k);
+Vec2D operator-(const Vec2D &v);
+void operator+=(Vec2D &v1, const Vec2D &v2);
+void operator-=(Vec2D &v1, const Vec2D &v2);
+void operator*=(Vec2D &v, float k);
+void operator/=(Vec2D &v, float k);
 
-// basic Vector functions
-Vector max(const Vector &, const Vector &);
-Vector min(const Vector &, const Vector &);
+Vec2D max(const Vec2D &v1, const Vec2D &v2);
+Vec2D min(const Vec2D &v1, const Vec2D &v2);
+Vec2D toInt(const Vec2D &v);
 
-Vector toInt(const Vector &);
-
+// control objects direction
 struct Direction
 {
 	float left, right, up, down;
@@ -44,6 +43,7 @@ struct Direction
 	Direction(float l, float r, float u, float d) : left(l), right(r), up(u), down(d) {}
 };
 
+// list of basic colors
 struct Color
 {
 	static SDL_Color white(Uint8 alpha) { return {255, 255, 255, alpha}; }
@@ -58,12 +58,13 @@ struct Color
 	static SDL_Color cyan(Uint8 alpha) { return {0, 255, 255, alpha}; }
 };
 
+// my functions for rectangles
 struct Rect
 {
 	static SDL_Rect square(int size) { return {0, 0, size, size}; }
-	static bool isCollide(const Vector &, const Vector &, const Vector &, const Vector &);
-	static Vector getCenter(const Vector &, const Vector &);
-	static SDL_Rect reScale(const Vector &, const Vector &, float);
+	static bool isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos, const Vec2D &v2size);
+	static Vec2D getCenter(const Vec2D &pos, const Vec2D &size);
+	static SDL_Rect reScale(const Vec2D &pos, const Vec2D &size, float scale);
 };
 
 #endif // UTIL_HPP

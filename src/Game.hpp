@@ -30,11 +30,11 @@ private:
 	Event event;
 
 public:
-	static bool running;
-	static std::string title;
+	static float fps;
 	static int win_w;
 	static int win_h;
-	static float fps;
+	static bool running;
+	static std::string title;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 

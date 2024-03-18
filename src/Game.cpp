@@ -3,11 +3,11 @@
 #include "Player.hpp"
 #include "util.hpp"
 
-bool Game::running = true;
-std::string Game::title = "Fix Your PC";
+float Game::fps = 60.0;
 int Game::win_w = 0;
 int Game::win_h = 0;
-float Game::fps = 60.0;
+bool Game::running = false;
+std::string Game::title = "Fix Your PC";
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
 
@@ -31,6 +31,8 @@ void Game::start()
 {
 	std::srand(std::time(NULL));
 	float frame_start, frame_time, frame_delay = 1000.0 / fps;
+
+	running = true;
 	while (running)
 	{
 		frame_start = float(SDL_GetTicks());
@@ -126,22 +128,22 @@ void Game::loadMedia()
 	std::string name;
 	name = "bg";
 	for (int i = 1; i <= NUM_BG; i++)
-		screen.loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").jpg", Vector(3840, 2400));
-	screen.loadSprite("window crash", "res/backgrounds/win_crash.jpg", Vector(5120, 2880));
+		screen.loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").jpg", Vec2D(3840, 2400));
+	screen.loadSprite("window crash", "res/backgrounds/win_crash.jpg", Vec2D(5120, 2880));
 
 	name = "enemy";
 	for (int i = 1; i <= MAX_NUM_ENEMY; i++)
-		screen.loadSprite(name + std::to_string(i), "res/enemy/" + name + " (" + std::to_string(i) + ").png", Vector(256, 256));
-	screen.loadSprite("boss", "res/enemy/boss.png", Vector(879, 501));
+		screen.loadSprite(name + std::to_string(i), "res/enemy/" + name + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
+	screen.loadSprite("boss", "res/enemy/boss.png", Vec2D(879, 501));
 
-	screen.loadSprite("arrow", "res/player/arrow.png", Vector(64, 64));
-	screen.loadSprite("beam", "res/player/beam.png", Vector(64, 44));
-	screen.loadSprite("busy", "res/player/busy.png", Vector(1152, 64), 18);
-	screen.loadSprite("helpsel", "res/player/helpsel.png", Vector(64, 64));
-	screen.loadSprite("link", "res/player/link.png", Vector(64, 64));
-	screen.loadSprite("move", "res/player/move.png", Vector(64, 64));
-	screen.loadSprite("unvail", "res/player/unavail.png", Vector(64, 64));
-	screen.loadSprite("working", "res/player/working.png", Vector(1152, 64), 18);
+	screen.loadSprite("arrow", "res/player/arrow.png", Vec2D(64, 64));
+	screen.loadSprite("beam", "res/player/beam.png", Vec2D(64, 44));
+	screen.loadSprite("busy", "res/player/busy.png", Vec2D(1152, 64), 18);
+	screen.loadSprite("helpsel", "res/player/helpsel.png", Vec2D(64, 64));
+	screen.loadSprite("link", "res/player/link.png", Vec2D(64, 64));
+	screen.loadSprite("move", "res/player/move.png", Vec2D(64, 64));
+	screen.loadSprite("unvail", "res/player/unavail.png", Vec2D(64, 64));
+	screen.loadSprite("working", "res/player/working.png", Vec2D(1152, 64), 18);
 	// screen.loadFont("thin", "res/fonts/Sarabun-Thin.ttf");
 	// screen.loadFont("light", "res/fonts/Sarabun-Light.ttf");
 	// screen.loadFont("medium", "res/fonts/Sarabun-Medium.ttf");

@@ -9,14 +9,14 @@ class Player
 private:
 protected:
 public:
-	float speed = 8.5;
-	int score = 0;
-	int x, y, w = 64, h = 64;
+	static float speed;
+	static int score;
+	static SDL_Rect rect;
 
 	Player();  // constructor
 	~Player(); // destructor
 
-	void update();
+	void move();
 };
 
 #endif // PLAYER_HPP
