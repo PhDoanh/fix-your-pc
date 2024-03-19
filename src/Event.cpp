@@ -1,22 +1,4 @@
 #include "Event.hpp"
-#include "Player.hpp"
-#include "Enemies.hpp"
-#include "Screen.hpp"
-#include "Game.hpp"
-#include "util.hpp"
-
-SDL_Event Event::e;
-const Uint8 *Event::state;
-
-Event::Event(/* args */)
-{
-	info("Event constructor called!");
-}
-
-Event::~Event()
-{
-	info("Event destructor called!");
-}
 
 void Event::handleKeyboard()
 {
@@ -26,7 +8,6 @@ void Event::handleKeyboard()
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_ESCAPE:
-			Game::running = false;
 			break;
 		default:
 			break;

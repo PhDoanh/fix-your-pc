@@ -1,11 +1,13 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <map>
 #include "../inc/SDL.h"
 #include "../inc/SDL_mixer.h"
+#include "util.hpp"
 
 #ifndef SOUND_HPP
 #define SOUND_HPP
 
-enum sound_chanels
+enum sound_chanel
 {
 	music,
 	left_click,
@@ -19,24 +21,23 @@ enum sound_chanels
 
 class Sound
 {
-private:
-	/* data */
 public:
-	Sound(/* args */);
-	~Sound();
+	Sound() { info("Sound constructor called."); }
+	~Sound() { info("Sound destructor called."); }
 
 	void loadSoundEffect(const std::string &, const std::string &);
-	static void playSoundEffect(const std::string &name, int chanel, int loop = 0);
-	static void stopSoundEffect(int);
+	void playSoundEffect(const std::string &name, int chanel, int loop = 0);
+	void stopSoundEffect(int);
 
 	void loadMusic(const std::string &, const std::string &);
-	static void playMusic(const std::string &name, int loop = -1);
-	static void stopMusic();
+	void playMusic(const std::string &name, int loop = -1);
+	void stopMusic();
 
 	void deleteSoundEffects();
 	void deleteMusics();
 };
 
+extern Sound *sound;
 extern std::map<std::string, Mix_Chunk *> sounds;
 extern std::map<std::string, Mix_Music *> musics;
 

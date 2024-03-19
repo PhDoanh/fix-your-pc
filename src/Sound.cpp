@@ -1,18 +1,7 @@
 #include "Sound.hpp"
-#include "util.hpp"
 
 std::map<std::string, Mix_Chunk *> sounds;
 std::map<std::string, Mix_Music *> musics;
-
-Sound::Sound(/* args */)
-{
-	info("Sound constructor called!");
-}
-
-Sound::~Sound()
-{
-	info("Sound destructor called!");
-}
 
 void Sound::loadSoundEffect(const std::string &name, const std::string &path)
 {

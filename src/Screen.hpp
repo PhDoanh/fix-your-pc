@@ -1,9 +1,8 @@
-#include <bits/stdc++.h>
+#include <map>
+#include <string>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
-#include "Player.hpp"
-#include "Enemies.hpp"
 #include "util.hpp"
 
 #ifndef SCREEN_HPP
@@ -40,10 +39,7 @@ private:
 	std::string bg_name;
 
 public:
-	Player player;
-	Enemies enemies;
-
-	Screen(/* args */);
+	Screen();
 	~Screen();
 
 	// image
@@ -61,9 +57,10 @@ public:
 	void drawBackground();
 	void drawEnemies();
 	void drawPlayer();
-	void drawDialog();
+	// void drawDialog();
 };
 
+extern Screen *screen;
 extern std::map<std::string, Sprite *> sprites;
 extern std::map<std::string, TTF_Font *> fonts;
 

@@ -5,20 +5,15 @@ Vec2D right_vec(1, 0);
 Vec2D up_vec(0, -1);
 Vec2D down_vec(0, 1);
 
-void log(const std::string &msg)
+float Vec2D::distance(const Vec2D &v)
 {
-	std::clog << "  log| " << msg << '\n';
+	float dx = v.x - x, dy = v.y - y;
+	return sqrt(dx * dx + dy * dy);
 }
 
-void info(const std::string &msg)
+bool Vec2D::between(const Vec2D &v1, const Vec2D &v2)
 {
-	std::cout << " info| " << msg << '\n';
-}
-
-void error(const std::string &msg)
-{
-	std::cerr << "error| " << msg << '\n';
-	exit(1);
+	return x >= v1.x && x <= v2.x && y >= v1.y && y <= v2.y;
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec2D &v)
@@ -89,17 +84,6 @@ Vec2D min(const Vec2D &v1, const Vec2D &v2)
 Vec2D toInt(const Vec2D &v)
 {
 	return Vec2D(int(v.x), int(v.y));
-}
-
-float Vec2D::distance(const Vec2D &v)
-{
-	float dx = v.x - x, dy = v.y - y;
-	return sqrt(dx * dx + dy * dy);
-}
-
-bool Vec2D::between(const Vec2D &v1, const Vec2D &v2)
-{
-	return x >= v1.x && x <= v2.x && y >= v1.y && y <= v2.y;
 }
 
 bool Rect::isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos, const Vec2D &v2size)

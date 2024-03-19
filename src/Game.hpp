@@ -1,21 +1,32 @@
-#include <bits/stdc++.h>
+#include <string>
+#include <ctime>
+#include <cstdlib>
+#include <fstream>
+#include <vector>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
 #include "../inc/SDL_mixer.h"
-#include "Screen.hpp"
-#include "Sound.hpp"
-#include "Event.hpp"
+#include "../inc/SDL_net.h"
+#include "util.hpp"
 
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#define NUM_BG 10
-#define MAX_NUM_ENEMY 50
-
 class Game
 {
-private:
+public:
+	std::string title;
+	static float fps;
+	static int win_w;
+	static int win_h;
+	static bool running;
+	static SDL_Window *window;
+	static SDL_Renderer *renderer;
+
+	Game(std::string title) : title(title) { info("Game constructor called."); }
+	~Game() { info("Game destructor called."); }
+
 	void initSDL2();
 	void loadMedia();
 
@@ -24,24 +35,6 @@ private:
 
 	void quitMedia();
 	void quitSDL2();
-
-	Screen screen;
-	Sound sound;
-	Event event;
-
-public:
-	static float fps;
-	static int win_w;
-	static int win_h;
-	static bool running;
-	static std::string title;
-	static SDL_Window *window;
-	static SDL_Renderer *renderer;
-
-	Game();
-	~Game();
-
-	void start();
 };
 
 #endif // GAME_HPP

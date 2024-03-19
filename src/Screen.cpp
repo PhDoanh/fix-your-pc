@@ -1,42 +1,40 @@
 #include "Game.hpp"
 #include "Screen.hpp"
 #include "Event.hpp"
+#include "Entity.hpp"
 
 std::map<std::string, Sprite *> sprites;
 std::map<std::string, TTF_Font *> fonts;
 
-Screen::Screen(/* args */)
+Screen::Screen()
 {
 	info("Screen constructor called!");
 
-	std::vector<int> indexes(50);
-	std::iota(indexes.begin(), indexes.end(), 1);
-	for (int x = 0; x < 16; x++)
-		for (int y = 0; y < 8; y++)
-		{
-			if (tilemap[x][y])
-			{
-				tilemap[x][y] = indexes[rand() % indexes.size()];
-				indexes.erase(std::find(indexes.begin(), indexes.end(), tilemap[x][y]));
-			}
-		}
+	// std::vector<int> indexes(50);
+	// std::iota(indexes.begin(), indexes.end(), 1);
+	// for (int x = 0; x < 16; x++)
+	// 	for (int y = 0; y < 8; y++)
+	// 	{
+	// 		if (tilemap[x][y])
+	// 		{
+	// 			tilemap[x][y] = indexes[rand() % indexes.size()];
+	// 			indexes.erase(std::find(indexes.begin(), indexes.end(), tilemap[x][y]));
+	// 		}
+	// 	}
 
-	for (int x = 0; x < 16; x++)
-		for (int y = 0; y < 8; y++)
-		{
-			int index = tilemap[x][y];
-			if (index)
-			{
-				enemy[index - 1].rect.x = x * 96;
-				enemy[index - 1].rect.y = y * 96;
-			}
-		}
+	// for (int x = 0; x < 16; x++)
+	// 	for (int y = 0; y < 8; y++)
+	// 	{
+	// 		int index = tilemap[x][y];
+	// 		if (index)
+	// 		{
+	// 			enemy[index - 1].rect.x = x * 96;
+	// 			enemy[index - 1].rect.y = y * 96;
+	// 		}
+	// 	}
 }
 
-Screen::~Screen()
-{
-	info("Screen destructor called!");
-}
+Screen::~Screen() { info("Screen destructor called!"); }
 
 void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame)
 {
@@ -90,14 +88,16 @@ void Screen::deleteSprites()
 
 void Screen::updateEnemies()
 {
-	if (enemy.size() <= 3)
-		enemies.spawn();
-	enemies.move();
+	if (enemies.size() <= 3)
+		for (int i = 0; i < 10; i++)
+			enemies[i]->spawn();
+	for (int i = 0; i < enemies.size(); i++)
+		enemies[i]->move();
 }
 
 void Screen::updatePlayer()
 {
-	player.move();
+	players[0]->move();
 }
 
 void Screen::drawBackground()
@@ -111,23 +111,22 @@ void Screen::drawBackground()
 
 void Screen::drawEnemies()
 {
-	for (int i = 0; i < enemy.size(); i++)
+	for (int i = 0; i < enemies.size(); i++)
 	{
 		drawSprite(
 			*sprites["enemy" + std::to_string(i + 1)],
-			Vec2D(enemy[i].rect.x, enemy[i].rect.y),
-			Vec2D(enemy[i].rect.w, enemy[i].rect.h),
+			Vec2D(enemies[i]->x, enemies[i]->y),
+			Vec2D(96, 96),
 			1, 1, false);
 	}
 }
 
 void Screen::drawPlayer()
 {
-	const SDL_Rect &player_rect = player.rect;
 	drawSprite(
 		*sprites["arrow"],
-		Vec2D(player_rect.x, player_rect.y),
-		Vec2D(player_rect.w, player_rect.h),
+		Vec2D(players[0]->x, players[0]->y),
+		Vec2D(64, 64),
 		1, 1, false);
 }
 

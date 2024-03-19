@@ -1,13 +1,27 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <cmath>
 #include "../inc/SDL.h"
 
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
 // track game states on the console
-void log(const std::string &msg);
-void info(const std::string &msg);
-void error(const std::string &msg);
+inline void log(const std::string &msg)
+{
+	std::clog << "  log| " << msg << '\n';
+}
+
+inline void info(const std::string &msg)
+{
+	std::cout << " info| " << msg << '\n';
+}
+
+inline void error(const std::string &msg)
+{
+	std::cerr << "error| " << msg << '\n';
+	exit(1);
+}
 
 // manage 2d objects more easily
 struct Vec2D
@@ -16,6 +30,7 @@ struct Vec2D
 	Vec2D() : x(0.0), y(0.0) {}
 	Vec2D(float val) : x(val), y(val) {}
 	Vec2D(float x, float y) : x(x), y(y) {}
+
 	float distance(const Vec2D &v);
 	bool between(const Vec2D &v1, const Vec2D &v2);
 };
@@ -30,7 +45,6 @@ void operator+=(Vec2D &v1, const Vec2D &v2);
 void operator-=(Vec2D &v1, const Vec2D &v2);
 void operator*=(Vec2D &v, float k);
 void operator/=(Vec2D &v, float k);
-
 Vec2D max(const Vec2D &v1, const Vec2D &v2);
 Vec2D min(const Vec2D &v1, const Vec2D &v2);
 Vec2D toInt(const Vec2D &v);
