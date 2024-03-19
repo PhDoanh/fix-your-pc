@@ -7,15 +7,27 @@ void Event::handleKeyboard()
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_ESCAPE:
+		case SDLK_LALT:
+			SDL_StopTextInput();
+			moving = true;
 			break;
 		default:
 			break;
 		}
 		break;
 	case SDL_KEYUP:
-		break;
-	default:
+		switch (e.key.keysym.sym)
+		{
+		case SDLK_LALT:
+			SDL_StartTextInput();
+			moving = false;
+			break;
+		default:
+			break;
+		}
+
+	case SDL_TEXTINPUT:
+		cur_txt_inp = e.text.text;
 		break;
 	}
 }
@@ -25,7 +37,8 @@ void Event::handleMouse()
 	switch (e.type)
 	{
 	case SDL_MOUSEMOTION:
-		// player.mouseMovement(e.motion);
+		mouse_x = e.motion.x;
+		mouse_y = e.motion.x;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		switch (e.button.button)

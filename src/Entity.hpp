@@ -34,7 +34,7 @@ class Enemy : public Entity
 {
 private:
 public:
-	Enemy(std::string name, int x = 0, int y = 0, float speed = 3.14) : Entity(name, x, y, speed) {}
+	Enemy(std::string name, int x = 0, int y = 0, float speed = 1.69) : Entity(name, x, y, speed) {}
 
 	void move();
 	void attack();

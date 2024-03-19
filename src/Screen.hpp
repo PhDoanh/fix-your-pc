@@ -48,8 +48,9 @@ public:
 	void deleteSprites();
 
 	// font
-	// void loadFont(const std::string &, const std::string &, int font_size = 18);
-	// void renderFont(const std::string &, const Vec2D &, const Vec2D &, SDL_Color color = Color::white(0), float scale = 1.0, const std::string &name = "regular");
+	void loadFont(const std::string &, const std::string &, const int &);
+	void renderFont(const std::string &, const std::string &, const Vec2D &, SDL_Color color = Color::white(0));
+	void deleteFonts();
 
 	void updateEnemies();
 	void updatePlayer();

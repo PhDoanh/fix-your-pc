@@ -8,13 +8,13 @@
 void Player::move()
 {
 	float dx = 0, dy = 0;
-	if (event->state[SDL_SCANCODE_RIGHT])
+	if (event->state[SDL_SCANCODE_D])
 		dx += speed;
-	if (event->state[SDL_SCANCODE_LEFT])
+	if (event->state[SDL_SCANCODE_A])
 		dx -= speed;
-	if (event->state[SDL_SCANCODE_UP])
+	if (event->state[SDL_SCANCODE_W])
 		dy -= speed;
-	if (event->state[SDL_SCANCODE_DOWN])
+	if (event->state[SDL_SCANCODE_S])
 		dy += speed;
 
 	float len = std::sqrt(dx * dx + dy * dy);
@@ -38,6 +38,14 @@ void Player::move()
 
 void Player::attack()
 {
+	// int index;
+	// float dist =
+	// for (int i = 0; i < enemies.size(); i++)
+	// 	if(event->cur_chr_inp == enemies[i]->name[0])
+	// 	{
+	// 		dist = min(dist, Vec2D(x, y).distance(Vec2D(enemies[i]->x, enemies[i]->y)));
+
+	// 	}
 }
 
 void Player::takeDamage()

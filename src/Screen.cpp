@@ -86,18 +86,68 @@ void Screen::deleteSprites()
 	}
 }
 
+void Screen::loadFont(const std::string &name, const std::string &path, const int &size)
+{
+	info("Trying to load " + path + " ... ");
+	fonts[name] = TTF_OpenFont(path.c_str(), size);
+	if (!fonts[name])
+	{
+		TTF_CloseFont(fonts[name]);
+		fonts[name] = nullptr;
+		fonts.erase(name);
+		error(path + " - fail.");
+	}
+	info(path + " - done.");
+}
+
+void Screen::renderFont(const std::string &name, const std::string &txt, const Vec2D &pos, SDL_Color color)
+{
+	SDL_Surface *surface = TTF_RenderText_Blended(fonts[name], txt.c_str(), color);
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
+	SDL_Rect dst_rect;
+	dst_rect.x = int(pos.x);
+	dst_rect.y = int(pos.y);
+	SDL_QueryTexture(texture, nullptr, nullptr, &dst_rect.w, &dst_rect.h);
+	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
+	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
+}
+
+void Screen::deleteFonts()
+{
+	info("Deleting all fonts ...");
+	for (auto &&font : fonts)
+	{
+		TTF_CloseFont(font.second);
+		// delete font.second;
+		font.second = nullptr;
+		fonts.erase(font.first);
+		if (font.second)
+			error(font.first + " Segoe UI Variable " + "- fail.");
+		else
+			info(font.first + " Segoe UI Variable " + "- done.");
+	}
+}
+
 void Screen::updateEnemies()
 {
 	if (enemies.size() <= 3)
 		for (int i = 0; i < 10; i++)
 			enemies[i]->spawn();
 	for (int i = 0; i < enemies.size(); i++)
+	{
 		enemies[i]->move();
+		enemies[i]->attack();
+		enemies[i]->takeDamage();
+	}
 }
 
 void Screen::updatePlayer()
 {
-	players[0]->move();
+	if (event->moving)
+		players[0]->move();
+	players[0]->attack();
+	players[0]->takeDamage();
 }
 
 void Screen::drawBackground()
@@ -118,6 +168,10 @@ void Screen::drawEnemies()
 			Vec2D(enemies[i]->x, enemies[i]->y),
 			Vec2D(96, 96),
 			1, 1, false);
+		renderFont(
+			"small",
+			enemies[i]->name,
+			Vec2D(enemies[i]->x, enemies[i]->y + 96));
 	}
 }
 
@@ -141,27 +195,4 @@ void Screen::drawPlayer()
 // 		int y = (Game::win_h - h) / 2.0;
 // 	 rawSprite(*dialog, Vec2D(x, y), Vec2D(w, h), 1, 1, false);
 // 	}
-// }
-
-// void Screen::loadFont(const std::string &name, const std::string &path, int font_size)
-// {
-// 	info("Trying to load " + path + " ... ");
-// 	fonts[name] = TTF_OpenFont(path.c_str(), font_size);
-// 	if (!fonts[name])
-// 	{
-// 		TTF_CloseFont(fonts[name]);
-// 		fonts[name] = nullptr;
-// 		fonts.erase(name);
-// 		error(path + " - fail.");
-// 	}
-// 	info(path + " - done.");
-// }
-
-// void Screen::renderFont(const std::string &content, const Vec2D &pos, const Vec2D &size, SDL_Color color, float scale, const std::string &name)
-// {
-// 	SDL_Surface *surface = TTF_RenderText_Blended(fonts[name], content.c_str(), color);
-// 	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
-// 	SDL_FreeSurface(surface);
-// 	SDL_Rect dst_rect = Rect::reScale(pos, size, scale);
-// 	SDL_RenderCopy(Game::renderer, texture, NULL, &dst_rect);
 // }

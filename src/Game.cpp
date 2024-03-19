@@ -29,6 +29,7 @@ void Game::handleEvent()
 		event->handleMouse();
 		event->handleKeyboard();
 	}
+	log(event->cur_txt_inp);
 }
 
 void Game::updateScreen()
@@ -140,12 +141,9 @@ void Game::loadMedia()
 	screen->loadSprite("move", "res/player/move.png", Vec2D(64, 64));
 	screen->loadSprite("unvail", "res/player/unavail.png", Vec2D(64, 64));
 	screen->loadSprite("working", "res/player/working.png", Vec2D(1152, 64), 18);
-	// screen->loadFont("thin", "res/fonts/Sarabun-Thin.ttf");
-	// screen->loadFont("light", "res/fonts/Sarabun-Light.ttf");
-	// screen->loadFont("medium", "res/fonts/Sarabun-Medium.ttf");
-	// screen->loadFont("regular", "res/fonts/Sarabun-Regular.ttf");
-	// screen->loadFont("bold", "res/fonts/Sarabun-Bold.ttf");
-	// screen->loadFont("italic", "res/fonts/Sarabun-Italic.ttf");
+	screen->loadFont("big", "res/SegUIVar.ttf", 48);
+	screen->loadFont("medium", "res/SegUIVar.ttf", 36);
+	screen->loadFont("small", "res/SegUIVar.ttf", 24);
 
 	// Load UX
 	sound->loadSoundEffect("right click", "res/sound_effects/rclick.wav");
@@ -167,9 +165,10 @@ void Game::quitSDL2()
 
 void Game::quitMedia()
 {
-	screen->deleteSprites();
 	sound->deleteSoundEffects();
 	sound->deleteMusics();
+	screen->deleteFonts();
+	screen->deleteSprites();
 
 	for (int i = 0; i < players.size(); i++)
 	{

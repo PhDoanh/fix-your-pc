@@ -1,3 +1,4 @@
+#include <string>
 #include "../inc/SDL.h"
 #include "Screen.hpp"
 #include "util.hpp"
@@ -11,6 +12,9 @@ private:
 public:
 	SDL_Event e;
 	const Uint8 *state;
+	std::string cur_txt_inp;
+	int mouse_x, mouse_y;
+	bool moving = false;
 
 	Event() { info("Event constructor called!"); }
 	~Event() { info("Event destructor called!"); }
