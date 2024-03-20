@@ -141,9 +141,9 @@ void Game::loadMedia()
 	screen->loadSprite("move", "res/player/move.png", Vec2D(64, 64));
 	screen->loadSprite("unvail", "res/player/unavail.png", Vec2D(64, 64));
 	screen->loadSprite("working", "res/player/working.png", Vec2D(1152, 64), 18);
-	screen->loadFont("big", "res/SegUIVar.ttf", 48);
-	screen->loadFont("medium", "res/SegUIVar.ttf", 36);
-	screen->loadFont("small", "res/SegUIVar.ttf", 24);
+	screen->loadFont("big", "res/SegUIVar.ttf", 32);
+	screen->loadFont("medium", "res/SegUIVar.ttf", 28);
+	screen->loadFont("small", "res/SegUIVar.ttf", 23);
 
 	// Load UX
 	sound->loadSoundEffect("right click", "res/sound_effects/rclick.wav");

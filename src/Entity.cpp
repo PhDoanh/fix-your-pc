@@ -4,6 +4,8 @@
 #include "Sound.hpp"
 #include "Event.hpp"
 
+int Enemy::index = 0;
+
 // Player
 void Player::move()
 {
@@ -38,14 +40,14 @@ void Player::move()
 
 void Player::attack()
 {
-	// int index;
-	// float dist =
-	// for (int i = 0; i < enemies.size(); i++)
-	// 	if(event->cur_chr_inp == enemies[i]->name[0])
-	// 	{
-	// 		dist = min(dist, Vec2D(x, y).distance(Vec2D(enemies[i]->x, enemies[i]->y)));
-
-	// 	}
+	// if (event->cur_chr_inp == enemy->name[Enemy::index])
+	// {
+	// 	enemy->name[Enemy::index] = ' ';
+	// 	Enemy::index++;
+	// }
+	// else
+	// {
+	// }
 }
 
 void Player::takeDamage()

@@ -7,7 +7,7 @@
 #ifndef SOUND_HPP
 #define SOUND_HPP
 
-enum sound_chanel
+enum sound_chanels
 {
 	music,
 	left_click,

@@ -34,6 +34,8 @@ class Enemy : public Entity
 {
 private:
 public:
+	static int index;
+
 	Enemy(std::string name, int x = 0, int y = 0, float speed = 1.69) : Entity(name, x, y, speed) {}
 
 	void move();

@@ -4,7 +4,7 @@
 #include "Entity.hpp"
 
 std::map<std::string, Sprite *> sprites;
-std::map<std::string, TTF_Font *> fonts;
+std::map<std::string, Font *> fonts;
 
 Screen::Screen()
 {
@@ -89,25 +89,32 @@ void Screen::deleteSprites()
 void Screen::loadFont(const std::string &name, const std::string &path, const int &size)
 {
 	info("Trying to load " + path + " ... ");
-	fonts[name] = TTF_OpenFont(path.c_str(), size);
-	if (!fonts[name])
+	fonts[name] = new Font();
+	fonts[name]->font = TTF_OpenFont(path.c_str(), size);
+	if (!fonts[name]->font)
 	{
-		TTF_CloseFont(fonts[name]);
+		TTF_CloseFont(fonts[name]->font);
 		fonts[name] = nullptr;
 		fonts.erase(name);
 		error(path + " - fail.");
 	}
 	info(path + " - done.");
+	fonts[name]->path = path;
 }
 
-void Screen::renderFont(const std::string &name, const std::string &txt, const Vec2D &pos, SDL_Color color)
+void Screen::renderFont(Font &my_font, const std::string &txt, const Vec2D &pos, int txt_type, SDL_Color txt_color, SDL_Color bg_color)
 {
-	SDL_Surface *surface = TTF_RenderText_Blended(fonts[name], txt.c_str(), color);
+	SDL_Surface *surface = nullptr;
+	if (txt_type == solid)
+		surface = TTF_RenderText_Solid(my_font.font, txt.c_str(), txt_color);
+	if (txt_type == blended)
+		surface = TTF_RenderText_Blended(my_font.font, txt.c_str(), txt_color);
+	if (txt_type == shaded)
+		surface = TTF_RenderText_Shaded(my_font.font, txt.c_str(), txt_color, bg_color);
+
 	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
-	SDL_Rect dst_rect;
-	dst_rect.x = int(pos.x);
-	dst_rect.y = int(pos.y);
-	SDL_QueryTexture(texture, nullptr, nullptr, &dst_rect.w, &dst_rect.h);
+	SDL_QueryTexture(texture, nullptr, nullptr, &my_font.w, &my_font.h);
+	SDL_Rect dst_rect = {int(pos.x), int(pos.y), my_font.w, my_font.h};
 	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
 	SDL_FreeSurface(surface);
 	SDL_DestroyTexture(texture);
@@ -116,16 +123,17 @@ void Screen::renderFont(const std::string &name, const std::string &txt, const V
 void Screen::deleteFonts()
 {
 	info("Deleting all fonts ...");
+	std::string path;
 	for (auto &&font : fonts)
 	{
-		TTF_CloseFont(font.second);
-		// delete font.second;
+		path = font.second->path;
+		TTF_CloseFont(font.second->font);
+		delete font.second;
 		font.second = nullptr;
-		fonts.erase(font.first);
 		if (font.second)
-			error(font.first + " Segoe UI Variable " + "- fail.");
+			error(path + "- fail.");
 		else
-			info(font.first + " Segoe UI Variable " + "- done.");
+			info(path + "- done.");
 	}
 }
 
@@ -169,9 +177,9 @@ void Screen::drawEnemies()
 			Vec2D(96, 96),
 			1, 1, false);
 		renderFont(
-			"small",
+			*fonts["small"],
 			enemies[i]->name,
-			Vec2D(enemies[i]->x, enemies[i]->y + 96));
+			Vec2D(enemies[i]->x + (96 - fonts["small"]->w) / 2, enemies[i]->y + 96));
 	}
 }
 
