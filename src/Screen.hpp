@@ -63,7 +63,7 @@ public:
 
 	// font
 	void loadFont(const std::string &, const std::string &, const int &);
-	void renderFont(Font &, const std::string &, const Vec2D &, int txt_type = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
+	void renderFont(Font &, const std::string &, const Vec2D &, int txt_type = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0.5));
 	void deleteFonts();
 
 	void updateEnemies();

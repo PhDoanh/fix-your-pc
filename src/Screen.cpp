@@ -146,16 +146,18 @@ void Screen::updateEnemies()
 	{
 		enemies[i]->move();
 		enemies[i]->attack();
-		enemies[i]->takeDamage();
+		if (enemies[i]->name.back() == ' ')
+		{
+			enemies.erase(enemies.begin() + i);
+			Enemy::index = 0;
+		}
 	}
 }
 
 void Screen::updatePlayer()
 {
-	if (event->moving)
-		players[0]->move();
-	players[0]->attack();
-	players[0]->takeDamage();
+	players[0]->move();
+	players[0]->attack(0);
 }
 
 void Screen::drawBackground()
@@ -176,10 +178,13 @@ void Screen::drawEnemies()
 			Vec2D(enemies[i]->x, enemies[i]->y),
 			Vec2D(96, 96),
 			1, 1, false);
+	}
+	for (int i = 0; i < enemies.size(); i++)
+	{
 		renderFont(
 			*fonts["small"],
 			enemies[i]->name,
-			Vec2D(enemies[i]->x + (96 - fonts["small"]->w) / 2, enemies[i]->y + 96));
+			Vec2D(enemies[i]->x, enemies[i]->y + 96));
 	}
 }
 

@@ -9,7 +9,8 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StopTextInput();
-			moving = true;
+			keyboard_control = true;
+			mouse_control = false;
 			break;
 		default:
 			break;
@@ -20,14 +21,14 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StartTextInput();
-			moving = false;
+			keyboard_control = false;
 			break;
 		default:
 			break;
 		}
 
 	case SDL_TEXTINPUT:
-		cur_txt_inp = e.text.text;
+		cur_chr_inp = e.text.text;
 		break;
 	}
 }
@@ -37,8 +38,10 @@ void Event::handleMouse()
 	switch (e.type)
 	{
 	case SDL_MOUSEMOTION:
+		mouse_control = true;
+		keyboard_control = false;
 		mouse_x = e.motion.x;
-		mouse_y = e.motion.x;
+		mouse_y = e.motion.y;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		switch (e.button.button)

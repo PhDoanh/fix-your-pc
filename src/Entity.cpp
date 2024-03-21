@@ -9,45 +9,51 @@ int Enemy::index = 0;
 // Player
 void Player::move()
 {
-	float dx = 0, dy = 0;
-	if (event->state[SDL_SCANCODE_D])
-		dx += speed;
-	if (event->state[SDL_SCANCODE_A])
-		dx -= speed;
-	if (event->state[SDL_SCANCODE_W])
-		dy -= speed;
-	if (event->state[SDL_SCANCODE_S])
-		dy += speed;
-
-	float len = std::sqrt(dx * dx + dy * dy);
-	if (len > 0)
+	if (event->mouse_control)
 	{
-		dx /= len;
-		dy /= len;
+		x = event->mouse_x;
+		y = event->mouse_y;
 	}
-	x += dx * speed;
-	y += dy * speed;
+
+	if (event->keyboard_control)
+	{
+		float dx = 0, dy = 0;
+		if (event->state[SDL_SCANCODE_D])
+			dx += speed;
+		if (event->state[SDL_SCANCODE_A])
+			dx -= speed;
+		if (event->state[SDL_SCANCODE_W])
+			dy -= speed;
+		if (event->state[SDL_SCANCODE_S])
+			dy += speed;
+
+		float len = std::sqrt(dx * dx + dy * dy);
+		if (len > 0)
+		{
+			dx /= len;
+			dy /= len;
+		}
+		x += dx * speed;
+		y += dy * speed;
+	}
 
 	if (x <= 0)
 		x = 0;
-	if (x + 64 - 10 > Game::win_w)
-		x = Game::win_w + 10 - 64;
+	if (x > Game::win_w)
+		x = Game::win_w - 10;
 	if (y <= 0)
 		y = 0;
-	if (y + 64 > Game::win_h)
-		y = Game::win_h - 64;
+	if (y > Game::win_h)
+		y = Game::win_h - 10;
 }
 
-void Player::attack()
+void Player::attack(const int &i)
 {
-	// if (event->cur_chr_inp == enemy->name[Enemy::index])
-	// {
-	// 	enemy->name[Enemy::index] = ' ';
-	// 	Enemy::index++;
-	// }
-	// else
-	// {
-	// }
+	// log(event->cur_txt_inp);
+	std::string enemy_cur_chr;
+	enemy_cur_chr += enemies[i]->name[Enemy::index];
+	if (event->cur_chr_inp == enemy_cur_chr)
+		enemies[i]->takeDamage();
 }
 
 void Player::takeDamage()
@@ -59,9 +65,12 @@ void Enemy::move()
 {
 	float dx = players[0]->x - x;
 	float dy = players[0]->y - y;
-	float hyp = std::sqrt(dx * dx + dy * dy);
-	dx /= hyp;
-	dy /= hyp;
+	float len = std::sqrt(dx * dx + dy * dy);
+	if (len > 0)
+	{
+		dx /= len;
+		dy /= len;
+	}
 	x += dx * speed;
 	y += dy * speed;
 }
@@ -72,6 +81,8 @@ void Enemy::attack()
 
 void Enemy::takeDamage()
 {
+	name[index] = ' ';
+	index++;
 }
 
 void Enemy::spawn()

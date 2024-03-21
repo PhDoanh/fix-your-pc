@@ -12,9 +12,10 @@ private:
 public:
 	SDL_Event e;
 	const Uint8 *state;
-	std::string cur_txt_inp;
+	std::string cur_chr_inp;
+	bool keyboard_control = false;
+	bool mouse_control = true;
 	int mouse_x, mouse_y;
-	bool moving = false;
 
 	Event() { info("Event constructor called!"); }
 	~Event() { info("Event destructor called!"); }

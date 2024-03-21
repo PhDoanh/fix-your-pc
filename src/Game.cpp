@@ -29,7 +29,7 @@ void Game::handleEvent()
 		event->handleMouse();
 		event->handleKeyboard();
 	}
-	log(event->cur_txt_inp);
+	// log(event->cur_txt_inp);
 }
 
 void Game::updateScreen()

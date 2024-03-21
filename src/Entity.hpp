@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <cstdlib>
 #include "../inc/SDL.h"
 #include "util.hpp"
 
@@ -23,10 +24,10 @@ private:
 	int health;
 
 public:
-	Player(std::string name, int x = 0, int y = 0, float speed = 8, int score = 0, int health = 100) : Entity(name, x, y, speed), score(score), health(health) {}
+	Player(std::string name, int x = 0, int y = 0, float speed = 3.14, int score = 0, int health = 100) : Entity(name, x, y, speed), score(score), health(health) {}
 
 	void move();
-	void attack();
+	void attack(const int &);
 	void takeDamage();
 };
 
@@ -36,7 +37,7 @@ private:
 public:
 	static int index;
 
-	Enemy(std::string name, int x = 0, int y = 0, float speed = 1.69) : Entity(name, x, y, speed) {}
+	Enemy(std::string name, int x = 0, int y = 0, float speed = 0.5 * (rand() % 4 + 1)) : Entity(name, x, y, speed) {}
 
 	void move();
 	void attack();
