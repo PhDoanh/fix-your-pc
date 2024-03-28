@@ -13,8 +13,6 @@ public:
 	SDL_Event e;
 	const Uint8 *state;
 	std::string cur_chr_inp;
-	bool keyboard_control = false;
-	bool mouse_control = true;
 	int mouse_x, mouse_y;
 
 	Event() { info("Event constructor called!"); }

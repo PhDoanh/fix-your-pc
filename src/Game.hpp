@@ -1,8 +1,10 @@
 #include <string>
+#include <sstream>
 #include <ctime>
 #include <cstdlib>
 #include <fstream>
 #include <vector>
+#include <queue>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
@@ -21,6 +23,9 @@ public:
 	static int win_w;
 	static int win_h;
 	static bool running;
+	static const Uint32 spawn_time;
+	static Uint32 last_spawn_time;
+	static std::stringstream level;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 
@@ -36,5 +41,7 @@ public:
 	void quitMedia();
 	void quitSDL2();
 };
+
+extern std::queue<std::string> levels;
 
 #endif // GAME_HPP

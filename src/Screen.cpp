@@ -139,25 +139,48 @@ void Screen::deleteFonts()
 
 void Screen::updateEnemies()
 {
-	if (enemies.size() <= 3)
-		for (int i = 0; i < 10; i++)
-			enemies[i]->spawn();
-	for (int i = 0; i < enemies.size(); i++)
+	if (levels.empty())
 	{
-		enemies[i]->move();
-		enemies[i]->attack();
-		if (enemies[i]->name.back() == ' ')
+	}
+	else
+	{
+		Uint32 cur_time = SDL_GetTicks();
+
+		if (enemies.empty()) // new level
 		{
-			enemies.erase(enemies.begin() + i);
-			Enemy::index = 0;
+			Game::level << levels.front();
+			levels.pop();
 		}
+
+		if (cur_time - Game::last_spawn_time >= Game::spawn_time) // spawn enemy
+		{
+			std::string word;
+			Game::level >> word;
+			Enemy *new_enemy = new Enemy(word, "enemy" + std::to_string(rand() % 50 + 1));
+			new_enemy->spawn(players[0]->x, players[0]->y);
+			enemies.emplace_back(new_enemy);
+			Game::last_spawn_time = cur_time;
+		}
+
+		for (int i = 0; i < enemies.size(); i++) // current displayed enemy
+		{
+			enemies[i]->move();
+			enemies[i]->attack();
+			// if (enemies[i]->name.back() == ' ')
+			// {
+			// 	enemies.erase(enemies.begin() + i);
+			// 	Enemy::name_index = 0;
+			// }
+		}
+		// for (int i = 0; i < 10; i++)
+		// 	enemies[i]->spawn()
 	}
 }
 
 void Screen::updatePlayer()
 {
 	players[0]->move();
-	players[0]->attack(0);
+	// players[0]->attack(0);
 }
 
 void Screen::drawBackground()
@@ -174,7 +197,7 @@ void Screen::drawEnemies()
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		drawSprite(
-			*sprites["enemy" + std::to_string(i + 1)],
+			*sprites[enemies[i]->id],
 			Vec2D(enemies[i]->x, enemies[i]->y),
 			Vec2D(96, 96),
 			1, 1, false);

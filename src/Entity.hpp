@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <queue>
 #include <cmath>
 #include <cstdlib>
 #include "../inc/SDL.h"
@@ -11,10 +12,10 @@
 class Entity
 {
 public:
-	std::string name;
+	std::string id;
 	int x, y;
 	float speed;
-	Entity(std::string name, int x, int y, float speed) : name(name), x(x), y(y), speed(speed) {}
+	Entity(std::string id, int x, int y, float speed) : id(id), x(x), y(y), speed(speed) {}
 };
 
 class Player : public Entity
@@ -24,7 +25,7 @@ private:
 	int health;
 
 public:
-	Player(std::string name, int x = 0, int y = 0, float speed = 3.14, int score = 0, int health = 100) : Entity(name, x, y, speed), score(score), health(health) {}
+	Player(std::string id, int x = 0, int y = 0, float speed = 3.14, int score = 0, int health = 100) : Entity(id, x, y, speed), score(score), health(health) {}
 
 	void move();
 	void attack(const int &);
@@ -35,14 +36,16 @@ class Enemy : public Entity
 {
 private:
 public:
-	static int index;
+	static int count;
+	static int name_index;
+	std::string name;
 
-	Enemy(std::string name, int x = 0, int y = 0, float speed = 0.5 * (rand() % 4 + 1)) : Entity(name, x, y, speed) {}
+	Enemy(std::string name, std::string id, int x = 0, int y = 0, float speed = 0.5 * (rand() % 4 + 1)) : name(name), Entity(id, x, y, speed) { count++; }
 
 	void move();
 	void attack();
-	void takeDamage(); // using name for health
-	void spawn();
+	void takeDamage();
+	void spawn(const int &, const int &);
 };
 
 extern std::vector<Player *> players;

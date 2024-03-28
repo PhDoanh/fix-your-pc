@@ -12,10 +12,14 @@ Sound *sound = nullptr;
 Event *event = nullptr;
 std::vector<Player *> players;
 std::vector<Enemy *> enemies;
+std::queue<std::string> levels;
 float Game::fps = 60.0;
 int Game::win_w = 0;
 int Game::win_h = 0;
 bool Game::running = true;
+const Uint32 Game::spawn_time = 3000;
+Uint32 Game::last_spawn_time = SDL_GetTicks();
+std::stringstream Game::level;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
 
@@ -107,30 +111,26 @@ void Game::loadMedia()
 {
 	info("Loading media ...");
 
-	std::string name;
+	std::string text;
 	screen = new Screen();
 	sound = new Sound();
 	event = new Event();
 	for (int i = 0; i < 1; i++)
 		players.emplace_back(new Player("player" + std::to_string(i)));
-	std::ifstream file("res/enemy_names.txt");
-	for (int i = 0; i < 10; i++)
-	{
-		file >> name;
-		enemies.emplace_back(new Enemy(name));
-		enemies[i]->spawn();
-	}
+	std::ifstream file("res/game_data/default_levels.txt");
+	while (getline(file, text))
+		levels.push(text);
 	file.close();
 
 	// Load UI
-	name = "bg";
+	text = "bg";
 	for (int i = 1; i <= BG_NUM_PATHS; i++)
-		screen->loadSprite(name + std::to_string(i), "res/backgrounds/" + name + " (" + std::to_string(i) + ").jpg", Vec2D(3840, 2400));
+		screen->loadSprite(text + std::to_string(i), "res/backgrounds/" + text + " (" + std::to_string(i) + ").jpg", Vec2D(3840, 2400));
 	screen->loadSprite("window crash", "res/backgrounds/win_crash.jpg", Vec2D(5120, 2880));
 
-	name = "enemy";
+	text = "enemy";
 	for (int i = 1; i <= ENEMY_NUM_PATHS; i++)
-		screen->loadSprite(name + std::to_string(i), "res/enemy/" + name + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
+		screen->loadSprite(text + std::to_string(i), "res/enemy/" + text + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
 	screen->loadSprite("boss", "res/enemy/boss.png", Vec2D(879, 501));
 
 	screen->loadSprite("arrow", "res/player/arrow.png", Vec2D(64, 64));
