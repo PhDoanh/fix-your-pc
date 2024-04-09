@@ -3,25 +3,28 @@
 #include "Sound.hpp"
 #include "Event.hpp"
 #include "Entity.hpp"
-
-#define BG_NUM_PATHS 10
-#define ENEMY_NUM_PATHS 50
+#include "Background.hpp"
 
 Screen *screen = nullptr;
 Sound *sound = nullptr;
 Event *event = nullptr;
+Background *bg = nullptr;
 std::vector<Player *> players;
 std::vector<Enemy *> enemies;
-std::queue<std::string> levels;
+const Uint64 Enemy::spawn_time = 3000; // 3s
+Uint64 Enemy::last_spawn_time = SDL_GetTicks64();
 float Game::fps = 60.0;
-int Game::win_w = 0;
-int Game::win_h = 0;
+int Game::win_w;
+int Game::win_h;
 bool Game::running = true;
-const Uint32 Game::spawn_time = 3000;
-Uint32 Game::last_spawn_time = SDL_GetTicks();
-std::stringstream Game::level;
+std::stringstream Game::cur_level;
+std::queue<std::string> levels;
 SDL_Window *Game::window = nullptr;
 SDL_Renderer *Game::renderer = nullptr;
+TTF_Font *Game::font18 = nullptr;
+TTF_Font *Game::font20 = nullptr;
+TTF_Font *Game::font23 = nullptr;
+TTF_Font *Game::font25 = nullptr;
 
 void Game::handleEvent()
 {
@@ -39,6 +42,7 @@ void Game::handleEvent()
 void Game::updateScreen()
 {
 	// update alls
+	// screen->updateBackground();
 	screen->updateEnemies();
 	screen->updatePlayer();
 
@@ -73,6 +77,14 @@ void Game::initSDL2()
 		error("TTF_Init - fail.");
 	else
 		info("TTF_Init - done.");
+	font18 = TTF_OpenFont("res/SegUIVar.ttf", 18);
+	font20 = TTF_OpenFont("res/SegUIVar.ttf", 20);
+	font23 = TTF_OpenFont("res/SegUIVar.ttf", 23);
+	font25 = TTF_OpenFont("res/SegUIVar.ttf", 25);
+	if (!(font18 && font20 && font23 && font25))
+		error("TTF_OpenFont - fail.");
+	else
+		info("TTF_OpenFont - done.");
 
 	// Sound init
 	if (!Mix_Init(MIX_INIT_MP3) || Mix_OpenAudio(44100, AUDIO_S32SYS, 2, 4096) != 0)
@@ -110,11 +122,11 @@ void Game::initSDL2()
 void Game::loadMedia()
 {
 	info("Loading media ...");
-
 	std::string text;
 	screen = new Screen();
 	sound = new Sound();
 	event = new Event();
+	bg = new Background();
 	for (int i = 0; i < 1; i++)
 		players.emplace_back(new Player("player" + std::to_string(i)));
 	std::ifstream file("res/game_data/default_levels.txt");
@@ -123,13 +135,12 @@ void Game::loadMedia()
 	file.close();
 
 	// Load UI
-	text = "bg";
-	for (int i = 1; i <= BG_NUM_PATHS; i++)
-		screen->loadSprite(text + std::to_string(i), "res/backgrounds/" + text + " (" + std::to_string(i) + ").jpg", Vec2D(3840, 2400));
+	screen->loadSprite("bg", "res/backgrounds/default.jpg", Vec2D(3840, 2400));
+	screen->loadSprite("bg blur", "res/backgrounds/default_blur.jpg", Vec2D(3840, 2400));
 	screen->loadSprite("window crash", "res/backgrounds/win_crash.jpg", Vec2D(5120, 2880));
 
 	text = "enemy";
-	for (int i = 1; i <= ENEMY_NUM_PATHS; i++)
+	for (int i = 1; i <= 50; i++)
 		screen->loadSprite(text + std::to_string(i), "res/enemy/" + text + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
 	screen->loadSprite("boss", "res/enemy/boss.png", Vec2D(879, 501));
 
@@ -141,9 +152,6 @@ void Game::loadMedia()
 	screen->loadSprite("move", "res/player/move.png", Vec2D(64, 64));
 	screen->loadSprite("unvail", "res/player/unavail.png", Vec2D(64, 64));
 	screen->loadSprite("working", "res/player/working.png", Vec2D(1152, 64), 18);
-	screen->loadFont("big", "res/SegUIVar.ttf", 32);
-	screen->loadFont("medium", "res/SegUIVar.ttf", 28);
-	screen->loadFont("small", "res/SegUIVar.ttf", 23);
 
 	// Load UX
 	sound->loadSoundEffect("right click", "res/sound_effects/rclick.wav");
@@ -158,6 +166,10 @@ void Game::quitSDL2()
 	SDLNet_Quit();
 	Mix_CloseAudio();
 	Mix_Quit();
+	TTF_CloseFont(font25);
+	TTF_CloseFont(font23);
+	TTF_CloseFont(font20);
+	TTF_CloseFont(font18);
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
@@ -167,7 +179,6 @@ void Game::quitMedia()
 {
 	sound->deleteSoundEffects();
 	sound->deleteMusics();
-	screen->deleteFonts();
 	screen->deleteSprites();
 
 	for (int i = 0; i < players.size(); i++)
@@ -180,10 +191,12 @@ void Game::quitMedia()
 		delete enemies[i];
 		enemies[i] = nullptr;
 	}
-	delete screen;
-	screen = nullptr;
-	delete sound;
-	sound = nullptr;
+	delete bg;
+	bg = nullptr;
 	delete event;
 	event = nullptr;
+	delete sound;
+	sound = nullptr;
+	delete screen;
+	screen = nullptr;
 }

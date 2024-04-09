@@ -11,12 +11,12 @@ int main(int argc, char *argv[])
 
     while (game->running)
     {
-        frame_start = float(SDL_GetTicks());
+        frame_start = float(SDL_GetTicks64());
 
         game->handleEvent();
         game->updateScreen();
 
-        frame_time = float(SDL_GetTicks()) - frame_start;
+        frame_time = float(SDL_GetTicks64()) - frame_start;
         if (frame_delay > frame_time)
             SDL_Delay(frame_delay - frame_time);
     }

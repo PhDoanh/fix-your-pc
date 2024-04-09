@@ -5,12 +5,15 @@
 
 class Background
 {
-private:
-protected:
 public:
+	int x, y;
+	float speed;
+
 	Background();	   // constructor
 	~Background();	   // destructor
-	void myFunction(); // a member function
+	void move();	   // a member function
 };
+
+extern Background *bg;
 
 #endif // BG_HPP

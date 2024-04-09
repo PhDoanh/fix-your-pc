@@ -23,11 +23,10 @@ public:
 	static int win_w;
 	static int win_h;
 	static bool running;
-	static const Uint32 spawn_time;
-	static Uint32 last_spawn_time;
-	static std::stringstream level;
+	static std::stringstream cur_level;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
+	static TTF_Font *font18, *font20, *font23, *font25;
 
 	Game(std::string title) : title(title) { info("Game constructor called."); }
 	~Game() { info("Game destructor called."); }

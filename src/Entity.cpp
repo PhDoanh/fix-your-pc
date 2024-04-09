@@ -11,13 +11,13 @@ int Enemy::name_index = 0;
 void Player::move()
 {
 	float dx = 0, dy = 0;
-	if (event->state[SDL_SCANCODE_D])
+	if (event->state[SDL_SCANCODE_D]) // right
 		dx += speed;
-	if (event->state[SDL_SCANCODE_A])
+	if (event->state[SDL_SCANCODE_A]) // left
 		dx -= speed;
-	if (event->state[SDL_SCANCODE_W])
+	if (event->state[SDL_SCANCODE_W]) // up
 		dy -= speed;
-	if (event->state[SDL_SCANCODE_S])
+	if (event->state[SDL_SCANCODE_S]) // down
 		dy += speed;
 
 	float len = std::sqrt(dx * dx + dy * dy);
@@ -31,12 +31,12 @@ void Player::move()
 
 	if (x <= 0)
 		x = 0;
-	if (x > Game::win_w)
-		x = Game::win_w - 10;
+	if (x + 35 > Game::win_w)
+		x = Game::win_w - 35;
 	if (y <= 0)
 		y = 0;
-	if (y > Game::win_h)
-		y = Game::win_h - 10;
+	if (y + 64 > Game::win_h)
+		y = Game::win_h - 64;
 }
 
 void Player::attack(const int &i)
@@ -68,17 +68,16 @@ void Enemy::attack()
 
 void Enemy::takeDamage()
 {
+	// do something
+	if (name != prev_name)
+	{
+		texture = screen->loadText(name, Game::font18);
+		prev_name = name;
+	}
 }
 
-void Enemy::spawn(const int &player_x, const int &player_y)
+void Enemy::spawnNearTo(Player *player)
 {
-	if (player_x < Game::win_w / 2)
-		x = std::rand() % (Game::win_w / 2) + Game::win_w / 2;
-	else
-		x = std::rand() % (Game::win_w / 2);
-
-	if (player_y < Game::win_h / 2)
-		y = std::rand() % (Game::win_h / 2) + Game::win_h / 2;
-	else
-		y = std::rand() % (Game::win_h / 2);
+	x = 0;
+	y = 0;
 }

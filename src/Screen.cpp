@@ -2,9 +2,9 @@
 #include "Screen.hpp"
 #include "Event.hpp"
 #include "Entity.hpp"
+#include "Background.hpp"
 
 std::map<std::string, Sprite *> sprites;
-std::map<std::string, Font *> fonts;
 
 Screen::Screen()
 {
@@ -86,94 +86,74 @@ void Screen::deleteSprites()
 	}
 }
 
-void Screen::loadFont(const std::string &name, const std::string &path, const int &size)
-{
-	info("Trying to load " + path + " ... ");
-	fonts[name] = new Font();
-	fonts[name]->font = TTF_OpenFont(path.c_str(), size);
-	if (!fonts[name]->font)
-	{
-		TTF_CloseFont(fonts[name]->font);
-		fonts[name] = nullptr;
-		fonts.erase(name);
-		error(path + " - fail.");
-	}
-	info(path + " - done.");
-	fonts[name]->path = path;
-}
-
-void Screen::renderFont(Font &my_font, const std::string &txt, const Vec2D &pos, int txt_type, SDL_Color txt_color, SDL_Color bg_color)
+SDL_Texture *Screen::loadText(const std::string &txt, TTF_Font *font, const int &option, SDL_Color txt_color, SDL_Color bg_color)
 {
 	SDL_Surface *surface = nullptr;
-	if (txt_type == solid)
-		surface = TTF_RenderText_Solid(my_font.font, txt.c_str(), txt_color);
-	if (txt_type == blended)
-		surface = TTF_RenderText_Blended(my_font.font, txt.c_str(), txt_color);
-	if (txt_type == shaded)
-		surface = TTF_RenderText_Shaded(my_font.font, txt.c_str(), txt_color, bg_color);
-
+	switch (option)
+	{
+	case solid:
+		surface = TTF_RenderText_Solid(font, txt.c_str(), txt_color);
+		break;
+	case blended:
+		surface = TTF_RenderText_Blended(font, txt.c_str(), txt_color);
+		break;
+	case shaded:
+		surface = TTF_RenderText_Shaded(font, txt.c_str(), txt_color, bg_color);
+		break;
+	default:
+		error("invalid text option.");
+		break;
+	}
 	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
-	SDL_QueryTexture(texture, nullptr, nullptr, &my_font.w, &my_font.h);
-	SDL_Rect dst_rect = {int(pos.x), int(pos.y), my_font.w, my_font.h};
-	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
 	SDL_FreeSurface(surface);
-	SDL_DestroyTexture(texture);
+	return texture;
 }
 
-void Screen::deleteFonts()
+void Screen::renderText(SDL_Texture *texture, const Vec2D &pos)
 {
-	info("Deleting all fonts ...");
-	std::string path;
-	for (auto &&font : fonts)
-	{
-		path = font.second->path;
-		TTF_CloseFont(font.second->font);
-		delete font.second;
-		font.second = nullptr;
-		if (font.second)
-			error(path + "- fail.");
-		else
-			info(path + "- done.");
-	}
+	int w_txt_box, h_txt_box;
+	SDL_QueryTexture(texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
+	SDL_Rect dst_rect = {int(pos.x), int(pos.y), w_txt_box, h_txt_box};
+	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
+}
+
+void Screen::updateBackground()
+{
+	bg->move();
 }
 
 void Screen::updateEnemies()
 {
 	if (levels.empty())
 	{
+		// end game
 	}
 	else
 	{
-		Uint32 cur_time = SDL_GetTicks();
+		std::string word;
+		Uint64 cur_time = SDL_GetTicks64();
 
-		if (enemies.empty()) // new level
+		if (cur_time - Enemy::last_spawn_time >= Enemy::spawn_time) // spawn enemy
 		{
-			Game::level << levels.front();
-			levels.pop();
+			if (enemies.empty()) // new cur_level
+			{
+				Game::cur_level << levels.front();
+				levels.pop();
+			}
+			if (Game::cur_level >> word)
+			{
+				Enemy *new_enemy = new Enemy(word, "enemy" + std::to_string(rand() % 50 + 1));
+				new_enemy->spawnNearTo(players[0]);
+				enemies.emplace_back(new_enemy);
+			}
+			Enemy::last_spawn_time = cur_time;
 		}
-
-		if (cur_time - Game::last_spawn_time >= Game::spawn_time) // spawn enemy
-		{
-			std::string word;
-			Game::level >> word;
-			Enemy *new_enemy = new Enemy(word, "enemy" + std::to_string(rand() % 50 + 1));
-			new_enemy->spawn(players[0]->x, players[0]->y);
-			enemies.emplace_back(new_enemy);
-			Game::last_spawn_time = cur_time;
-		}
-
 		for (int i = 0; i < enemies.size(); i++) // current displayed enemy
 		{
 			enemies[i]->move();
 			enemies[i]->attack();
-			// if (enemies[i]->name.back() == ' ')
-			// {
-			// 	enemies.erase(enemies.begin() + i);
-			// 	Enemy::name_index = 0;
-			// }
+			enemies[i]->takeDamage();
 		}
-		// for (int i = 0; i < 10; i++)
-		// 	enemies[i]->spawn()
 	}
 }
 
@@ -186,7 +166,7 @@ void Screen::updatePlayer()
 void Screen::drawBackground()
 {
 	drawSprite(
-		*sprites["bg1"],
+		*sprites["bg"],
 		Vec2D(),
 		Vec2D(Game::win_w, Game::win_h),
 		1, 1, false);
@@ -204,20 +184,20 @@ void Screen::drawEnemies()
 	}
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		renderFont(
-			*fonts["small"],
-			enemies[i]->name,
+		renderText(
+			enemies[i]->texture,
 			Vec2D(enemies[i]->x, enemies[i]->y + 96));
 	}
 }
 
 void Screen::drawPlayer()
 {
-	drawSprite(
-		*sprites["arrow"],
-		Vec2D(players[0]->x, players[0]->y),
-		Vec2D(64, 64),
-		1, 1, false);
+	for (int i = 1; i <= sprites["arrow"]->max_frame; i++)
+		drawSprite(
+			*sprites["arrow"],
+			Vec2D(players[0]->x, players[0]->y),
+			Vec2D(64, 64),
+			1, i, false);
 }
 
 // void Screen::drawDialog()
