@@ -40,11 +40,14 @@ public:
 	static int name_index;
 	static const Uint64 spawn_time;
 	static Uint64 last_spawn_time;
-	SDL_Texture *texture;
+	SDL_Texture *txt_box_texture;
+	int x_txt_box, y_txt_box;
+	int w_txt_box, h_txt_box;
 	std::string name, prev_name;
 
-	Enemy(std::string name, std::string id, int x = 0, int y = 0, float speed = 0.5 * (rand() % 4 + 1)) : name(name), Entity(id, x, y, speed) { count++; }
+	Enemy(std::string name, std::string id, int x = 0, int y = 0, float speed = rand() % 3 + 1) : name(name), Entity(id, x, y, speed) { count++; }
 
+	void showName();
 	void move();
 	void attack();
 	void takeDamage();

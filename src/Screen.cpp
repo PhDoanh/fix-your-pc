@@ -109,12 +109,13 @@ SDL_Texture *Screen::loadText(const std::string &txt, TTF_Font *font, const int 
 	return texture;
 }
 
-void Screen::renderText(SDL_Texture *texture, const Vec2D &pos)
+std::pair<int, int> Screen::renderText(SDL_Texture *texture, const Vec2D &pos)
 {
-	int w_txt_box, h_txt_box;
-	SDL_QueryTexture(texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
-	SDL_Rect dst_rect = {int(pos.x), int(pos.y), w_txt_box, h_txt_box};
+	int w, h;
+	SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+	SDL_Rect dst_rect = {int(pos.x), int(pos.y), w, h};
 	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
+	return {w, h};
 }
 
 void Screen::updateBackground()
@@ -150,6 +151,7 @@ void Screen::updateEnemies()
 		}
 		for (int i = 0; i < enemies.size(); i++) // current displayed enemy
 		{
+			enemies[i]->showName();
 			enemies[i]->move();
 			enemies[i]->attack();
 			enemies[i]->takeDamage();
@@ -184,9 +186,14 @@ void Screen::drawEnemies()
 	}
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		renderText(
-			enemies[i]->texture,
-			Vec2D(enemies[i]->x, enemies[i]->y + 96));
+		std::pair<int, int> size = renderText(
+			enemies[i]->txt_box_texture,
+			Vec2D(enemies[i]->x_txt_box, enemies[i]->y_txt_box));
+		enemies[i]->w_txt_box = size.first;
+		enemies[i]->h_txt_box = size.second;
+
+		// SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
+		// SDL_RenderDrawLine(Game::renderer, enemies[i]->x, enemies[i]->y, players[0]->x, players[0]->y);
 	}
 }
 

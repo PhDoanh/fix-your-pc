@@ -28,7 +28,7 @@ public:
 	static SDL_Renderer *renderer;
 	static TTF_Font *font18, *font20, *font23, *font25;
 
-	Game(std::string title) : title(title) { info("Game constructor called."); }
+	Game(const std::string &title) : title(title) { info("Game constructor called."); }
 	~Game() { info("Game destructor called."); }
 
 	void initSDL2();

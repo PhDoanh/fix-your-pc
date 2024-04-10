@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <utility>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
@@ -56,7 +57,7 @@ public:
 
 	// font
 	SDL_Texture *loadText(const std::string &, TTF_Font *font, const int &option = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
-	void renderText(SDL_Texture *texture, const Vec2D &);
+	std::pair<int, int> renderText(SDL_Texture *, const Vec2D &);
 
 	void updateBackground();
 	void updateEnemies();
