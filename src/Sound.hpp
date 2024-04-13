@@ -22,8 +22,8 @@ enum sound_chanels
 class Sound
 {
 public:
-	Sound() { info("Sound constructor called."); }
-	~Sound() { info("Sound destructor called."); }
+	Sound() { dev->info("Sound constructor called."); }
+	~Sound() { dev->info("Sound destructor called."); }
 
 	void loadSoundEffect(const std::string &, const std::string &);
 	void playSoundEffect(const std::string &name, int chanel, int loop = 0);

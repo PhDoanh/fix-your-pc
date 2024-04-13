@@ -23,13 +23,21 @@ public:
 	static int win_w;
 	static int win_h;
 	static bool running;
-	static std::stringstream cur_level;
+	static std::stringstream level;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
-	static TTF_Font *font18, *font20, *font23, *font25;
 
-	Game(const std::string &title) : title(title) { info("Game constructor called."); }
-	~Game() { info("Game destructor called."); }
+	Game(const std::string &title) : title(title)
+	{
+		dev = new DevTool(console | ui);
+		dev->info("Game constructor called.");
+	}
+	~Game()
+	{
+		dev->info("Game destructor called.");
+		delete dev;
+		dev = nullptr;
+	}
 
 	void initSDL2();
 	void loadMedia();

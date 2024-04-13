@@ -4,7 +4,9 @@
 #include "Sound.hpp"
 #include "Event.hpp"
 
+bool Enemy::killed = true;
 int Enemy::count = 0;
+int Enemy::index = -1;
 int Enemy::name_index = 0;
 
 // Player
@@ -39,8 +41,10 @@ void Player::move()
 		y = Game::win_h - 64;
 }
 
-void Player::attack(const int &i)
+void Player::attack(Enemy *enemy)
 {
+	if (event->cur_txt_inp.front() == enemy->name[Enemy::name_index])
+		enemy->name[Enemy::name_index++] = ' ';
 }
 
 void Player::takeDamage()
@@ -91,6 +95,7 @@ void Enemy::move()
 	}
 	x += dx * speed;
 	y += dy * speed;
+	// std::cout << speed << ' ' << dx << ' ' << dy << '\n';
 }
 
 void Enemy::attack()
@@ -99,10 +104,17 @@ void Enemy::attack()
 
 void Enemy::takeDamage()
 {
-	// do something
+	if (name == std::string(name.size(), ' '))
+	{
+		enemies.erase(enemies.begin() + index);
+		index = -1;
+		name_index = 0;
+		killed = true;
+	}
+
 	if (name != prev_name)
 	{
-		txt_box_texture = screen->loadText(name, Game::font18);
+		txt_box_texture = screen->loadText(name);
 		prev_name = name;
 	}
 }

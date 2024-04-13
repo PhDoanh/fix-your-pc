@@ -1,6 +1,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <algorithm>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
@@ -55,9 +56,11 @@ public:
 	void drawSprite(Sprite &, const Vec2D &, const Vec2D &, float, int, bool);
 	void deleteSprites();
 
-	// font
-	SDL_Texture *loadText(const std::string &, TTF_Font *font, const int &option = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
-	std::pair<int, int> renderText(SDL_Texture *, const Vec2D &);
+	// text
+	void loadFont(const std::string &, const int &);
+	SDL_Texture *loadText(const std::string &, const int &font_size = 18, const int &option = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
+	std::pair<int, int> drawText(SDL_Texture *, const Vec2D &);
+	void deleteFonts();
 
 	void updateBackground();
 	void updateEnemies();
@@ -71,5 +74,6 @@ public:
 
 extern Screen *screen;
 extern std::map<std::string, Sprite *> sprites;
+extern std::map<int, TTF_Font *> font_sizes;
 
 #endif // SCREEN_HPP

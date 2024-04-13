@@ -6,23 +6,6 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-// track game states on the console
-inline void log(const std::string &msg)
-{
-	std::clog << "  log| " << msg << '\n';
-}
-
-inline void info(const std::string &msg)
-{
-	std::cout << " info| " << msg << '\n';
-}
-
-inline void error(const std::string &msg)
-{
-	std::cerr << "error| " << msg << '\n';
-	exit(1);
-}
-
 // manage 2d objects more easily
 struct Vec2D
 {
@@ -75,10 +58,30 @@ struct Color
 // my functions for rectangles
 struct Rect
 {
-	static SDL_Rect square(int size) { return {0, 0, size, size}; }
+	static SDL_FRect square(float size) { return {0, 0, size, size}; }
 	static bool isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos, const Vec2D &v2size);
 	static Vec2D getCenter(const Vec2D &pos, const Vec2D &size);
-	static SDL_Rect reScale(const Vec2D &pos, const Vec2D &size, float scale);
+	static SDL_FRect reScale(const Vec2D &pos, const Vec2D &size, float scale);
 };
+
+enum views
+{
+	console,
+	ui
+};
+
+class DevTool
+{
+	int views;
+
+public:
+	DevTool(int views) : views(views) {}
+	void log(const std::string &);
+	void info(const std::string &);
+	void error(const std::string &);
+	void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);
+};
+
+extern DevTool *dev;
 
 #endif // UTIL_HPP

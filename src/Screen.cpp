@@ -5,10 +5,11 @@
 #include "Background.hpp"
 
 std::map<std::string, Sprite *> sprites;
+std::map<int, TTF_Font *> font_sizes;
 
 Screen::Screen()
 {
-	info("Screen constructor called!");
+	dev->info("Screen constructor called!");
 
 	// std::vector<int> indexes(50);
 	// std::iota(indexes.begin(), indexes.end(), 1);
@@ -34,11 +35,11 @@ Screen::Screen()
 	// 	}
 }
 
-Screen::~Screen() { info("Screen destructor called!"); }
+Screen::~Screen() { dev->info("Screen destructor called!"); }
 
 void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame)
 {
-	info("Trying to load " + path + " ... ");
+	dev->info("Trying to load " + path + " ... ");
 	sprites[name] = new Sprite();
 	SDL_Surface *surface = IMG_Load(path.c_str());
 	sprites[name]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
@@ -48,10 +49,10 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D 
 		delete sprites[name];
 		sprites[name] = nullptr;
 		sprites.erase(name);
-		error(path + " - fail.");
+		dev->error(path + " - fail.");
 	}
 
-	info(path + " - done.");
+	dev->info(path + " - done.");
 	sprites[name]->path = path;
 	sprites[name]->real_size = real_size;
 	sprites[name]->max_frame = max_frame;
@@ -66,42 +67,56 @@ void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, flo
 	int w = sprite.real_size.x;
 	int h = sprite.real_size.y;
 	SDL_Rect src_rect = {x, y, w, h};
-	SDL_Rect dst_rect = Rect::reScale(pos, size, scale);
-	SDL_RenderCopyEx(Game::renderer, sprite.texture, &src_rect, &dst_rect, 0, NULL, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
+	SDL_FRect dst_rect = Rect::reScale(pos, size, scale);
+	SDL_RenderCopyExF(Game::renderer, sprite.texture, &src_rect, &dst_rect, 0, NULL, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
 }
 
 void Screen::deleteSprites()
 {
 	std::string path;
-	info("Deleting all sprites ...");
+	dev->info("Deleting all sprites ...");
 	for (auto &&sprite : sprites)
 	{
 		path = sprite.second->path;
 		delete sprite.second;
 		sprite.second = nullptr;
 		if (sprite.second)
-			error(path + " - fail.");
+			dev->error(path + " - fail.");
 		else
-			info(path + " - done.");
+			dev->info(path + " - done.");
 	}
 }
 
-SDL_Texture *Screen::loadText(const std::string &txt, TTF_Font *font, const int &option, SDL_Color txt_color, SDL_Color bg_color)
+void Screen::loadFont(const std::string &path, const int &size)
+{
+	dev->info("Trying to load " + path + " ... ");
+	font_sizes[size] = TTF_OpenFont(path.c_str(), size);
+	if (!font_sizes[size])
+	{
+		TTF_CloseFont(font_sizes[size]);
+		font_sizes[size] = nullptr;
+		font_sizes.erase(size);
+		dev->error(path + " " + std::to_string(size) + "pt - fail.");
+	}
+	dev->info(path + " " + std::to_string(size) + "pt - done.");
+}
+
+SDL_Texture *Screen::loadText(const std::string &txt, const int &font_size, const int &option, SDL_Color txt_color, SDL_Color bg_color)
 {
 	SDL_Surface *surface = nullptr;
 	switch (option)
 	{
 	case solid:
-		surface = TTF_RenderText_Solid(font, txt.c_str(), txt_color);
+		surface = TTF_RenderUTF8_Solid(font_sizes[font_size], txt.c_str(), txt_color);
 		break;
 	case blended:
-		surface = TTF_RenderText_Blended(font, txt.c_str(), txt_color);
+		surface = TTF_RenderUTF8_Blended(font_sizes[font_size], txt.c_str(), txt_color);
 		break;
 	case shaded:
-		surface = TTF_RenderText_Shaded(font, txt.c_str(), txt_color, bg_color);
+		surface = TTF_RenderUTF8_Shaded(font_sizes[font_size], txt.c_str(), txt_color, bg_color);
 		break;
 	default:
-		error("invalid text option.");
+		dev->error("invalid text option.");
 		break;
 	}
 	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
@@ -109,41 +124,59 @@ SDL_Texture *Screen::loadText(const std::string &txt, TTF_Font *font, const int 
 	return texture;
 }
 
-std::pair<int, int> Screen::renderText(SDL_Texture *texture, const Vec2D &pos)
+std::pair<int, int> Screen::drawText(SDL_Texture *texture, const Vec2D &pos)
 {
-	int w, h;
-	SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-	SDL_Rect dst_rect = {int(pos.x), int(pos.y), w, h};
-	SDL_RenderCopy(Game::renderer, texture, nullptr, &dst_rect);
-	return {w, h};
+	int w_txt_box, h_txt_box;
+	SDL_QueryTexture(texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
+	SDL_FRect dst_rect = {pos.x, pos.y, float(w_txt_box), float(h_txt_box)};
+	SDL_RenderCopyF(Game::renderer, texture, nullptr, &dst_rect);
+	return {w_txt_box, h_txt_box};
+}
+
+void Screen::deleteFonts()
+{
+	dev->info("Deleting all fonts ...");
+	for (auto &&font_size : font_sizes)
+	{
+		TTF_CloseFont(font_size.second);
+		font_size.second = nullptr;
+		if (font_size.second)
+			dev->error("fail.");
+		else
+			dev->info("done.");
+	}
 }
 
 void Screen::updateBackground()
 {
-	bg->move();
 }
 
 void Screen::updateEnemies()
 {
 	if (levels.empty())
 	{
-		// end game
+		dev->log("end game!");
 	}
 	else
 	{
-		std::string word;
+		std::string name;
 		Uint64 cur_time = SDL_GetTicks64();
 
 		if (cur_time - Enemy::last_spawn_time >= Enemy::spawn_time) // spawn enemy
 		{
-			if (enemies.empty()) // new cur_level
+			if (enemies.empty()) // new level
 			{
-				Game::cur_level << levels.front();
+				Game::level << levels.front();
 				levels.pop();
 			}
-			if (Game::cur_level >> word)
+			if (Game::level >> name)
 			{
-				Enemy *new_enemy = new Enemy(word, "enemy" + std::to_string(rand() % 50 + 1));
+				if (ispunct(name.front()))
+					name.erase(name.begin());
+				if (ispunct(name.back()))
+					name.pop_back();
+				std::replace(name.begin(), name.end(), '_', ' ');
+				Enemy *new_enemy = new Enemy(name, "enemy" + std::to_string(rand() % 50 + 1));
 				new_enemy->spawnNearTo(players[0]);
 				enemies.emplace_back(new_enemy);
 			}
@@ -161,8 +194,31 @@ void Screen::updateEnemies()
 
 void Screen::updatePlayer()
 {
-	players[0]->move();
-	// players[0]->attack(0);
+	if (players[0]->moving)
+		players[0]->move();
+	else
+	{
+		if (!enemies.empty())
+		{
+			if (Enemy::killed)
+			{
+				float cur_d, min_d = INT_MAX;
+				for (int i = 0; i < enemies.size(); i++)
+				{
+					cur_d = Vec2D(enemies[i]->x, enemies[i]->y).distance(Vec2D(players[0]->x, players[0]->y));
+					if (event->cur_txt_inp.front() == enemies[i]->name.front() && cur_d < min_d)
+					{
+						min_d = cur_d;
+						Enemy::index = i;
+					}
+				}
+				if (Enemy::index >= 0)
+					Enemy::killed = false;
+			}
+			if (Enemy::index >= 0)
+				players[0]->attack(enemies[Enemy::index]);
+		}
+	}
 }
 
 void Screen::drawBackground()
@@ -170,12 +226,13 @@ void Screen::drawBackground()
 	drawSprite(
 		*sprites["bg"],
 		Vec2D(),
-		Vec2D(Game::win_w, Game::win_h),
+		Vec2D(3840, 2400),
 		1, 1, false);
 }
 
 void Screen::drawEnemies()
 {
+	// 64x64: easy enemy, 96x96: medium enemy, 128x128: hard enemy
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		drawSprite(
@@ -186,20 +243,19 @@ void Screen::drawEnemies()
 	}
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		std::pair<int, int> size = renderText(
+		std::pair<int, int> size = drawText(
 			enemies[i]->txt_box_texture,
 			Vec2D(enemies[i]->x_txt_box, enemies[i]->y_txt_box));
 		enemies[i]->w_txt_box = size.first;
 		enemies[i]->h_txt_box = size.second;
 
-		// SDL_SetRenderDrawColor(Game::renderer, 255, 255, 255, 255);
-		// SDL_RenderDrawLine(Game::renderer, enemies[i]->x, enemies[i]->y, players[0]->x, players[0]->y);
+		dev->drawLine(Vec2D(players[0]->x, players[0]->y), Vec2D(enemies[i]->x, enemies[i]->y), (i != Enemy::index) ? Color::white(0) : Color::red(0));
 	}
 }
 
 void Screen::drawPlayer()
 {
-	for (int i = 1; i <= sprites["arrow"]->max_frame; i++)
+	for (int i = 0; i < sprites["arrow"]->max_frame; i++)
 		drawSprite(
 			*sprites["arrow"],
 			Vec2D(players[0]->x, players[0]->y),

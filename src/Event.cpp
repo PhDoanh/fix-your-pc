@@ -1,4 +1,5 @@
 #include "Event.hpp"
+#include "Entity.hpp"
 
 void Event::handleKeyboard()
 {
@@ -9,6 +10,7 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StopTextInput();
+			players[0]->moving = true;
 			break;
 		default:
 			break;
@@ -19,13 +21,17 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StartTextInput();
+			players[0]->moving = false;
 			break;
 		default:
 			break;
 		}
 
 	case SDL_TEXTINPUT:
-		cur_chr_inp = e.text.text;
+		cur_txt_inp = e.text.text;
+		// dev->log(cur_txt_inp);
+		break;
+	case SDL_TEXTEDITING:
 		break;
 	}
 }

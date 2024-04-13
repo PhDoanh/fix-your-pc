@@ -7,12 +7,12 @@ Background::Background()
 	x = 0;
 	y = 0;
 	speed = 1.5;
-	info("Background constructor called.");
+	dev->info("Background constructor called.");
 }
 
 Background::~Background()
 {
-	info("Background destructor called.");
+	dev->info("Background destructor called.");
 }
 
 void Background::move()

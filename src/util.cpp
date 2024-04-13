@@ -1,4 +1,5 @@
 #include "util.hpp"
+#include "Game.hpp"
 
 Vec2D left_vec(-1, 0);
 Vec2D right_vec(1, 0);
@@ -98,12 +99,42 @@ Vec2D Rect::getCenter(const Vec2D &pos, const Vec2D &size)
 	return pos + size / 2;
 }
 
-SDL_Rect Rect::reScale(const Vec2D &pos, const Vec2D &size, float scale)
+SDL_FRect Rect::reScale(const Vec2D &pos, const Vec2D &size, float scale)
 {
-	SDL_Rect new_rect;
-	new_rect.x = pos.x + (1 - scale) * size.x / 2;
-	new_rect.y = pos.y + (1 - scale) * size.y / 2;
+	SDL_FRect new_rect;
+	new_rect.x = pos.x + (1 - scale) * size.x / 2.0;
+	new_rect.y = pos.y + (1 - scale) * size.y / 2.0;
 	new_rect.w = scale * size.x;
 	new_rect.h = scale * size.y;
 	return new_rect;
+}
+
+void DevTool::log(const std::string &msg)
+{
+	if (views == console || views == (console | ui))
+		std::clog << "  log| " << msg << '\n';
+}
+
+void DevTool::info(const std::string &msg)
+{
+	if (views == console || views == (console | ui))
+		std::cout << " info| " << msg << '\n';
+}
+
+void DevTool::error(const std::string &msg)
+{
+	if (views == console || views == (console | ui))
+	{
+		std::cerr << "error| " << msg << '\n';
+		exit(1);
+	}
+}
+
+void DevTool::drawLine(const Vec2D &pos1, const Vec2D &pos2, const SDL_Color &color)
+{
+	if (views == ui || views == (console | ui))
+	{
+		SDL_SetRenderDrawColor(Game::renderer, color.r, color.g, color.b, color.a);
+		SDL_RenderDrawLineF(Game::renderer, pos1.x, pos1.y, pos2.x, pos2.y);
+	}
 }
