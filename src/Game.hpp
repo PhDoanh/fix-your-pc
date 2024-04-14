@@ -1,10 +1,8 @@
 #include <string>
-#include <sstream>
 #include <ctime>
 #include <cstdlib>
 #include <fstream>
 #include <vector>
-#include <queue>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
@@ -23,21 +21,13 @@ public:
 	static int win_w;
 	static int win_h;
 	static bool running;
-	static std::stringstream level;
+	static float deltaTime;
+	static std::fstream data;
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 
-	Game(const std::string &title) : title(title)
-	{
-		dev = new DevTool(console | ui);
-		dev->info("Game constructor called.");
-	}
-	~Game()
-	{
-		dev->info("Game destructor called.");
-		delete dev;
-		dev = nullptr;
-	}
+	Game(const std::string &title) : title(title) { info("Game constructor called."); }
+	~Game() { info("Game destructor called."); }
 
 	void initSDL2();
 	void loadMedia();
@@ -48,7 +38,5 @@ public:
 	void quitMedia();
 	void quitSDL2();
 };
-
-extern std::queue<std::string> levels;
 
 #endif // GAME_HPP

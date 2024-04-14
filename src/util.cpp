@@ -6,6 +6,12 @@ Vec2D right_vec(1, 0);
 Vec2D up_vec(0, -1);
 Vec2D down_vec(0, 1);
 
+void drawLine(const Vec2D &pos1, const Vec2D &pos2, const SDL_Color &color)
+{
+	SDL_SetRenderDrawColor(Game::renderer, color.r, color.g, color.b, color.a);
+	SDL_RenderDrawLineF(Game::renderer, pos1.x, pos1.y, pos2.x, pos2.y);
+}
+
 float Vec2D::distance(const Vec2D &v)
 {
 	float dx = v.x - x, dy = v.y - y;
@@ -107,34 +113,4 @@ SDL_FRect Rect::reScale(const Vec2D &pos, const Vec2D &size, float scale)
 	new_rect.w = scale * size.x;
 	new_rect.h = scale * size.y;
 	return new_rect;
-}
-
-void DevTool::log(const std::string &msg)
-{
-	if (views == console || views == (console | ui))
-		std::clog << "  log| " << msg << '\n';
-}
-
-void DevTool::info(const std::string &msg)
-{
-	if (views == console || views == (console | ui))
-		std::cout << " info| " << msg << '\n';
-}
-
-void DevTool::error(const std::string &msg)
-{
-	if (views == console || views == (console | ui))
-	{
-		std::cerr << "error| " << msg << '\n';
-		exit(1);
-	}
-}
-
-void DevTool::drawLine(const Vec2D &pos1, const Vec2D &pos2, const SDL_Color &color)
-{
-	if (views == ui || views == (console | ui))
-	{
-		SDL_SetRenderDrawColor(Game::renderer, color.r, color.g, color.b, color.a);
-		SDL_RenderDrawLineF(Game::renderer, pos1.x, pos1.y, pos2.x, pos2.y);
-	}
 }

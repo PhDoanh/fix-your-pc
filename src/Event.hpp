@@ -15,8 +15,8 @@ public:
 	std::string cur_txt_inp;
 	int mouse_x, mouse_y;
 
-	Event() { dev->info("Event constructor called!"); }
-	~Event() { dev->info("Event destructor called!"); }
+	Event() { info("Event constructor called!"); }
+	~Event() { info("Event destructor called!"); }
 
 	void handleKeyboard();
 	void handleMouse();

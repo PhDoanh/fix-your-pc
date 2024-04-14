@@ -25,27 +25,17 @@ struct Sprite
 	int max_frame;
 };
 
+struct Text
+{
+	SDL_Texture *texture;
+	std::string txt;
+};
+
 class Screen
 {
 private:
-	int tilemap[16][8] = {
-		{1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 0},
-		{1, 1, 1, 0, 1, 1, 0, 0},
-		{1, 1, 1, 1, 1, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 1, 1, 1, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{1, 1, 1, 1, 1, 1, 0, 0},
-		{1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1}};
-	std::string bg_name;
+	SDL_Texture *txt_texture;
+	std::string prev_txt;
 
 public:
 	Screen();
@@ -59,17 +49,16 @@ public:
 	// text
 	void loadFont(const std::string &, const int &);
 	SDL_Texture *loadText(const std::string &, const int &font_size = 18, const int &option = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
-	std::pair<int, int> drawText(SDL_Texture *, const Vec2D &);
+	Vec2D drawText(SDL_Texture *, const Vec2D &);
 	void deleteFonts();
 
-	void updateBackground();
+	void updateUI();
 	void updateEnemies();
 	void updatePlayer();
 
-	void drawBackground();
+	void drawUI();
 	void drawEnemies();
 	void drawPlayer();
-	// void drawDialog();
 };
 
 extern Screen *screen;

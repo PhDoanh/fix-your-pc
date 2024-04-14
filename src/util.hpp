@@ -6,6 +6,29 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+struct Vec2D;
+
+// backend analysis
+inline void log(const std::string &msg) { std::clog << "  log| " << msg << '\n'; }
+inline void info(const std::string &msg) { std::cout << " info| " << msg << '\n'; }
+inline void error(const std::string &msg)
+{
+	std::cerr << "error| " << msg << '\n';
+	exit(1);
+}
+void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);
+
+// linear interpolation
+inline float lerp(float goal, float cur, float dt)
+{
+	float diff = goal - cur;
+	if (diff > dt)
+		return cur + dt;
+	if (diff < -dt)
+		return cur - dt;
+	return goal;
+}
+
 // manage 2d objects more easily
 struct Vec2D
 {
@@ -63,25 +86,5 @@ struct Rect
 	static Vec2D getCenter(const Vec2D &pos, const Vec2D &size);
 	static SDL_FRect reScale(const Vec2D &pos, const Vec2D &size, float scale);
 };
-
-enum views
-{
-	console,
-	ui
-};
-
-class DevTool
-{
-	int views;
-
-public:
-	DevTool(int views) : views(views) {}
-	void log(const std::string &);
-	void info(const std::string &);
-	void error(const std::string &);
-	void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);
-};
-
-extern DevTool *dev;
 
 #endif // UTIL_HPP

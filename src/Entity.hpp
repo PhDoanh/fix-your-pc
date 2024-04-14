@@ -11,29 +11,40 @@
 
 class Enemy;
 
+enum entity_size
+{
+	extra = 256,
+	big = 128,
+	medium = 96,
+	small = 64,
+	mini = 32
+};
+
 class Entity
 {
 public:
 	std::string id;
-	float x, y;
-	float speed;
-	Entity(std::string id, float x, float y, float speed) : id(id), x(x), y(y), speed(speed) {}
+	Vec2D pos; // position
+	Vec2D size;
+	Vec2D vel; // velocity
+	Vec2D goal_vel;
+	Vec2D speed; // max velocity
+	int health;
+
+	// Entity();
+	Entity(const std::string &, const Vec2D &, const Vec2D &, const Vec2D &, const int &);
+	~Entity();
 };
 
 class Player : public Entity
 {
 private:
 	int score;
-	int health;
 
 public:
 	bool moving;
-	Player(std::string id, float x = 0.0, float y = 0.0, float speed = 5.0, int score = 0, int health = 100) : Entity(id, x, y, speed)
-	{
-		this->score = score;
-		this->health = health;
-		this->moving = false;
-	}
+	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(small), const Vec2D &speed = Vec2D(5), const int &health = 5);
+	~Player();
 
 	void move();
 	void attack(Enemy *);
@@ -50,16 +61,14 @@ public:
 	static int name_index;
 	static const Uint64 spawn_time;
 	static Uint64 last_spawn_time;
-	SDL_Texture *txt_box_texture;
-	float x_txt_box, y_txt_box;
-	int w_txt_box, h_txt_box;
-	std::string name, prev_name;
 
-	Enemy(std::string name, std::string id, float x = 0.0, float y = 0.0, float speed = 2) : Entity(id, x, y, speed)
-	{
-		this->name = name;
-		count++;
-	}
+	std::string name, prev_name;
+	SDL_Texture *name_texture;
+	Vec2D name_pos;
+	Vec2D name_size;
+
+	Enemy(const std::string &, const std::string &, const Vec2D &pos = Vec2D(), const Vec2D &size = Vec2D(medium), const Vec2D &speed = Vec2D(3));
+	~Enemy();
 
 	void showName();
 	void move();

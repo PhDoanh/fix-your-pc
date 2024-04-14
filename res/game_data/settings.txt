@@ -1,0 +1,5 @@
+soundVol 50
+musicVol 50
+enableNum 1
+enablePunct 0
+enableCaseSensitive 0
