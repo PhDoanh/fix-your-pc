@@ -26,8 +26,8 @@ public:
 	static SDL_Window *window;
 	static SDL_Renderer *renderer;
 
-	Game(const std::string &title) : title(title) { info("Game constructor called."); }
-	~Game() { info("Game destructor called."); }
+	Game(const std::string &title) : title(title) { info("Game constructor called.\n"); }
+	~Game() { info("Game destructor called.\n"); }
 
 	void initSDL2();
 	void loadMedia();

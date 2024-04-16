@@ -6,15 +6,16 @@
 #include "UI.hpp"
 
 std::map<std::string, Sprite *> sprites;
-std::map<int, TTF_Font *> font_sizes;
+std::map<std::string, Text *> texts;
+std::map<std::string, TTF_Font *> fonts;
 
-Screen::Screen() { info("Screen constructor called!"); }
+Screen::Screen() { info("Screen constructor called!\n"); }
 
-Screen::~Screen() { info("Screen destructor called!"); }
+Screen::~Screen() { info("Screen destructor called!\n"); }
 
 void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame)
 {
-	info("Trying to load " + path + " ... ");
+	info("Trying to load " + path + " ... \n");
 	sprites[name] = new Sprite();
 	SDL_Surface *surface = IMG_Load(path.c_str());
 	sprites[name]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
@@ -24,10 +25,10 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D 
 		delete sprites[name];
 		sprites[name] = nullptr;
 		sprites.erase(name);
-		error(path + " - fail.");
+		error(path + " - fail.\n");
 	}
 
-	info(path + " - done.");
+	info(path + " - done.\n");
 	sprites[name]->path = path;
 	sprites[name]->real_size = real_size;
 	sprites[name]->max_frame = max_frame;
@@ -49,77 +50,83 @@ void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, flo
 void Screen::deleteSprites()
 {
 	std::string path;
-	info("Deleting all sprites ...");
+	info("Deleting all sprites ...\n");
 	for (auto &&sprite : sprites)
 	{
 		path = sprite.second->path;
 		delete sprite.second;
 		sprite.second = nullptr;
 		if (sprite.second)
-			error(path + " - fail.");
+			error(path + " - fail.\n");
 		else
-			info(path + " - done.");
+			info(path + " - done.\n");
 	}
 }
 
-void Screen::loadFont(const std::string &path, const int &size)
+void Screen::loadFont(const std::string &name, const std::string &path, const std::initializer_list<int> &sizes)
 {
 	info("Trying to load " + path + " ... ");
-	font_sizes[size] = TTF_OpenFont(path.c_str(), size);
-	if (!font_sizes[size])
+	for (auto &&size : sizes)
 	{
-		TTF_CloseFont(font_sizes[size]);
-		font_sizes[size] = nullptr;
-		font_sizes.erase(size);
-		error(path + " " + std::to_string(size) + "pt - fail.");
+		std::string alias = name + std::to_string(size);
+		fonts[alias] = TTF_OpenFont(path.c_str(), size);
+		if (!fonts[alias])
+		{
+			TTF_CloseFont(fonts[alias]);
+			fonts[alias] = nullptr;
+			fonts.erase(alias);
+			error("fail.\n");
+		}
 	}
-	info(path + " " + std::to_string(size) + "pt - done.");
+	info("done.\n");
 }
 
-SDL_Texture *Screen::loadText(const std::string &txt, const int &font_size, const int &option, SDL_Color txt_color, SDL_Color bg_color)
+Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const int &font_size, const std::string &font_name, const SDL_Color &txt_color, const SDL_Color &bg_color)
 {
-	SDL_Surface *surface = nullptr;
-	switch (option)
+	if (texts.find(txt) == texts.end())
+		texts[txt] = new Text();
+	if (txt != texts[txt]->prev_txt)
 	{
-	case solid:
-		surface = TTF_RenderUTF8_Solid(font_sizes[font_size], txt.c_str(), txt_color);
-		break;
-	case blended:
-		surface = TTF_RenderUTF8_Blended(font_sizes[font_size], txt.c_str(), txt_color);
-		break;
-	case shaded:
-		surface = TTF_RenderUTF8_Shaded(font_sizes[font_size], txt.c_str(), txt_color, bg_color);
-		break;
-	default:
-		error("invalid text option.");
-		break;
+		SDL_Surface *surface = nullptr;
+		// if ()
+		// 	surface = TTF_RenderUTF8_Solid(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color);
+		// else
+		surface = TTF_RenderUTF8_Shaded(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color, bg_color);
+		texts[txt]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
+		SDL_FreeSurface(surface);
+		texts[txt]->prev_txt = txt;
 	}
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
-	SDL_FreeSurface(surface);
-	return texture;
-}
-
-Vec2D Screen::drawText(SDL_Texture *texture, const Vec2D &pos)
-{
 	int w_txt_box, h_txt_box;
-	SDL_QueryTexture(texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
+	SDL_QueryTexture(texts[txt]->texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
 	SDL_FRect dst_rect = {pos.x, pos.y, float(w_txt_box), float(h_txt_box)};
-	SDL_RenderCopyF(Game::renderer, texture, nullptr, &dst_rect);
+	SDL_RenderCopyF(Game::renderer, texts[txt]->texture, nullptr, &dst_rect);
 	return Vec2D(w_txt_box, h_txt_box);
+}
+
+void Screen::deleteTexts()
+{
+	info("Deleting all texts ... ");
+	for (auto &&text : texts)
+	{
+		delete text.second;
+		text.second = nullptr;
+		if (text.second)
+			error("fail.\n");
+	}
+	info("done.\n");
 }
 
 void Screen::deleteFonts()
 {
-	info("Deleting all fonts ...");
-	for (auto &&font_size : font_sizes)
+	info("Deleting all fonts ... ");
+	for (auto &&font : fonts)
 	{
-		TTF_CloseFont(font_size.second);
-		font_size.second = nullptr;
-		if (font_size.second)
-			error("fail.");
-		else
-			info("done.");
+		TTF_CloseFont(font.second);
+		font.second = nullptr;
+		if (font.second)
+			error("fail.\n");
 	}
+	info("done.\n");
 }
 
 void Screen::updateUI()
@@ -131,13 +138,14 @@ void Screen::updateEnemies()
 {
 	if (lvs.empty())
 	{
-		log("end game!");
+		log("end game!\n");
 	}
 	else
 	{
 		Uint64 cur_time = SDL_GetTicks64();
 		if (cur_time - Enemy::last_spawn_time >= Enemy::spawn_time) // spawn enemy per 3s
 		{
+			std::clog << enemies.size() << '\n';
 			if (enemies.empty()) // new level
 				level->newLevel();
 			level->spawnEnemy();
@@ -196,7 +204,7 @@ void Screen::drawEnemies()
 			enemies[i]->pos,
 			enemies[i]->size,
 			1, 1, false);
-		enemies[i]->name_size = drawText(enemies[i]->name_texture, enemies[i]->name_pos);
+		enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos);
 		drawLine(players[0]->pos, enemies[i]->pos, (i != Enemy::index) ? Color::white(0) : Color::red(0));
 	}
 }

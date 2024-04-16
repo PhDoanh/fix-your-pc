@@ -47,8 +47,8 @@ void Player::move()
 	if (event->state[SDL_SCANCODE_W] && event->state[SDL_SCANCODE_S])
 		goal_vel.y = 0;
 
-	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 20);
-	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 20);
+	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 30);
+	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 30);
 
 	Vec2D dpos;
 	dpos += vel;
@@ -137,16 +137,12 @@ void Enemy::takeDamage()
 {
 	if (name == std::string(name.size(), ' '))
 	{
+		delete enemies[index];
+		enemies[index] = nullptr;
 		enemies.erase(enemies.begin() + index);
 		index = -1;
 		name_index = 0;
 		killed = true;
-	}
-
-	if (name != prev_name)
-	{
-		name_texture = screen->loadText(name, 18, shaded, Color::orange(0), Color::black(0.8));
-		prev_name = name;
 	}
 }
 

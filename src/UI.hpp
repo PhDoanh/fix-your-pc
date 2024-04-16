@@ -8,8 +8,9 @@
 class UI
 {
 private:
-	Vec2D bg_pos; // position
-	Vec2D bg_size;
+	Vec2D goal_bg_pos, bg_pos, bg_size;	   // background 1
+	Vec2D goal_bg2_pos, bg2_pos, bg2_size; // background 2
+	Vec2D fg_pos, fg_size;				   // foreground
 
 	int tilemap[16][8] = {
 		{1, 1, 1, 1, 1, 1, 1, 1},

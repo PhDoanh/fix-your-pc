@@ -43,7 +43,7 @@ private:
 
 public:
 	bool moving;
-	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(small), const Vec2D &speed = Vec2D(5), const int &health = 5);
+	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(small), const Vec2D &speed = Vec2D(6), const int &health = 5);
 	~Player();
 
 	void move();
@@ -62,12 +62,11 @@ public:
 	static const Uint64 spawn_time;
 	static Uint64 last_spawn_time;
 
-	std::string name, prev_name;
-	SDL_Texture *name_texture;
+	std::string name;
 	Vec2D name_pos;
 	Vec2D name_size;
 
-	Enemy(const std::string &, const std::string &, const Vec2D &pos = Vec2D(), const Vec2D &size = Vec2D(medium), const Vec2D &speed = Vec2D(3));
+	Enemy(const std::string &, const std::string &, const Vec2D &pos, const Vec2D &size, const Vec2D &speed);
 	~Enemy();
 
 	void showName();

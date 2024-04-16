@@ -8,7 +8,7 @@ void Event::handleKeyboard()
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_RALT:
+		case SDLK_LALT:
 			SDL_StopTextInput();
 			players[0]->moving = true;
 			break;
@@ -19,7 +19,7 @@ void Event::handleKeyboard()
 	case SDL_KEYUP:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_RALT:
+		case SDLK_LALT:
 			SDL_StartTextInput();
 			players[0]->moving = false;
 			break;
@@ -29,7 +29,7 @@ void Event::handleKeyboard()
 
 	case SDL_TEXTINPUT:
 		cur_txt_inp = e.text.text;
-		// log(cur_txt_inp);
+		// log(cur_txt_inp + "\n");
 		break;
 	case SDL_TEXTEDITING:
 		break;

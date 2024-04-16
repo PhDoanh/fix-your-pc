@@ -2,6 +2,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
+#include <initializer_list>
 #include "../inc/SDL.h"
 #include "../inc/SDL_image.h"
 #include "../inc/SDL_ttf.h"
@@ -9,13 +10,6 @@
 
 #ifndef SCREEN_HPP
 #define SCREEN_HPP
-
-enum text_options
-{
-	solid,
-	blended,
-	shaded,
-};
 
 struct Sprite
 {
@@ -28,15 +22,11 @@ struct Sprite
 struct Text
 {
 	SDL_Texture *texture;
-	std::string txt;
+	std::string prev_txt;
 };
 
 class Screen
 {
-private:
-	SDL_Texture *txt_texture;
-	std::string prev_txt;
-
 public:
 	Screen();
 	~Screen();
@@ -47,9 +37,9 @@ public:
 	void deleteSprites();
 
 	// text
-	void loadFont(const std::string &, const int &);
-	SDL_Texture *loadText(const std::string &, const int &font_size = 18, const int &option = shaded, SDL_Color txt_color = Color::white(0), SDL_Color bg_color = Color::black(0));
-	Vec2D drawText(SDL_Texture *, const Vec2D &);
+	void loadFont(const std::string &, const std::string &, const std::initializer_list<int> &);
+	Vec2D drawText(const std::string &, const Vec2D &, const int &font_size = 18, const std::string &font_name = "ui", const SDL_Color &txt_color = Color::white(0), const SDL_Color &bg_color = Color::black(0));
+	void deleteTexts();
 	void deleteFonts();
 
 	void updateUI();
@@ -63,6 +53,7 @@ public:
 
 extern Screen *screen;
 extern std::map<std::string, Sprite *> sprites;
-extern std::map<int, TTF_Font *> font_sizes;
+extern std::map<std::string, TTF_Font *> fonts;
+extern std::map<std::string, Text *> texts;
 
 #endif // SCREEN_HPP

@@ -1,7 +1,7 @@
 #include <sstream>
 #include <queue>
 #include <string>
-#include <regex>
+#include <cctype>
 #include "util.hpp"
 
 #ifndef LEVEL_HPP

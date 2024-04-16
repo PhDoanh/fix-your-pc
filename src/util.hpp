@@ -9,11 +9,11 @@
 struct Vec2D;
 
 // backend analysis
-inline void log(const std::string &msg) { std::clog << "  log| " << msg << '\n'; }
-inline void info(const std::string &msg) { std::cout << " info| " << msg << '\n'; }
+inline void log(const std::string &msg) { std::clog << "  log| " << msg; }
+inline void info(const std::string &msg) { std::cout << " info| " << msg; }
 inline void error(const std::string &msg)
 {
-	std::cerr << "error| " << msg << '\n';
+	std::cerr << "error| " << msg;
 	exit(1);
 }
 void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);

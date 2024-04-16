@@ -22,7 +22,6 @@ int Game::win_h;
 bool Game::running = true;
 float Game::deltaTime = 0.01667;
 std::fstream Game::data;
-std::stringstream Level::lv;
 std::queue<std::string> lvs;
 SDL_Window *Game::window = nullptr; // 1536x864
 SDL_Renderer *Game::renderer = nullptr;
@@ -58,44 +57,44 @@ void Game::updateScreen()
 
 void Game::initSDL2()
 {
-	info("Initializing SDL2 ...");
+	info("Initializing SDL2 ...\n");
 
 	// Base init
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-		error("SDL_Init - fail.");
+		error("SDL_Init - fail.\n");
 	else
-		info("SDL_Init - done.");
+		info("SDL_Init - done.\n");
 
 	// Image init
 	if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
-		error("IMG_Init - fail.");
+		error("IMG_Init - fail.\n");
 	else
-		info("IMG_Init - done.");
+		info("IMG_Init - done.\n");
 
 	// Font init
 	if (TTF_Init() != 0)
-		error("TTF_Init - fail.");
+		error("TTF_Init - fail.\n");
 	else
-		info("TTF_Init - done.");
+		info("TTF_Init - done.\n");
 
 	// Sound init
 	if (!Mix_Init(MIX_INIT_MP3) || Mix_OpenAudio(44100, AUDIO_S32SYS, 2, 4096) != 0)
-		error("Mix_Init - fail.");
+		error("Mix_Init - fail.\n");
 	else
-		info("MIX_Init - done.");
+		info("MIX_Init - done.\n");
 
 	// Net init
 	if (SDLNet_Init() != 0)
-		error("SDLNet_Init - fail.");
+		error("SDLNet_Init - fail.\n");
 	else
-		info("SDLNet_Init - done.");
+		info("SDLNet_Init - done.\n");
 
 	// Create window
 	window = SDL_CreateWindow(title.c_str(), 0, 0, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (!window)
-		error("SDL_CreateWindow - fail.");
+		error("SDL_CreateWindow - fail.\n");
 	else
-		info("SDL_CreateWindow - done.");
+		info("SDL_CreateWindow - done.\n");
 
 	// Get window's real size
 	SDL_GetWindowSize(window, &win_w, &win_h);
@@ -104,21 +103,22 @@ void Game::initSDL2()
 	// Create renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
-		error("SDL_CreateRenderer - fail.");
+		error("SDL_CreateRenderer - fail.\n");
 	else
-		info("SDL_CreateRenderer - done.");
+		info("SDL_CreateRenderer - done.\n");
 
 	SDL_ShowCursor(SDL_DISABLE);
 }
 
 void Game::loadMedia()
 {
-	info("Loading media ...");
+	info("Loading media ...\n");
 
 	// load controller
 	screen = new Screen();
 	sound = new Sound();
 	event = new Event();
+	level = new Level();
 	std::string key;
 	int value;
 
@@ -138,11 +138,12 @@ void Game::loadMedia()
 	data.close();
 
 	// Load UI, UX
-	screen->loadSprite("full", "res/background/full.png", Vec2D(3840, 2400));
-	screen->loadSprite("bg", "res/background/bg.png", Vec2D(3840, 2400));
-	screen->loadSprite("fg", "res/background/fg.png", Vec2D(3840, 2400));
-	screen->loadSprite("fg blur", "res/background/fg_blur.png", Vec2D(3840, 2400));
-	screen->loadSprite("win crash", "res/background/crash.png", Vec2D(5120, 2880));
+	screen->loadSprite("crash", "res/background/crash.png", Vec2D(5120, 2880));
+	screen->loadSprite("flower blur", "res/background/flower_blur.png", Vec2D(3840, 2400));
+	screen->loadSprite("flower", "res/background/flower.png", Vec2D(3840, 2400));
+	screen->loadSprite("gradient", "res/background/gradient.png", Vec2D(3840, 2400));
+	screen->loadSprite("space", "res/background/space.png", Vec2D(4096));
+	screen->loadSprite("stars", "res/background/stars.png", Vec2D(4096));
 	key = "enemy";
 	for (int i = 1; i <= 50; i++)
 		screen->loadSprite(key + std::to_string(i), "res/enemy/" + key + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
@@ -154,18 +155,16 @@ void Game::loadMedia()
 	screen->loadSprite("move", "res/player/move.png", Vec2D(64, 64));
 	screen->loadSprite("unvail", "res/player/unavail.png", Vec2D(64, 64));
 	screen->loadSprite("working", "res/player/working.png", Vec2D(1152, 64), 18);
-	std::vector<int> sizes = {18, 23, 26};
-	for (int i = 0; i < sizes.size(); i++)
-		screen->loadFont("res/SegUIVar.ttf", sizes[i]);
+	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 23, 26}); // main font
 	ui = new UI();
 
-	sound->loadSoundEffect("right click", "res/sound_effect/rclick.wav");
-	sound->loadSoundEffect("left click", "res/sound_effect/lclick.wav");
+	sound->loadSoundEffect("rclick", "res/sound_effect/rclick.wav");
+	sound->loadSoundEffect("lclick", "res/sound_effect/lclick.wav");
 	sound->loadSoundEffect("win error", "res/sound_effect/Windows Error.wav");
 
 	// load objects
 	for (int i = 0; i < 1; i++)
-		players.emplace_back(new Player("player" + std::to_string(i), Vec2D(win_w / 2, win_h / 2)));
+		players.emplace_back(new Player("player" + std::to_string(i), Vec2D(win_w / 2.0, win_h / 2.0)));
 }
 
 void Game::quitSDL2()
@@ -187,19 +186,17 @@ void Game::quitMedia()
 		delete players[i];
 		players[i] = nullptr;
 	}
-	for (int i = 0; i < enemies.size(); i++)
-	{
-		delete enemies[i];
-		enemies[i] = nullptr;
-	}
 	delete ui;
 	ui = nullptr;
 
 	sound->deleteSoundEffects();
 	sound->deleteMusics();
+	screen->deleteTexts();
 	screen->deleteFonts();
 	screen->deleteSprites();
 
+	delete level;
+	level = nullptr;
 	delete event;
 	event = nullptr;
 	delete sound;
