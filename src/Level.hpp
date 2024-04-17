@@ -10,19 +10,19 @@
 class Level
 {
 public:
-	static std::stringstream lv;
+	std::queue<std::string> lv;
 
 	Level();  // constructor
 	~Level(); // destructor
 
-	void newLevel();
-	void spawnEnemy();
+	// void newLevel();
+	void spawnEnemyPer(const int &);
 
 	// utils
 	std::string processStr(const std::string &); // a member function
 };
 
 extern Level *level;
-extern std::queue<std::string> lvs;
+extern std::queue<std::queue<std::string>> lvs;
 
 #endif // LEVEL_HPP

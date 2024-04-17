@@ -17,6 +17,7 @@ struct Sprite
 	std::string path;
 	Vec2D real_size;
 	int max_frame;
+	int max_layer;
 };
 
 struct Text
@@ -32,8 +33,8 @@ public:
 	~Screen();
 
 	// image
-	void loadSprite(const std::string &, const std::string &, Vec2D, int max_frame = 1);
-	void drawSprite(Sprite &, const Vec2D &, const Vec2D &, float, int, bool);
+	void loadSprite(const std::string &, const std::string &, Vec2D, int max_frame = 1, int max_layer = 1);
+	void drawSprite(Sprite &, const Vec2D &, const Vec2D &, const float &scale = 1, const int &cur_frame = 0, const int &cur_layer = 0, const double &angle = 0, const SDL_FPoint *center = nullptr, const bool &flip = false);
 	void deleteSprites();
 
 	// text

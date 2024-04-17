@@ -25,6 +25,7 @@ class Entity
 public:
 	std::string id;
 	Vec2D pos; // position
+	Vec2D center_pos;
 	Vec2D size;
 	Vec2D vel; // velocity
 	Vec2D goal_vel;
@@ -42,12 +43,19 @@ private:
 	int score;
 
 public:
-	bool moving;
-	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(small), const Vec2D &speed = Vec2D(6), const int &health = 5);
+	bool killed;
+	int cur_frame;
+	int cur_layer;
+	double angle;
+	double goal_angle;
+	double delta_angle;
+
+	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(mini), const Vec2D &speed = Vec2D(0), const int &health = 5);
 	~Player();
 
 	void move();
-	void attack(Enemy *);
+	void attackNearestEnemy();
+	void updateRotation();
 	void takeDamage();
 };
 
@@ -65,18 +73,19 @@ public:
 	std::string name;
 	Vec2D name_pos;
 	Vec2D name_size;
+	SDL_Color name_color;
 
 	Enemy(const std::string &, const std::string &, const Vec2D &pos, const Vec2D &size, const Vec2D &speed);
 	~Enemy();
 
 	void showName();
 	void move();
-	void attack();
+	void attack(Player *);
 	void takeDamage();
 	void spawnNearTo(Player *);
 };
 
-extern std::vector<Player *> players;
+extern Player *player;
 extern std::vector<Enemy *> enemies;
 
 #endif // ENTITY_HPP

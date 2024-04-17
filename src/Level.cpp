@@ -3,8 +3,6 @@
 #include "Entity.hpp"
 #include "UI.hpp"
 
-std::stringstream Level::lv;
-
 Level::Level()
 {
 	info("Level constructor called.\n");
@@ -15,49 +13,58 @@ Level::~Level()
 	info("Level destructor called.\n");
 }
 
-void Level::newLevel()
-{
-	std::string s = lvs.front();
-	lv.str(s);
-	lvs.pop();
-}
+// void Level::newLevel()
+// {
+// }
 
-void Level::spawnEnemy()
+void Level::spawnEnemyPer(const int &spawn_time)
 {
-	std::string name, id;
-	Vec2D pos, size, speed;
-	if (lv >> name)
+	Uint64 cur_time = SDL_GetTicks64();
+	if (cur_time - Enemy::last_spawn_time >= spawn_time) // spawn enemy per "time"
 	{
-		id = "enemy" + std::to_string(rand() % 50 + 1);
-		name = processStr(name);
-		if (name.size() == 1) // trash mobs (char)
+		std::string name, id;
+		Vec2D pos, size, speed;
+		if (!lv.empty()) // spawn enemy on current level
 		{
-			size = mini;
-			speed = 4;
+			name = lv.front();
+			id = "enemy" + std::to_string(rand() % 50 + 1);
+			name = processStr(name);
+			if (name.size() == 1) // trash mobs (char)
+			{
+				size = mini;
+				speed = 4;
+			}
+			else if (name.size() <= 6) // grunts (word)
+			{
+				size = small;
+				speed = 2;
+			}
+			else if (name.size() <= 17) // mini boss (long word)
+			{
+				size = medium;
+				speed = 1.5;
+			}
+			else if (name.size() <= 2000) // boss (sentence)
+			{
+				size = big;
+				speed = 1;
+			}
+			else // final boss (paragraph)
+			{
+				size = extra;
+				speed = 0.5;
+			}
+			Enemy *new_enemy = new Enemy(name, id, pos, size, speed);
+			new_enemy->spawnNearTo(player);
+			enemies.emplace_back(new_enemy);
+			lv.pop();
 		}
-		else if (name.size() <= 6) // grunts (word)
+		else // new level
 		{
-			size = small;
-			speed = 2;
+			lv = lvs.front();
+			lvs.pop();
 		}
-		else if (name.size() <= 17) // mini boss (long word)
-		{
-			size = medium;
-			speed = 1.5;
-		}
-		else if (name.size() <= 2000) // boss (sentence)
-		{
-			size = big;
-			speed = 1;
-		}
-		else // final boss (paragraph)
-		{
-			size = extra;
-			speed = 0.5;
-		}
-		Enemy *new_enemy = new Enemy(name, id, pos, size, speed);
-		new_enemy->spawnNearTo(players[0]);
-		enemies.emplace_back(new_enemy);
+		Enemy::last_spawn_time = cur_time;
 	}
 }
 

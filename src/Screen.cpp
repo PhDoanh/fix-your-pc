@@ -13,7 +13,7 @@ Screen::Screen() { info("Screen constructor called!\n"); }
 
 Screen::~Screen() { info("Screen destructor called!\n"); }
 
-void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame)
+void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D real_size, int max_frame, int max_layer)
 {
 	info("Trying to load " + path + " ... \n");
 	sprites[name] = new Sprite();
@@ -32,19 +32,20 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D 
 	sprites[name]->path = path;
 	sprites[name]->real_size = real_size;
 	sprites[name]->max_frame = max_frame;
+	sprites[name]->max_layer = max_layer;
 
 	SDL_FreeSurface(surface);
 }
 
-void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, float scale, int cur_frame, bool flip)
+void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, const float &scale, const int &cur_frame, const int &cur_layer, const double &angle, const SDL_FPoint *center, const bool &flip)
 {
 	int x = (cur_frame % sprite.max_frame) * sprite.real_size.x;
-	int y = 0;
+	int y = (cur_layer % sprite.max_layer) * sprite.real_size.y;
 	int w = sprite.real_size.x;
 	int h = sprite.real_size.y;
 	SDL_Rect src_rect = {x, y, w, h};
 	SDL_FRect dst_rect = Rect::reScale(pos, size, scale);
-	SDL_RenderCopyExF(Game::renderer, sprite.texture, &src_rect, &dst_rect, 0, NULL, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
+	SDL_RenderCopyExF(Game::renderer, sprite.texture, &src_rect, &dst_rect, angle, center, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
 }
 
 void Screen::deleteSprites()
@@ -142,20 +143,12 @@ void Screen::updateEnemies()
 	}
 	else
 	{
-		Uint64 cur_time = SDL_GetTicks64();
-		if (cur_time - Enemy::last_spawn_time >= Enemy::spawn_time) // spawn enemy per 3s
-		{
-			std::clog << enemies.size() << '\n';
-			if (enemies.empty()) // new level
-				level->newLevel();
-			level->spawnEnemy();
-			Enemy::last_spawn_time = cur_time;
-		}
+		level->spawnEnemyPer(Enemy::spawn_time);
 		for (int i = 0; i < enemies.size(); i++) // current displayed enemy
 		{
 			enemies[i]->showName();
 			enemies[i]->move();
-			enemies[i]->attack();
+			enemies[i]->attack(player);
 			enemies[i]->takeDamage();
 		}
 	}
@@ -163,31 +156,9 @@ void Screen::updateEnemies()
 
 void Screen::updatePlayer()
 {
-	if (players[0]->moving)
-		players[0]->move();
-	else
-	{
-		if (!enemies.empty())
-		{
-			if (Enemy::killed)
-			{
-				float cur_d, min_d = INT_MAX;
-				for (int i = 0; i < enemies.size(); i++)
-				{
-					cur_d = enemies[i]->pos.distance(players[0]->pos);
-					if (event->cur_txt_inp.front() == enemies[i]->name.front() && cur_d < min_d)
-					{
-						min_d = cur_d;
-						Enemy::index = i;
-					}
-				}
-				if (Enemy::index >= 0)
-					Enemy::killed = false;
-			}
-			if (Enemy::index >= 0)
-				players[0]->attack(enemies[Enemy::index]);
-		}
-	}
+	player->move();
+	player->attackNearestEnemy();
+	player->updateRotation();
 }
 
 void Screen::drawUI()
@@ -199,21 +170,13 @@ void Screen::drawEnemies()
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		drawSprite(
-			*sprites[enemies[i]->id],
-			enemies[i]->pos,
-			enemies[i]->size,
-			1, 1, false);
-		enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos);
-		drawLine(players[0]->pos, enemies[i]->pos, (i != Enemy::index) ? Color::white(0) : Color::red(0));
+		drawSprite(*sprites[enemies[i]->id], enemies[i]->pos, enemies[i]->size);
+		enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos, 18, "ui", enemies[i]->name_color);
+		drawLine(player->pos, enemies[i]->pos, (i != Enemy::index) ? Color::white(0) : Color::red(0));
 	}
 }
 
 void Screen::drawPlayer()
 {
-	drawSprite(
-		*sprites["arrow"],
-		players[0]->pos,
-		players[0]->size,
-		1, 1, false);
+	drawSprite(*sprites["arrow"], player->pos, player->size, 1, player->cur_frame, player->cur_layer, player->angle);
 }

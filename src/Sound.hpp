@@ -9,14 +9,30 @@
 
 enum sound_chanels
 {
-	music,
-	left_click,
-	right_click,
+	// window sound
+	lclick,
+	rclick,
 	win_error,
-	shoot,
-	damaged,
-	healing,
-	die
+	unlock_pc,
+	critical_stop,
+	shutdown,
+	notify,
+	new_level,
+
+	// player sound
+	cancel,
+	typing,
+	hit,
+	emp,
+	explosion_player,
+
+	// enemy sound
+	explosion_large,
+	explosion_small,
+	explosion,
+	plasma,
+	spawn,
+	target
 };
 
 class Sound

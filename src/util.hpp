@@ -6,6 +6,8 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+const double PI = 3.1415926536;
+
 struct Vec2D;
 
 // backend analysis
@@ -18,7 +20,7 @@ inline void error(const std::string &msg)
 }
 void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);
 
-// linear interpolation
+// interpolation
 inline float lerp(float goal, float cur, float dt)
 {
 	float diff = goal - cur;
@@ -27,6 +29,23 @@ inline float lerp(float goal, float cur, float dt)
 	if (diff < -dt)
 		return cur - dt;
 	return goal;
+}
+
+inline double lerpAngle(double start, double end, double amount)
+{
+	double diff = abs(end - start);
+	if (diff > 180)
+	{
+		if (end > start)
+			start += 360;
+		else
+			end += 360;
+	}
+	float value = (start + ((end - start) * amount));
+	float rangeZero = 360;
+	if (value >= 0 && value <= 360)
+		return value;
+	return fmod(value, rangeZero);
 }
 
 // manage 2d objects more easily
@@ -74,7 +93,7 @@ struct Color
 	static SDL_Color violet(Uint8 alpha) { return {238, 130, 238, alpha}; }
 	static SDL_Color pink(Uint8 alpha) { return {255, 192, 203, alpha}; }
 	static SDL_Color yellow(Uint8 alpha) { return {255, 255, 0, alpha}; }
-	static SDL_Color orange(Uint8 alpha) { return {255, 165, 0, alpha}; }
+	static SDL_Color light_orange(Uint8 alpha) { return {252, 156, 89, alpha}; }
 	static SDL_Color cyan(Uint8 alpha) { return {0, 255, 255, alpha}; }
 };
 

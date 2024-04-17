@@ -43,8 +43,8 @@ UI::~UI()
 
 void UI::updateBackground()
 {
-	goal_bg_pos.x = goal_bg2_pos.x = fg_pos.x = -players[0]->pos.x * 200 / float(Game::win_w);
-	goal_bg_pos.y = goal_bg2_pos.y = fg_pos.y = -players[0]->pos.y * 200 / float(Game::win_h);
+	goal_bg_pos.x = goal_bg2_pos.x = fg_pos.x = -player->pos.x * 200 / float(Game::win_w);
+	goal_bg_pos.y = goal_bg2_pos.y = fg_pos.y = -player->pos.y * 200 / float(Game::win_h);
 	bg_pos.x = lerp(goal_bg_pos.x, bg_pos.x, Game::deltaTime * 10);
 	bg_pos.y = lerp(goal_bg_pos.y, bg_pos.y, Game::deltaTime * 10);
 	bg2_pos.x = lerp(goal_bg2_pos.x, bg2_pos.x, Game::deltaTime * 20);
@@ -53,9 +53,16 @@ void UI::updateBackground()
 
 void UI::drawBackground()
 {
-	screen->drawSprite(*sprites["space"], bg_pos, bg_size, 1, 1, false);
-	screen->drawSprite(*sprites["stars"], bg2_pos, bg2_size, 1, 1, false);
-	screen->drawSprite(*sprites["flower"], fg_pos, fg_size, 1, 1, false);
+	// if (player->killed)
+	// {
+	// 	screen->drawSprite(*sprites["crash"], Vec2D(), Vec2D(Game::win_w, Game::win_h));
+	// }
+	// else
+	// {
+	screen->drawSprite(*sprites["space"], bg_pos, bg_size);
+	screen->drawSprite(*sprites["stars"], bg2_pos, bg2_size);
+	screen->drawSprite(*sprites["flower"], fg_pos, fg_size);
+	// }
 }
 
 void UI::drawMenu()

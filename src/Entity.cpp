@@ -17,6 +17,7 @@ Entity::Entity(const std::string &id, const Vec2D &pos, const Vec2D &size, const
 	this->size = size;
 	this->speed = speed;
 	this->health = health;
+	this->center_pos = Rect::getCenter(pos, size);
 }
 
 Entity::~Entity() {}
@@ -25,8 +26,11 @@ Entity::~Entity() {}
 Player::Player(const std::string &id, const Vec2D &pos, const Vec2D &size, const Vec2D &speed, const int &health)
 	: Entity(id, pos, size, speed, health)
 {
+	this->killed = false;
+	this->cur_frame = 0;
+	this->cur_layer = 0;
 	this->score = 0;
-	this->moving = false;
+	this->angle = this->goal_angle = -25;
 }
 
 Player::~Player() {}
@@ -57,6 +61,7 @@ void Player::move()
 		dpos /= len;
 	pos.x += fabs(dpos.x) * vel.x;
 	pos.y += fabs(dpos.y) * vel.y;
+	center_pos = Rect::getCenter(pos, size);
 
 	if (pos.x <= 0)
 		pos.x = 0;
@@ -68,14 +73,55 @@ void Player::move()
 		pos.y = Game::win_h - 64;
 }
 
-void Player::attack(Enemy *enemy)
+void Player::attackNearestEnemy()
 {
-	if (event->cur_txt_inp.front() == enemy->name[Enemy::name_index])
-		enemy->name[Enemy::name_index++] = ' ';
+	if (Enemy::killed) // find enemy nearest to player
+	{
+		float cur_d, min_d = INT_MAX;
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			cur_d = enemies[i]->pos.distance(pos);
+			if (event->cur_txt_inp.front() == enemies[i]->name.front() && cur_d < min_d)
+			{
+				min_d = cur_d;
+				Enemy::index = i;
+			}
+		}
+		if (Enemy::index >= 0)
+			Enemy::killed = false;
+	}
+	if (Enemy::index >= 0) // kill cur nearest enemy
+	{
+		Vec2D dpos = enemies[Enemy::index]->center_pos - center_pos;
+		goal_angle = (std::atan2(dpos.y, dpos.x) * 180 / PI) + 90;
+		if (event->cur_txt_inp.front() == enemies[Enemy::index]->name[Enemy::name_index])
+		{
+			enemies[Enemy::index]->name[Enemy::name_index++] = ' ';
+			enemies[Enemy::index]->name_color = Color::light_orange(0);
+		}
+	}
+}
+
+void Player::updateRotation()
+{
+	if (abs(angle - goal_angle) < 1.0)
+	{
+		if (angle > goal_angle)
+			goal_angle -= 0.8;
+		else if (angle < goal_angle)
+			goal_angle += 0.8;
+		delta_angle = Game::deltaTime;
+	}
+	else
+		delta_angle = 0.25;
+	angle = lerpAngle(angle, goal_angle, delta_angle);
 }
 
 void Player::takeDamage()
 {
+	if (killed)
+	{
+	}
 }
 
 // Enemy
@@ -83,6 +129,7 @@ Enemy::Enemy(const std::string &name, const std::string &id, const Vec2D &pos, c
 	: Entity(id, pos, size, speed, name.size())
 {
 	this->name = name;
+	this->name_color = Color::white(0);
 	count++;
 }
 
@@ -90,30 +137,30 @@ Enemy::~Enemy() {}
 
 void Enemy::showName()
 {
-	float a = float(players[0]->pos.y - pos.y - 96) / (players[0]->pos.x - pos.x);
-	float b = players[0]->pos.y - a * players[0]->pos.x;
+	float a = float(player->pos.y - pos.y - size.y) / (player->pos.x - pos.x);
+	float b = player->pos.y - a * player->pos.x;
 	if (pos.x < 0) // left
 		name_pos = Vec2D(0, b);
-	else if (pos.y + 96 < 0) // top
+	else if (pos.y + size.y < 0) // top
 		name_pos = Vec2D(-b / a, 0);
-	else if (pos.x > Game::win_w - size.x) // right
+	else if (pos.x > Game::win_w - name_size.x) // right
 		name_pos = Vec2D(Game::win_w - name_size.x, a * (Game::win_w - name_size.x) + b);
-	else if (pos.y + 96 > Game::win_h - size.y) // bottom
-		name_pos = Vec2D((Game::win_h - b) / a, Game::win_h - name_size.y);
+	else if (pos.y + size.y > Game::win_h - name_size.y) // bottom
+		name_pos = Vec2D((Game::win_h - name_size.y - b) / a, Game::win_h - name_size.y);
 	else // inside
-		name_pos = Vec2D(pos.x, pos.y + 96);
+		name_pos = Vec2D(pos.x, pos.y + size.y);
 }
 
 void Enemy::move()
 {
 	goal_vel = {0, 0};
-	if (pos.x < players[0]->pos.x) // right
+	if (pos.x < player->pos.x) // right
 		goal_vel.x = speed.x;
-	if (pos.x > players[0]->pos.x) // left
+	if (pos.x > player->pos.x) // left
 		goal_vel.x = -speed.x;
-	if (pos.y > players[0]->pos.y) // up
+	if (pos.y > player->pos.y) // up
 		goal_vel.y = -speed.y;
-	if (pos.y < players[0]->pos.y) // down
+	if (pos.y < player->pos.y) // down
 		goal_vel.y = speed.y;
 
 	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 20);
@@ -121,16 +168,24 @@ void Enemy::move()
 	// std::clog << vel;
 
 	Vec2D dpos;
-	dpos = players[0]->pos - pos;
+	dpos = player->pos - pos;
 	float len = std::sqrt(dpos.x * dpos.x + dpos.y * dpos.y);
 	if (len > 0)
 		dpos /= len;
 	pos.x += fabs(dpos.x) * vel.x;
 	pos.y += fabs(dpos.y) * vel.y;
+	center_pos = Rect::getCenter(pos, size);
 }
 
-void Enemy::attack()
+void Enemy::attack(Player *player)
 {
+	if (Rect::isCollide(player->pos, player->size, pos, size))
+	{
+		if (player->health == 0)
+			player->killed = true;
+		player->health--;
+		player->cur_frame++;
+	}
 }
 
 void Enemy::takeDamage()
@@ -182,4 +237,5 @@ void Enemy::spawnNearTo(Player *player)
 				pos = Vec2D(rand() % (Game::win_w / 2) + Game::win_w / 2, player->pos.y + Game::win_h / 2);
 		}
 	}
+	center_pos = Rect::getCenter(pos, size);
 }

@@ -10,7 +10,7 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StopTextInput();
-			players[0]->moving = true;
+			player->speed = Vec2D(6);
 			break;
 		default:
 			break;
@@ -21,7 +21,7 @@ void Event::handleKeyboard()
 		{
 		case SDLK_LALT:
 			SDL_StartTextInput();
-			players[0]->moving = false;
+			player->speed = Vec2D(0);
 			break;
 		default:
 			break;
@@ -48,11 +48,11 @@ void Event::handleMouse()
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			// sound.playSoundEffect("left click", left_click);
+			// sound.playSoundEffect("left click", lclick);
 			// player.enableDialog();
 			break;
 		case SDL_BUTTON_RIGHT:
-			// sound.playSoundEffect("right click", right_click);
+			// sound.playSoundEffect("right click", rclick);
 			break;
 		default:
 			break;
