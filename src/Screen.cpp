@@ -139,7 +139,7 @@ void Screen::updateEnemies()
 {
 	if (lvs.empty())
 	{
-		log("end game!\n");
+		// log("end game!\n");
 	}
 	else
 	{
@@ -149,7 +149,8 @@ void Screen::updateEnemies()
 			enemies[i]->showName();
 			enemies[i]->move();
 			enemies[i]->attack(player);
-			enemies[i]->takeDamage();
+			if (i == player->index)
+				enemies[i]->takeDamage();
 		}
 	}
 }
@@ -159,6 +160,7 @@ void Screen::updatePlayer()
 	player->move();
 	player->attackNearestEnemy();
 	player->updateRotation();
+	player->takeDamage();
 }
 
 void Screen::drawUI()
@@ -171,12 +173,15 @@ void Screen::drawEnemies()
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		drawSprite(*sprites[enemies[i]->id], enemies[i]->pos, enemies[i]->size);
-		enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos, 18, "ui", enemies[i]->name_color);
-		drawLine(player->pos, enemies[i]->pos, (i != Enemy::index) ? Color::white(0) : Color::red(0));
+		if (!enemies[i]->name.empty())
+			enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos, 18, "ui", enemies[i]->name_color);
+		drawLine(player->pos, enemies[i]->pos, (i != player->index) ? Color::white(0) : Color::red(0));
 	}
 }
 
 void Screen::drawPlayer()
 {
+	for (int i = 0; i < player->bullets.size(); i++)
+		drawSprite(*sprites["bullet"], player->bullets[i]->pos, player->bullets[i]->size, 1, 0, 0, player->bullets[i]->angle);
 	drawSprite(*sprites["arrow"], player->pos, player->size, 1, player->cur_frame, player->cur_layer, player->angle);
 }

@@ -118,7 +118,7 @@ void Game::loadMedia()
 	int value;
 
 	// load levels
-	data.open("res/game_data/default_levels.txt");
+	data.open("res/game_data/test.txt");
 	while (getline(data, sentence, '.'))
 	{
 		std::queue<std::string> lv;
@@ -156,6 +156,7 @@ void Game::loadMedia()
 	screen->loadSprite("emp", "res/object/emp.png", Vec2D(256));
 	screen->loadSprite("reticle", "res/object/reticle.png", Vec2D(256));
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
+	screen->loadSprite("bullet", "res/object/bullet.png", Vec2D(21, 28));
 	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 23, 26}); // main font
 
 	sound->loadSoundEffect("rclick", "res/sound/rclick.wav");
@@ -166,21 +167,22 @@ void Game::loadMedia()
 	sound->loadSoundEffect("shutdown", "res/sound/Windows Shutdown.wav");
 	sound->loadSoundEffect("notify", "res/sound/Windows Notify System Generic.wav");
 	sound->loadSoundEffect("new level", "res/sound/Windows Balloon.wav");
-	sound->loadSoundEffect("cancel", "res/sound/cancel.ogg");
-	sound->loadSoundEffect("typing", "res/sound/click.ogg");
-	sound->loadSoundEffect("emp", "res/sound/emp.ogg");
-	sound->loadSoundEffect("explosion large", "res/sound/explosion-large.ogg");
-	sound->loadSoundEffect("explosion player", "res/sound/explosion-player.ogg");
-	sound->loadSoundEffect("explosion small", "res/sound/explosion-small.ogg");
-	sound->loadSoundEffect("explosion", "res/sound/explosion.ogg");
-	sound->loadSoundEffect("hit", "res/sound/hit.ogg");
-	sound->loadSoundEffect("plasma", "res/sound/plasma.ogg");
-	sound->loadSoundEffect("spawn", "res/sound/spawn.ogg");
-	sound->loadSoundEffect("target", "res/sound/target.ogg");
+	sound->loadSoundEffect("cancel", "res/sound/cancel.wav");
+	sound->loadSoundEffect("typing", "res/sound/click.wav");
+	sound->loadSoundEffect("emp", "res/sound/emp.wav");
+	sound->loadSoundEffect("explosion large", "res/sound/explosion-large.wav");
+	sound->loadSoundEffect("explosion player", "res/sound/explosion-player.wav");
+	sound->loadSoundEffect("explosion small", "res/sound/explosion-small.wav");
+	sound->loadSoundEffect("explosion", "res/sound/explosion.wav");
+	sound->loadSoundEffect("hit", "res/sound/hit.wav");
+	sound->loadSoundEffect("plasma", "res/sound/plasma.wav");
+	sound->loadSoundEffect("spawn", "res/sound/spawn.wav");
+	sound->loadSoundEffect("target", "res/sound/target.wav");
 	sound->loadMusic("endure", "res/music/endure.ogg");
 	sound->loadMusic("orientation", "res/music/orientation.ogg");
 
-	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(43.3, 60.6));
+	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(32, 45));
+	sound->playMusic("endure");
 }
 
 void Game::quitSDL2()
@@ -202,6 +204,11 @@ void Game::quitMedia()
 	screen->deleteFonts();
 	screen->deleteSprites();
 
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		delete enemies[i];
+		enemies[i] = nullptr;
+	}
 	delete player;
 	player = nullptr;
 	delete ui;

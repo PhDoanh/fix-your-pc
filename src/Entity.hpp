@@ -31,8 +31,12 @@ public:
 	Vec2D goal_vel;
 	Vec2D speed; // max velocity
 	int health;
+	bool killed; // bullet is killed when collide enemy
+	double angle;
+	double goal_angle;
+	double delta_angle;
 
-	// Entity();
+	Entity(const Vec2D &, const Vec2D &, const Vec2D &);
 	Entity(const std::string &, const Vec2D &, const Vec2D &, const Vec2D &, const int &);
 	~Entity();
 };
@@ -43,18 +47,18 @@ private:
 	int score;
 
 public:
-	bool killed;
+	int index; // using for nearest enemy index
 	int cur_frame;
 	int cur_layer;
-	double angle;
-	double goal_angle;
-	double delta_angle;
+	std::vector<Entity *> bullets;
 
 	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(mini), const Vec2D &speed = Vec2D(0), const int &health = 5);
 	~Player();
 
 	void move();
 	void attackNearestEnemy();
+	void shootBulletTo(Enemy *);
+	void moveBulletTo(Enemy *);
 	void updateRotation();
 	void takeDamage();
 };
@@ -63,14 +67,12 @@ class Enemy : public Entity
 {
 private:
 public:
-	static bool killed;
 	static int count;
-	static int index;
-	static int name_index;
 	static const Uint64 spawn_time;
 	static Uint64 last_spawn_time;
 
 	std::string name;
+	int name_index;
 	Vec2D name_pos;
 	Vec2D name_size;
 	SDL_Color name_color;

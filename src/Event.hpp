@@ -13,7 +13,7 @@ public:
 	SDL_Event e;
 	const Uint8 *state;
 	std::string cur_txt_inp;
-	int mouse_x, mouse_y;
+	Vec2D mouse_pos;
 
 	Event() { info("Event constructor called!\n"); }
 	~Event() { info("Event destructor called!\n"); }

@@ -4,12 +4,16 @@
 #include "Sound.hpp"
 #include "Event.hpp"
 
-bool Enemy::killed = true;
 int Enemy::count = 0;
-int Enemy::index = -1;
-int Enemy::name_index = 0;
 
 // Entity
+Entity::Entity(const Vec2D &pos, const Vec2D &size, const Vec2D &speed)
+{
+	this->pos = pos;
+	this->size = size;
+	this->speed = speed;
+}
+
 Entity::Entity(const std::string &id, const Vec2D &pos, const Vec2D &size, const Vec2D &speed, const int &health)
 {
 	this->id = id;
@@ -17,6 +21,7 @@ Entity::Entity(const std::string &id, const Vec2D &pos, const Vec2D &size, const
 	this->size = size;
 	this->speed = speed;
 	this->health = health;
+	this->killed = false;
 	this->center_pos = Rect::getCenter(pos, size);
 }
 
@@ -26,11 +31,11 @@ Entity::~Entity() {}
 Player::Player(const std::string &id, const Vec2D &pos, const Vec2D &size, const Vec2D &speed, const int &health)
 	: Entity(id, pos, size, speed, health)
 {
-	this->killed = false;
+	this->score = 0;
+	this->index = -1;
 	this->cur_frame = 0;
 	this->cur_layer = 0;
-	this->score = 0;
-	this->angle = this->goal_angle = -25;
+	this->angle = this->goal_angle = -26;
 }
 
 Player::~Player() {}
@@ -51,8 +56,8 @@ void Player::move()
 	if (event->state[SDL_SCANCODE_W] && event->state[SDL_SCANCODE_S])
 		goal_vel.y = 0;
 
-	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 30);
-	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 30);
+	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 25);
+	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 25);
 
 	Vec2D dpos;
 	dpos += vel;
@@ -73,33 +78,87 @@ void Player::move()
 		pos.y = Game::win_h - 64;
 }
 
+void Player::moveBulletTo(Enemy *enemy)
+{
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		bullets[i]->goal_vel = {0, 0};
+		if (bullets[i]->pos.x < enemy->pos.x) // right
+			bullets[i]->goal_vel.x = bullets[i]->speed.x;
+		if (bullets[i]->pos.x > enemy->pos.x) // left
+			bullets[i]->goal_vel.x = -bullets[i]->speed.x;
+		if (bullets[i]->pos.y > enemy->pos.y) // up
+			bullets[i]->goal_vel.y = -bullets[i]->speed.y;
+		if (bullets[i]->pos.y < enemy->pos.y) // down
+			bullets[i]->goal_vel.y = bullets[i]->speed.y;
+
+		bullets[i]->vel.x = lerp(bullets[i]->goal_vel.x, bullets[i]->vel.x, Game::deltaTime * 20);
+		bullets[i]->vel.y = lerp(bullets[i]->goal_vel.y, bullets[i]->vel.y, Game::deltaTime * 20);
+
+		Vec2D dpos;
+		dpos = enemy->pos - bullets[i]->pos;
+		float len = std::sqrt(dpos.x * dpos.x + dpos.y * dpos.y);
+		if (len > 0)
+			dpos /= len;
+		bullets[i]->pos.x += fabs(dpos.x) * bullets[i]->vel.x;
+		bullets[i]->pos.y += fabs(dpos.y) * bullets[i]->vel.y;
+		bullets[i]->center_pos = Rect::getCenter(bullets[i]->pos, bullets[i]->size);
+
+		Vec2D dcenter_pos = enemy->center_pos - bullets[i]->center_pos;
+		bullets[i]->goal_angle = (std::atan2(dcenter_pos.y, dcenter_pos.x) * 180 / PI) + 90;
+		bullets[i]->angle = lerpAngle(bullets[i]->angle, bullets[i]->goal_angle, 0.25);
+	}
+}
+
 void Player::attackNearestEnemy()
 {
-	if (Enemy::killed) // find enemy nearest to player
+	if (index < 0) // find nearest enemy index
 	{
-		float cur_d, min_d = INT_MAX;
-		for (int i = 0; i < enemies.size(); i++)
+		if (!event->cur_txt_inp.empty())
 		{
-			cur_d = enemies[i]->pos.distance(pos);
-			if (event->cur_txt_inp.front() == enemies[i]->name.front() && cur_d < min_d)
+			float cur_d, min_d = INT_MAX;
+			for (int i = 0; i < enemies.size(); i++)
 			{
-				min_d = cur_d;
-				Enemy::index = i;
+				cur_d = enemies[i]->pos.distance(pos);
+				if (event->cur_txt_inp[0] == enemies[i]->name[0] && cur_d < min_d)
+				{
+					min_d = cur_d;
+					index = i;
+				}
+			}
+			if (index < 0)
+				event->cur_txt_inp.clear();
+		}
+	}
+	else // valid index -> attack nearest enemy
+	{
+		Enemy *enemy = enemies[index];
+		Vec2D dpos = enemy->center_pos - center_pos;
+		goal_angle = (std::atan2(dpos.y, dpos.x) * 180 / PI) + 90;
+		if (!event->cur_txt_inp.empty())
+		{
+			if (event->cur_txt_inp[0] == enemy->name[enemy->name_index])
+				shootBulletTo(enemy);
+			else // wrong type
+			{
+				sound->playSoundEffect("typing", player_channel);
+				event->cur_txt_inp.clear();
 			}
 		}
-		if (Enemy::index >= 0)
-			Enemy::killed = false;
+		moveBulletTo(enemy);
 	}
-	if (Enemy::index >= 0) // kill cur nearest enemy
-	{
-		Vec2D dpos = enemies[Enemy::index]->center_pos - center_pos;
-		goal_angle = (std::atan2(dpos.y, dpos.x) * 180 / PI) + 90;
-		if (event->cur_txt_inp.front() == enemies[Enemy::index]->name[Enemy::name_index])
-		{
-			enemies[Enemy::index]->name[Enemy::name_index++] = ' ';
-			enemies[Enemy::index]->name_color = Color::light_orange(0);
-		}
-	}
+}
+
+void Player::shootBulletTo(Enemy *enemy)
+{
+	sound->playSoundEffect("plasma", player_channel);
+	Vec2D bullet_size = sprites["bullet"]->real_size;
+	Vec2D buillet_pos = pos + (size - bullet_size) / 2.0;
+	Vec2D bullet_speed = speed + Vec2D(5);
+	bullets.push_back(new Entity(buillet_pos, bullet_size, bullet_speed));
+	enemy->name[enemy->name_index++] = ' ';
+	enemy->name_color = Color::light_orange(0);
+	event->cur_txt_inp.clear();
 }
 
 void Player::updateRotation()
@@ -119,6 +178,7 @@ void Player::updateRotation()
 
 void Player::takeDamage()
 {
+
 	if (killed)
 	{
 	}
@@ -129,8 +189,9 @@ Enemy::Enemy(const std::string &name, const std::string &id, const Vec2D &pos, c
 	: Entity(id, pos, size, speed, name.size())
 {
 	this->name = name;
+	this->name_index = 0;
 	this->name_color = Color::white(0);
-	count++;
+	this->count++;
 }
 
 Enemy::~Enemy() {}
@@ -165,7 +226,6 @@ void Enemy::move()
 
 	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 20);
 	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 20);
-	// std::clog << vel;
 
 	Vec2D dpos;
 	dpos = player->pos - pos;
@@ -179,25 +239,38 @@ void Enemy::move()
 
 void Enemy::attack(Player *player)
 {
-	if (Rect::isCollide(player->pos, player->size, pos, size))
-	{
-		if (player->health == 0)
-			player->killed = true;
-		player->health--;
-		player->cur_frame++;
-	}
+	// if (Rect::isCollide(player->pos, player->size, pos, size))
+	// {
+	// 	if (player->health == 0)
+	// 		player->killed = true;
+	// 	player->health--;
+	// 	player->cur_frame++;
+	// }
 }
 
 void Enemy::takeDamage()
 {
-	if (name == std::string(name.size(), ' '))
+	log(std::to_string(player->index) + "\n");
+	for (int i = 0; i < player->bullets.size(); i++)
 	{
-		delete enemies[index];
-		enemies[index] = nullptr;
-		enemies.erase(enemies.begin() + index);
-		index = -1;
-		name_index = 0;
-		killed = true;
+		if (Rect::isCollide(pos, size, player->bullets[i]->pos, player->bullets[i]->size))
+		{
+			sound->playSoundEffect("hit", enemy_channel);
+			health--;
+			delete player->bullets[i];
+			player->bullets[i] = nullptr;
+			player->bullets.erase(player->bullets.begin());
+		}
+	}
+
+	if (name == std::string(name.size(), ' ')) // erase name
+		name.clear();
+
+	if (health == 0) // erase itselfs
+	{
+		enemies.erase(enemies.begin() + player->index);
+		event->cur_txt_inp.clear();
+		player->index = -1;
 	}
 }
 

@@ -1,3 +1,4 @@
+#include "Sound.hpp"
 #include "Event.hpp"
 #include "Entity.hpp"
 
@@ -28,8 +29,7 @@ void Event::handleKeyboard()
 		}
 
 	case SDL_TEXTINPUT:
-		cur_txt_inp = e.text.text;
-		// log(cur_txt_inp + "\n");
+		cur_txt_inp += e.text.text;
 		break;
 	case SDL_TEXTEDITING:
 		break;
@@ -41,18 +41,16 @@ void Event::handleMouse()
 	switch (e.type)
 	{
 	case SDL_MOUSEMOTION:
-		mouse_x = e.motion.x;
-		mouse_y = e.motion.y;
+		mouse_pos = Vec2D(e.motion.x, e.motion.y);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			// sound.playSoundEffect("left click", lclick);
-			// player.enableDialog();
+			sound->playSoundEffect("lclick", general);
 			break;
 		case SDL_BUTTON_RIGHT:
-			// sound.playSoundEffect("right click", rclick);
+			sound->playSoundEffect("rclick", general);
 			break;
 		default:
 			break;
