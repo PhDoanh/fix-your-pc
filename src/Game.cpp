@@ -181,7 +181,9 @@ void Game::loadMedia()
 	sound->loadMusic("endure", "res/music/endure.ogg");
 	sound->loadMusic("orientation", "res/music/orientation.ogg");
 
-	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(32, 45));
+	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(43, 60));
+	player->shield.time = 7000;		  // 7s
+	player->shield_state.time = 2000; // 2s
 	sound->playMusic("endure");
 }
 

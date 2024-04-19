@@ -137,9 +137,9 @@ void Screen::updateUI()
 
 void Screen::updateEnemies()
 {
-	if (lvs.empty())
+	if (lvs.empty()) // game over
 	{
-		// log("end game!\n");
+		log("end game!\n");
 	}
 	else
 	{
@@ -149,8 +149,7 @@ void Screen::updateEnemies()
 			enemies[i]->showName();
 			enemies[i]->move();
 			enemies[i]->attack(player);
-			if (i == player->index)
-				enemies[i]->takeDamage();
+			enemies[i]->takeDamage(i);
 		}
 	}
 }
@@ -160,7 +159,7 @@ void Screen::updatePlayer()
 	player->move();
 	player->attackNearestEnemy();
 	player->updateRotation();
-	player->takeDamage();
+	player->updateScore();
 }
 
 void Screen::drawUI()
@@ -183,5 +182,11 @@ void Screen::drawPlayer()
 {
 	for (int i = 0; i < player->bullets.size(); i++)
 		drawSprite(*sprites["bullet"], player->bullets[i]->pos, player->bullets[i]->size, 1, 0, 0, player->bullets[i]->angle);
+
 	drawSprite(*sprites["arrow"], player->pos, player->size, 1, player->cur_frame, player->cur_layer, player->angle);
+
+	for (int i = 0; i < player->circles.size(); i++)
+		drawSprite(*sprites["reticle"], player->circles[i]->pos, player->circles[i]->size, 1, 0, 0, player->circles[i]->angle);
+	for (int i = 0; i < player->dead_zones.size(); i++)
+		drawSprite(*sprites["emp"], player->dead_zones[i]->pos, player->dead_zones[i]->size, 1, 0, 0, player->dead_zones[i]->angle);
 }

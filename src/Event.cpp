@@ -13,6 +13,13 @@ void Event::handleKeyboard()
 			SDL_StopTextInput();
 			player->speed = Vec2D(6);
 			break;
+		case SDLK_RETURN:
+			if (player->num_of_chrs >= 1)
+			{
+				player->addDeadZone();
+				player->num_of_chrs = 0;
+			}
+			break;
 		default:
 			break;
 		}

@@ -48,6 +48,13 @@ inline double lerpAngle(double start, double end, double amount)
 	return fmod(value, rangeZero);
 }
 
+// manage all objects time
+struct Time
+{
+	Uint64 time;
+	Uint64 last_time;
+};
+
 // manage 2d objects more easily
 struct Vec2D
 {

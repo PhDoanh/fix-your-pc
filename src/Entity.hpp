@@ -1,6 +1,6 @@
+#include <map>
 #include <vector>
 #include <string>
-#include <queue>
 #include <cmath>
 #include <cstdlib>
 #include "../inc/SDL.h"
@@ -36,30 +36,39 @@ public:
 	double goal_angle;
 	double delta_angle;
 
-	Entity(const Vec2D &, const Vec2D &, const Vec2D &);
-	Entity(const std::string &, const Vec2D &, const Vec2D &, const Vec2D &, const int &);
+	Entity(const Vec2D &, const Vec2D &, const Vec2D &);								   // objects
+	Entity(const std::string &, const Vec2D &, const Vec2D &, const Vec2D &, const int &); // characters
 	~Entity();
 };
 
 class Player : public Entity
 {
 private:
-	int score;
-
 public:
+	Time shield, shield_state;
 	int index; // using for nearest enemy index
-	int cur_frame;
-	int cur_layer;
+	int score;
+	int num_of_chrs;
+	int num_of_dead_zones;
+	int cur_frame, cur_layer;
+	int max_frame, max_layer;
+	std::vector<Entity *> circles;
 	std::vector<Entity *> bullets;
+	std::vector<Entity *> dead_zones;
 
 	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(mini), const Vec2D &speed = Vec2D(0), const int &health = 5);
 	~Player();
 
 	void move();
 	void attackNearestEnemy();
-	void shootBulletTo(Enemy *);
+	void makeCircleOn(Enemy *);
+	void moveCircleOn(Enemy *);
+	void shootBullet();
 	void moveBulletTo(Enemy *);
+	void addDeadZone();
+	void releaseDeadZone();
 	void updateRotation();
+	void updateScore();
 	void takeDamage();
 };
 
@@ -83,7 +92,7 @@ public:
 	void showName();
 	void move();
 	void attack(Player *);
-	void takeDamage();
+	void takeDamage(const int&);
 	void spawnNearTo(Player *);
 };
 
