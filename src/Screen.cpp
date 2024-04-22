@@ -9,7 +9,11 @@ std::map<std::string, Sprite *> sprites;
 std::map<std::string, Text *> texts;
 std::map<std::string, TTF_Font *> fonts;
 
-Screen::Screen() { info("Screen constructor called!\n"); }
+Screen::Screen()
+{
+	info("Screen constructor called!\n");
+	size = Vec2D(Game::win_w, Game::win_h);
+}
 
 Screen::~Screen() { info("Screen destructor called!\n"); }
 
@@ -82,24 +86,28 @@ void Screen::loadFont(const std::string &name, const std::string &path, const st
 	info("done.\n");
 }
 
-Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const int &font_size, const std::string &font_name, const SDL_Color &txt_color, const SDL_Color &bg_color)
+Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const bool &center_pos, const int &font_size, const std::string &font_name, const bool &shaded_mode, const SDL_Color &txt_color, const SDL_Color &bg_color)
 {
 	if (texts.find(txt) == texts.end())
 		texts[txt] = new Text();
 	if (txt != texts[txt]->prev_txt)
 	{
 		SDL_Surface *surface = nullptr;
-		// if ()
-		// 	surface = TTF_RenderUTF8_Solid(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color);
-		// else
-		surface = TTF_RenderUTF8_Shaded(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color, bg_color);
+		if (shaded_mode)
+			surface = TTF_RenderUTF8_Shaded(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color, bg_color);
+		else
+			surface = TTF_RenderUTF8_Blended(fonts[font_name + std::to_string(font_size)], txt.c_str(), txt_color);
 		texts[txt]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
 		SDL_FreeSurface(surface);
 		texts[txt]->prev_txt = txt;
 	}
 	int w_txt_box, h_txt_box;
 	SDL_QueryTexture(texts[txt]->texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
-	SDL_FRect dst_rect = {pos.x, pos.y, float(w_txt_box), float(h_txt_box)};
+	SDL_FRect dst_rect;
+	if (center_pos)
+		dst_rect = {pos.x - float(w_txt_box / 2.0), pos.y - float(h_txt_box / 2.0), float(w_txt_box), float(h_txt_box)};
+	else
+		dst_rect = {pos.x, pos.y, float(w_txt_box), float(h_txt_box)};
 	SDL_RenderCopyF(Game::renderer, texts[txt]->texture, nullptr, &dst_rect);
 	return Vec2D(w_txt_box, h_txt_box);
 }
@@ -130,63 +138,44 @@ void Screen::deleteFonts()
 	info("done.\n");
 }
 
-void Screen::updateUI()
+void Screen::update()
 {
-	ui->updateBackground();
-}
-
-void Screen::updateEnemies()
-{
-	if (lvs.empty()) // game over
+	switch (Game::state)
 	{
-		log("end game!\n");
-	}
-	else
-	{
-		level->spawnEnemyPer(Enemy::spawn_time);
-		for (int i = 0; i < enemies.size(); i++) // current displayed enemy
-		{
-			enemies[i]->showName();
-			enemies[i]->move();
-			enemies[i]->attack(player);
-			enemies[i]->takeDamage(i);
-		}
+	case start:
+		ui->updateMenu();
+		break;
+	case play:
+		ui->updateGamePlay();
+		break;
+	case pause:
+		ui->updateSetting();
+		break;
+	case over:
+		ui->updateGameOver();
+		break;
+	default:
+		break;
 	}
 }
 
-void Screen::updatePlayer()
+void Screen::draw()
 {
-	player->move();
-	player->attackNearestEnemy();
-	player->updateRotation();
-	player->updateScore();
-}
-
-void Screen::drawUI()
-{
-	ui->drawBackground();
-}
-
-void Screen::drawEnemies()
-{
-	for (int i = 0; i < enemies.size(); i++)
+	switch (Game::state)
 	{
-		drawSprite(*sprites[enemies[i]->id], enemies[i]->pos, enemies[i]->size);
-		if (!enemies[i]->name.empty())
-			enemies[i]->name_size = drawText(enemies[i]->name, enemies[i]->name_pos, 18, "ui", enemies[i]->name_color);
-		drawLine(player->pos, enemies[i]->pos, (i != player->index) ? Color::white(0) : Color::red(0));
+	case start:
+		ui->drawMenu();
+		break;
+	case play:
+		ui->drawGamePlay();
+		break;
+	case pause:
+		ui->drawSetting();
+		break;
+	case over:
+		ui->drawGameOver();
+		break;
+	default:
+		break;
 	}
-}
-
-void Screen::drawPlayer()
-{
-	for (int i = 0; i < player->bullets.size(); i++)
-		drawSprite(*sprites["bullet"], player->bullets[i]->pos, player->bullets[i]->size, 1, 0, 0, player->bullets[i]->angle);
-
-	drawSprite(*sprites["arrow"], player->pos, player->size, 1, player->cur_frame, player->cur_layer, player->angle);
-
-	for (int i = 0; i < player->circles.size(); i++)
-		drawSprite(*sprites["reticle"], player->circles[i]->pos, player->circles[i]->size, 1, 0, 0, player->circles[i]->angle);
-	for (int i = 0; i < player->dead_zones.size(); i++)
-		drawSprite(*sprites["emp"], player->dead_zones[i]->pos, player->dead_zones[i]->size, 1, 0, 0, player->dead_zones[i]->angle);
 }

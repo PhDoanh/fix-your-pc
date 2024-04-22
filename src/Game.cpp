@@ -14,10 +14,12 @@ UI *ui = nullptr;
 Player *player = nullptr;
 std::vector<Enemy *> enemies;
 std::map<std::string, int> settings;
+std::multimap<int, std::string> high_scores;
 std::queue<std::queue<std::string>> lvs;
 const Uint64 Enemy::spawn_time = 3000; // 3s
 Uint64 Enemy::last_spawn_time = SDL_GetTicks64();
 float Game::fps = 60.0;
+int Game::state = start;
 int Game::win_w;
 int Game::win_h;
 bool Game::running = true;
@@ -40,18 +42,9 @@ void Game::handleEvent()
 
 void Game::updateScreen()
 {
-	// update alls
-	screen->updateUI();
-	screen->updateEnemies();
-	screen->updatePlayer();
-
-	// redraw alls
+	screen->update();
 	SDL_RenderClear(renderer);
-
-	screen->drawUI();
-	screen->drawEnemies();
-	screen->drawPlayer();
-
+	screen->draw();
 	SDL_RenderPresent(renderer);
 }
 
@@ -113,12 +106,11 @@ void Game::loadMedia()
 	sound = new Sound();
 	event = new Event();
 	level = new Level();
-	ui = new UI();
 	std::string key, sentence, word;
 	int value;
 
 	// load levels
-	data.open("res/game_data/test.txt");
+	data.open("res/game_data/levels.txt");
 	while (getline(data, sentence, '.'))
 	{
 		std::queue<std::string> lv;
@@ -138,13 +130,23 @@ void Game::loadMedia()
 	}
 	data.close();
 
+	// load high scores
+	data.open("res/game_data/high_scores.txt");
+	while (!data.eof())
+	{
+		data >> key >> value;
+		high_scores.insert({value, key});
+	}
+	data.close();
+
 	// Load UI, UX
-	screen->loadSprite("crash", "res/background/crash.png", Vec2D(5120, 2880));
-	screen->loadSprite("flower blur", "res/background/flower_blur.png", Vec2D(3840, 2400));
+	// screen->loadSprite("crash", "res/background/crash.png", Vec2D(5120, 2880));
 	screen->loadSprite("flower", "res/background/flower.png", Vec2D(3840, 2400));
-	screen->loadSprite("gradient", "res/background/gradient.png", Vec2D(3840, 2400));
 	screen->loadSprite("space", "res/background/space.png", Vec2D(4096));
 	screen->loadSprite("stars", "res/background/stars.png", Vec2D(4096));
+	screen->loadSprite("full", "res/background/full.png", Vec2D(3840, 2400));
+	screen->loadSprite("full blur", "res/background/full_blur.png", Vec2D(3840, 2400));
+
 	key = "enemy";
 	for (int i = 1; i <= 50; i++)
 		screen->loadSprite(key + std::to_string(i), "res/enemy/" + key + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
@@ -157,7 +159,8 @@ void Game::loadMedia()
 	screen->loadSprite("reticle", "res/object/reticle.png", Vec2D(256));
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
 	screen->loadSprite("bullet", "res/object/bullet.png", Vec2D(21, 28));
-	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 23, 26}); // main font
+	screen->loadSprite("game src", "res/object/game_src.png", Vec2D(148));
+	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 26, 72}); // main font
 
 	sound->loadSoundEffect("rclick", "res/sound/rclick.wav");
 	sound->loadSoundEffect("lclick", "res/sound/lclick.wav");
@@ -178,13 +181,15 @@ void Game::loadMedia()
 	sound->loadSoundEffect("plasma", "res/sound/plasma.wav");
 	sound->loadSoundEffect("spawn", "res/sound/spawn.wav");
 	sound->loadSoundEffect("target", "res/sound/target.wav");
+	sound->loadSoundEffect("health loss", "res/sound/breaking.wav");
 	sound->loadMusic("endure", "res/music/endure.ogg");
 	sound->loadMusic("orientation", "res/music/orientation.ogg");
 
+	ui = new UI();
 	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(43, 60));
 	player->shield.time = 7000;		  // 7s
 	player->shield_state.time = 2000; // 2s
-	sound->playMusic("endure");
+									  // sound->playMusic("endure");
 }
 
 void Game::quitSDL2()
@@ -211,6 +216,12 @@ void Game::quitMedia()
 		delete enemies[i];
 		enemies[i] = nullptr;
 	}
+
+	data.open("res/game_data/high_scores.txt", std::ios::trunc | std::ios::out);
+	for (auto &&hs : high_scores)
+		data << hs.second << ' ' << hs.first << '\n';
+	data.close();
+
 	delete player;
 	player = nullptr;
 	delete ui;

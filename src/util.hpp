@@ -102,6 +102,8 @@ struct Color
 	static SDL_Color yellow(Uint8 alpha) { return {255, 255, 0, alpha}; }
 	static SDL_Color light_orange(Uint8 alpha) { return {252, 156, 89, alpha}; }
 	static SDL_Color cyan(Uint8 alpha) { return {0, 255, 255, alpha}; }
+	static SDL_Color ice_blue(Uint8 alpha) { return {234, 237, 240, alpha}; }
+	static SDL_Color blue_gray(Uint8 alpha) { return {129, 146, 168, alpha}; }
 };
 
 // my functions for rectangles
@@ -109,6 +111,8 @@ struct Rect
 {
 	static SDL_FRect square(float size) { return {0, 0, size, size}; }
 	static bool isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos, const Vec2D &v2size);
+	static Uint32 get_pixel(SDL_Surface *, const int &, const int &);
+	static bool isPixelCollide(SDL_Texture *, SDL_Rect, SDL_Texture *, SDL_Rect);
 	static Vec2D getCenter(const Vec2D &pos, const Vec2D &size);
 	static SDL_FRect reScale(const Vec2D &pos, const Vec2D &size, float scale);
 };

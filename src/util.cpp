@@ -100,6 +100,54 @@ bool Rect::isCollide(const Vec2D &v1pos, const Vec2D &v1size, const Vec2D &v2pos
 	return c_x <= 0 && c_y <= 0;
 }
 
+Uint32 Rect::get_pixel(SDL_Surface *surface, const int &x, const int &y)
+{
+	Uint32 *pixels = (Uint32 *)surface->pixels;
+	return pixels[(y * surface->w) + x];
+}
+
+bool Rect::isPixelCollide(SDL_Texture *texture1, SDL_Rect rect1, SDL_Texture *texture2, SDL_Rect rect2)
+{
+	if (!SDL_HasIntersection(&rect1, &rect2))
+		return false;
+
+	SDL_Surface *surface1 = SDL_CreateRGBSurfaceWithFormat(0, rect1.w, rect1.h, 32, SDL_PIXELFORMAT_RGBA32);
+	SDL_Surface *surface2 = SDL_CreateRGBSurfaceWithFormat(0, rect2.w, rect2.h, 32, SDL_PIXELFORMAT_RGBA32);
+
+	SDL_RenderReadPixels(Game::renderer, &rect1, SDL_PIXELFORMAT_RGBA32, surface1->pixels, surface1->pitch);
+	SDL_RenderReadPixels(Game::renderer, &rect2, SDL_PIXELFORMAT_RGBA32, surface2->pixels, surface2->pitch);
+
+	SDL_Rect intersection;
+	SDL_IntersectRect(&rect1, &rect2, &intersection);
+
+	for (int y = intersection.y; y < intersection.y + intersection.h; y++)
+	{
+		for (int x = intersection.x; x < intersection.x + intersection.w; x++)
+		{
+			Uint32 pixel1 = get_pixel(surface1, x - rect1.x, y - rect1.y);
+			Uint32 pixel2 = get_pixel(surface2, x - rect2.x, y - rect2.y);
+
+			Uint8 r, g, b, a;
+			SDL_GetRGBA(pixel1, surface1->format, &r, &g, &b, &a);
+			bool pixel1_opaque = a > 0;
+
+			SDL_GetRGBA(pixel2, surface2->format, &r, &g, &b, &a);
+			bool pixel2_opaque = a > 0;
+
+			if (pixel1_opaque && pixel2_opaque)
+			{
+				SDL_FreeSurface(surface1);
+				SDL_FreeSurface(surface2);
+				return true;
+			}
+		}
+	}
+
+	SDL_FreeSurface(surface1);
+	SDL_FreeSurface(surface2);
+	return false;
+}
+
 Vec2D Rect::getCenter(const Vec2D &pos, const Vec2D &size)
 {
 	return pos + size / 2;

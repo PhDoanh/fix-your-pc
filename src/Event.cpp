@@ -1,24 +1,20 @@
+#include "Game.hpp"
 #include "Sound.hpp"
 #include "Event.hpp"
 #include "Entity.hpp"
+#include "UI.hpp"
 
 void Event::handleKeyboard()
 {
+	handleTextInput();
+	handleLeftAlt();
 	switch (e.type)
 	{
 	case SDL_KEYDOWN:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_LALT:
-			SDL_StopTextInput();
-			player->speed = Vec2D(6);
-			break;
 		case SDLK_RETURN:
-			if (player->num_of_chrs >= 1)
-			{
-				player->addDeadZone();
-				player->num_of_chrs = 0;
-			}
+			handleEnter();
 			break;
 		default:
 			break;
@@ -27,18 +23,9 @@ void Event::handleKeyboard()
 	case SDL_KEYUP:
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_LALT:
-			SDL_StartTextInput();
-			player->speed = Vec2D(0);
-			break;
 		default:
 			break;
 		}
-
-	case SDL_TEXTINPUT:
-		cur_txt_inp += e.text.text;
-		break;
-	case SDL_TEXTEDITING:
 		break;
 	}
 }
@@ -54,7 +41,7 @@ void Event::handleMouse()
 		switch (e.button.button)
 		{
 		case SDL_BUTTON_LEFT:
-			sound->playSoundEffect("lclick", general);
+			handleLeftClick();
 			break;
 		case SDL_BUTTON_RIGHT:
 			sound->playSoundEffect("rclick", general);
@@ -67,5 +54,94 @@ void Event::handleMouse()
 		break;
 	default:
 		break;
+	}
+}
+
+void Event::handleTextInput()
+{
+	if (Game::state == start || Game::state == pause)
+	{
+		if (e.type == SDL_TEXTINPUT || e.type == SDL_KEYDOWN)
+		{
+			if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_BACKSPACE && cur_txt_inp.size() > 0)
+				cur_txt_inp = cur_txt_inp.substr(0, cur_txt_inp.size() - 1);
+			else if (e.type == SDL_TEXTINPUT && e.key.keysym.sym != SDLK_SPACE)
+				cur_txt_inp += e.text.text;
+		}
+	}
+	else if (Game::state == play)
+	{
+		if (e.type == SDL_TEXTINPUT)
+			cur_txt_inp += e.text.text;
+	}
+}
+
+void Event::handleLeftAlt()
+{
+	if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_LALT)
+	{
+		SDL_StopTextInput();
+		player->speed = Vec2D(6);
+	}
+	if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_LALT)
+	{
+		SDL_StartTextInput();
+		player->speed = Vec2D(0);
+	}
+}
+
+void Event::handleEnter()
+{
+	if (Game::state == start)
+	{
+		if (!cur_txt_inp.empty())
+		{
+			while (high_scores.size() >= 7)
+				high_scores.erase(high_scores.begin());
+			high_scores.insert({0, cur_txt_inp});
+			std::vector<std::string> dt = {"Welcome " + cur_txt_inp + " "};
+			ui->setDynamicText(dt);
+			player->id = cur_txt_inp;
+			is_txt_entered = true;
+			cur_txt_inp.clear();
+		}
+	}
+	else if (Game::state == play)
+	{
+		if (player->num_of_chrs >= 1)
+		{
+			player->addDeadZone();
+			player->num_of_chrs = 0;
+		}
+	}
+}
+
+void Event::handleLeftClick()
+{
+	sound->playSoundEffect("lclick", general);
+	if (Game::state == start)
+	{
+		activePassBox();
+	}
+	else if (Game::state == pause)
+	{
+	}
+}
+
+void Event::activePassBox()
+{
+	Vec2D pass_pos = ui->getPassBoxPos();
+	Vec2D pass_size = ui->getPassBoxSize();
+	if (mouse_pos.between(pass_pos, pass_pos + pass_size))
+	{
+		SDL_StartTextInput();
+		ui->setPassBoxBorderColor(Color::black(255));
+		ui->setPassBoxColor(Color::white(255));
+	}
+	else
+	{
+		SDL_StopTextInput();
+		ui->setPassBoxBorderColor(Color::ice_blue(255));
+		ui->setPassBoxColor(Color::ice_blue(255));
 	}
 }

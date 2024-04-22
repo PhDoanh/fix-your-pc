@@ -13,11 +13,20 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+enum game_states
+{
+	start,
+	play,
+	pause,
+	over
+};
+
 class Game
 {
 public:
 	std::string title;
 	static float fps;
+	static int state;
 	static int win_w;
 	static int win_h;
 	static bool running;

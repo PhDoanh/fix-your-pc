@@ -56,7 +56,7 @@ public:
 	std::vector<Entity *> bullets;
 	std::vector<Entity *> dead_zones;
 
-	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(mini), const Vec2D &speed = Vec2D(0), const int &health = 5);
+	Player(const std::string &, const Vec2D &, const Vec2D &size = Vec2D(mini), const Vec2D &speed = Vec2D(0), const int &health = 2);
 	~Player();
 
 	void move();

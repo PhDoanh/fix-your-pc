@@ -60,8 +60,8 @@ void Player::move()
 	if (event->state[SDL_SCANCODE_W] && event->state[SDL_SCANCODE_S])
 		goal_vel.y = 0;
 
-	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 25);
-	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 25);
+	vel.x = lerp(goal_vel.x, vel.x, Game::deltaTime * 20);
+	vel.y = lerp(goal_vel.y, vel.y, Game::deltaTime * 20);
 
 	Vec2D dpos;
 	dpos += vel;
@@ -106,7 +106,6 @@ void Player::attackNearestEnemy()
 	}
 	else // valid index -> attack nearest enemy
 	{
-		log(std::to_string(num_of_chrs) + "\n");
 		Enemy *enemy = enemies[index];
 		Vec2D dpos = enemy->center_pos - center_pos;
 		goal_angle = (std::atan2(dpos.y, dpos.x) * 180 / PI) + 90;
@@ -130,11 +129,6 @@ void Player::attackNearestEnemy()
 		moveCircleOn(enemy);
 		moveBulletTo(enemy);
 	}
-	// if (num_of_chrs >= 1 && event->e.type == SDL_KEYDOWN && event->e.key.keysym.sym == SDLK_0)
-	// {
-	// 	log("new dead zone!\n");
-
-	// }
 	releaseDeadZone();
 }
 
@@ -142,7 +136,7 @@ void Player::makeCircleOn(Enemy *enemy)
 {
 	sound->playSoundEffect("target", general);
 	Vec2D circle_size = sprites["reticle"]->real_size * 3;
-	Vec2D circle_pos = enemy->pos + (enemy->size - circle_size) / 2.0;
+	Vec2D circle_pos = enemy->pos - (circle_size - enemy->size) / 2.0;
 	Vec2D circle_speed = Vec2D(100);
 	Entity *circle = new Entity(circle_pos, circle_size, circle_speed);
 	circle->goal_angle = 0;
@@ -162,7 +156,7 @@ void Player::moveCircleOn(Enemy *enemy)
 		}
 		else
 		{
-			circles[i]->pos = enemy->pos + (enemy->size - circles[i]->size) / 2.0;
+			circles[i]->pos = enemy->pos - (circles[i]->size - enemy->size) / 2.0;
 
 			circles[i]->vel.x = lerp(circles[i]->speed.x, circles[i]->vel.x, Game::deltaTime * 100);
 			circles[i]->vel.y = lerp(circles[i]->speed.y, circles[i]->vel.y, Game::deltaTime * 100);
@@ -179,8 +173,9 @@ void Player::shootBullet()
 	sound->playSoundEffect("plasma", player_channel);
 	Vec2D bullet_size = sprites["bullet"]->real_size;
 	Vec2D buillet_pos = pos + (size - bullet_size) / 2.0;
-	Vec2D bullet_speed = speed + Vec2D(6);
-	bullets.push_back(new Entity(buillet_pos, bullet_size, bullet_speed));
+	Vec2D bullet_speed = Vec2D(20);
+	Entity *bullet = new Entity(buillet_pos, bullet_size, bullet_speed);
+	bullets.push_back(bullet);
 }
 
 void Player::moveBulletTo(Enemy *enemy)
@@ -197,8 +192,8 @@ void Player::moveBulletTo(Enemy *enemy)
 		if (bullets[i]->pos.y < enemy->pos.y) // down
 			bullets[i]->goal_vel.y = bullets[i]->speed.y;
 
-		bullets[i]->vel.x = lerp(bullets[i]->goal_vel.x, bullets[i]->vel.x, Game::deltaTime * 20);
-		bullets[i]->vel.y = lerp(bullets[i]->goal_vel.y, bullets[i]->vel.y, Game::deltaTime * 20);
+		bullets[i]->vel.x = lerp(bullets[i]->goal_vel.x, bullets[i]->vel.x, Game::deltaTime * 30);
+		bullets[i]->vel.y = lerp(bullets[i]->goal_vel.y, bullets[i]->vel.y, Game::deltaTime * 30);
 
 		Vec2D dpos;
 		dpos = enemy->pos - bullets[i]->pos;
@@ -270,23 +265,23 @@ void Player::updateRotation()
 
 void Player::updateScore()
 {
-	// cur_frame = cur_layer = 0;
+	score += num_of_chrs;
 }
 
 void Player::takeDamage()
 {
 	if (health == 0) // game over
 	{
-		sound->playSoundEffect("explosion player", player_channel);
-		log("player died!\n");
-		exit(0);
+		sound->stopMusic();
+		sound->playSoundEffect("critical stop", general);
+		Game::state = over;
 	}
 	else
 	{
 		Uint64 cur_time = SDL_GetTicks64();
 		if (cur_time - shield.last_time >= shield.time)
 		{
-			log("health --\n");
+			sound->playSoundEffect("health loss", player_channel);
 			cur_layer = 0;
 			health--;
 			cur_frame = (cur_frame == max_frame) ? cur_frame : cur_frame + 1;
@@ -379,8 +374,8 @@ void Enemy::takeDamage(const int &i)
 			break;
 		}
 		enemies.erase(enemies.begin() + player->index);
-		event->cur_txt_inp.clear();
 		player->index = -1;
+		event->cur_txt_inp.clear();
 	}
 	else
 	{
@@ -399,8 +394,16 @@ void Enemy::takeDamage(const int &i)
 			}
 		}
 		for (int i = 0; i < player->dead_zones.size(); i++)
-			if (Rect::isCollide(pos, size, player->dead_zones[i]->pos, player->dead_zones[i]->size))
+		{
+			SDL_Rect rect1 = {
+				int(player->dead_zones[i]->pos.x),
+				int(player->dead_zones[i]->pos.y),
+				int(player->dead_zones[i]->size.x),
+				int(player->dead_zones[i]->size.y)};
+			SDL_Rect rect2 = {int(pos.x), int(pos.y), int(size.x), int(size.y)};
+			if (Rect::isPixelCollide(sprites["emp"]->texture, rect1, sprites[id]->texture, rect2))
 				health = 0;
+		}
 	}
 }
 
