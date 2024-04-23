@@ -41,7 +41,7 @@ void Screen::loadSprite(const std::string &name, const std::string &path, Vec2D 
 	SDL_FreeSurface(surface);
 }
 
-void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, const float &scale, const int &cur_frame, const int &cur_layer, const double &angle, const SDL_FPoint *center, const bool &flip)
+void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, const float &scale, const int &align, const int &cur_frame, const int &cur_layer, const double &angle, const SDL_FPoint *center_pos, const bool &flip)
 {
 	int x = (cur_frame % sprite.max_frame) * sprite.real_size.x;
 	int y = (cur_layer % sprite.max_layer) * sprite.real_size.y;
@@ -49,7 +49,49 @@ void Screen::drawSprite(Sprite &sprite, const Vec2D &pos, const Vec2D &size, con
 	int h = sprite.real_size.y;
 	SDL_Rect src_rect = {x, y, w, h};
 	SDL_FRect dst_rect = Rect::reScale(pos, size, scale);
-	SDL_RenderCopyExF(Game::renderer, sprite.texture, &src_rect, &dst_rect, angle, center, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
+	switch (align)
+	{
+	case top_left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y;
+		break;
+	case top_mid:
+		dst_rect.x = pos.x - float(dst_rect.w / 2.0);
+		dst_rect.y = pos.y;
+		break;
+	case top_right:
+		dst_rect.x = pos.x - float(dst_rect.w);
+		dst_rect.y = pos.y;
+		break;
+	case left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y - float(dst_rect.h / 2.0);
+		break;
+	case center:
+		dst_rect.x = pos.x - float(dst_rect.w / 2.0);
+		dst_rect.y = pos.y - float(dst_rect.h / 2.0);
+		break;
+	case right:
+		dst_rect.x = pos.x - float(dst_rect.w);
+		dst_rect.y = pos.y - float(dst_rect.h / 2.0);
+		break;
+	case bottom_left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y - float(dst_rect.h);
+		break;
+	case bottom_mid:
+		dst_rect.x = pos.x - float(dst_rect.w / 2.0);
+		dst_rect.y = pos.y - float(dst_rect.h);
+		break;
+	case bottom_right:
+		dst_rect.x = pos.x - float(dst_rect.w);
+		dst_rect.y = pos.y - float(dst_rect.h);
+		break;
+	default:
+		error("invalid align\n");
+		break;
+	}
+	SDL_RenderCopyExF(Game::renderer, sprite.texture, &src_rect, &dst_rect, angle, center_pos, (flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
 }
 
 void Screen::deleteSprites()
@@ -86,7 +128,7 @@ void Screen::loadFont(const std::string &name, const std::string &path, const st
 	info("done.\n");
 }
 
-Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const bool &center_pos, const int &font_size, const std::string &font_name, const bool &shaded_mode, const SDL_Color &txt_color, const SDL_Color &bg_color)
+Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const int &align, const int &font_size, const std::string &font_name, const bool &shaded_mode, const SDL_Color &txt_color, const SDL_Color &bg_color)
 {
 	if (texts.find(txt) == texts.end())
 		texts[txt] = new Text();
@@ -104,10 +146,50 @@ Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const bool &cen
 	int w_txt_box, h_txt_box;
 	SDL_QueryTexture(texts[txt]->texture, nullptr, nullptr, &w_txt_box, &h_txt_box);
 	SDL_FRect dst_rect;
-	if (center_pos)
-		dst_rect = {pos.x - float(w_txt_box / 2.0), pos.y - float(h_txt_box / 2.0), float(w_txt_box), float(h_txt_box)};
-	else
-		dst_rect = {pos.x, pos.y, float(w_txt_box), float(h_txt_box)};
+	switch (align)
+	{
+	case top_left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y;
+		break;
+	case top_mid:
+		dst_rect.x = pos.x - float(w_txt_box / 2.0);
+		dst_rect.y = pos.y;
+		break;
+	case top_right:
+		dst_rect.x = pos.x - float(w_txt_box);
+		dst_rect.y = pos.y;
+		break;
+	case left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y - float(h_txt_box / 2.0);
+		break;
+	case center:
+		dst_rect.x = pos.x - float(w_txt_box / 2.0);
+		dst_rect.y = pos.y - float(h_txt_box / 2.0);
+		break;
+	case right:
+		dst_rect.x = pos.x - float(w_txt_box);
+		dst_rect.y = pos.y - float(h_txt_box / 2.0);
+		break;
+	case bottom_left:
+		dst_rect.x = pos.x;
+		dst_rect.y = pos.y - float(h_txt_box);
+		break;
+	case bottom_mid:
+		dst_rect.x = pos.x - float(w_txt_box / 2.0);
+		dst_rect.y = pos.y - float(h_txt_box);
+		break;
+	case bottom_right:
+		dst_rect.x = pos.x - float(w_txt_box);
+		dst_rect.y = pos.y - float(h_txt_box);
+		break;
+	default:
+		error("invalid align\n");
+		break;
+	}
+	dst_rect.w = float(w_txt_box);
+	dst_rect.h = float(h_txt_box);
 	SDL_RenderCopyF(Game::renderer, texts[txt]->texture, nullptr, &dst_rect);
 	return Vec2D(w_txt_box, h_txt_box);
 }
@@ -142,14 +224,17 @@ void Screen::update()
 {
 	switch (Game::state)
 	{
+	case ready:
+		ui->updateGameReady();
+		break;
 	case start:
-		ui->updateMenu();
+		ui->updateGameStart();
 		break;
 	case play:
 		ui->updateGamePlay();
 		break;
 	case pause:
-		ui->updateSetting();
+		ui->updateGamePause();
 		break;
 	case over:
 		ui->updateGameOver();
@@ -163,14 +248,17 @@ void Screen::draw()
 {
 	switch (Game::state)
 	{
+	case ready:
+		ui->drawGameReady();
+		break;
 	case start:
-		ui->drawMenu();
+		ui->drawGameStart();
 		break;
 	case play:
 		ui->drawGamePlay();
 		break;
 	case pause:
-		ui->drawSetting();
+		ui->drawGamePause();
 		break;
 	case over:
 		ui->drawGameOver();

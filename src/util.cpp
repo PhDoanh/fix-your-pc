@@ -12,6 +12,13 @@ void drawLine(const Vec2D &pos1, const Vec2D &pos2, const SDL_Color &color)
 	SDL_RenderDrawLineF(Game::renderer, pos1.x, pos1.y, pos2.x, pos2.y);
 }
 
+void drawRect(const Vec2D &pos, const Vec2D &size, const SDL_Color &color)
+{
+	SDL_SetRenderDrawColor(Game::renderer, color.r, color.g, color.b, color.a);
+	SDL_FRect rect = {pos.x, pos.y, size.x, size.y};
+	SDL_RenderDrawRectF(Game::renderer, &rect);
+}
+
 float Vec2D::distance(const Vec2D &v)
 {
 	float dx = v.x - x, dy = v.y - y;

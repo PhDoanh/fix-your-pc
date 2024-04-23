@@ -15,6 +15,7 @@
 
 enum game_states
 {
+	ready,
 	start,
 	play,
 	pause,
@@ -27,6 +28,7 @@ public:
 	std::string title;
 	static float fps;
 	static int state;
+	static int prev_state;
 	static int win_w;
 	static int win_h;
 	static bool running;

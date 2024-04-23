@@ -19,7 +19,8 @@ std::queue<std::queue<std::string>> lvs;
 const Uint64 Enemy::spawn_time = 3000; // 3s
 Uint64 Enemy::last_spawn_time = SDL_GetTicks64();
 float Game::fps = 60.0;
-int Game::state = start;
+int Game::state = ready;
+int Game::prev_state = pause;
 int Game::win_w;
 int Game::win_h;
 bool Game::running = true;
@@ -138,6 +139,8 @@ void Game::loadMedia()
 		high_scores.insert({value, key});
 	}
 	data.close();
+	while (high_scores.size() >= 5)
+		high_scores.erase(high_scores.begin());
 
 	// Load UI, UX
 	// screen->loadSprite("crash", "res/background/crash.png", Vec2D(5120, 2880));
@@ -160,7 +163,7 @@ void Game::loadMedia()
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
 	screen->loadSprite("bullet", "res/object/bullet.png", Vec2D(21, 28));
 	screen->loadSprite("game src", "res/object/game_src.png", Vec2D(148));
-	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 26, 72}); // main font
+	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 36, 48}); // main font
 
 	sound->loadSoundEffect("rclick", "res/sound/rclick.wav");
 	sound->loadSoundEffect("lclick", "res/sound/lclick.wav");

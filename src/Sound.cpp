@@ -17,15 +17,15 @@ void Sound::loadSoundEffect(const std::string &name, const std::string &path)
 	info(path + " - done.\n");
 }
 
-void Sound::playSoundEffect(const std::string &name, int chanel, int loop)
+void Sound::playSoundEffect(const std::string &name, int chanel, int ms, int loop)
 {
 	stopSoundEffect(chanel);
-	Mix_FadeInChannel(chanel, sounds[name], loop, 5);
+	Mix_FadeInChannel(chanel, sounds[name], loop, ms);
 }
 
-void Sound::stopSoundEffect(int chanel)
+void Sound::stopSoundEffect(int chanel, int ms)
 {
-	Mix_FadeOutChannel(chanel, 5);
+	Mix_FadeOutChannel(chanel, ms);
 }
 
 void Sound::loadMusic(const std::string &name, const std::string &path)

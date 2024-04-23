@@ -32,6 +32,7 @@ public:
 	void handleLeftClick();
 
 	bool isTextInputEmpty() { return cur_txt_inp.empty(); }
+	bool isHoverOn(const Vec2D &pos, const Vec2D &size);
 	void activePassBox();
 };
 

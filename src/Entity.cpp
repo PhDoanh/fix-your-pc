@@ -7,6 +7,13 @@
 int Enemy::count = 0;
 
 // Entity
+Entity::Entity(const std::string &id, const Vec2D &pos, const Vec2D &size)
+{
+	this->id = id;
+	this->pos = pos;
+	this->size = size;
+}
+
 Entity::Entity(const Vec2D &pos, const Vec2D &size, const Vec2D &speed)
 {
 	this->pos = pos;

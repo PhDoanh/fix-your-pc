@@ -21,8 +21,8 @@ public:
 	~Sound() { info("Sound destructor called.\n"); }
 
 	void loadSoundEffect(const std::string &, const std::string &);
-	void playSoundEffect(const std::string &name, int chanel, int loop = 0);
-	void stopSoundEffect(int);
+	void playSoundEffect(const std::string &name, int chanel, int ms = 5, int loop = 0);
+	void stopSoundEffect(int, int ms = 5);
 
 	void loadMusic(const std::string &, const std::string &);
 	void playMusic(const std::string &name, int loop = -1);

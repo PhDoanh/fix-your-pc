@@ -18,7 +18,8 @@ inline void error(const std::string &msg)
 	std::cerr << "error| " << msg;
 	exit(1);
 }
-void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &);
+void drawLine(const Vec2D &, const Vec2D &, const SDL_Color &color = {255, 255, 255, 255});
+void drawRect(const Vec2D &, const Vec2D &, const SDL_Color &color = {255, 255, 255, 255});
 
 // interpolation
 inline float lerp(float goal, float cur, float dt)

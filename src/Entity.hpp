@@ -36,7 +36,8 @@ public:
 	double goal_angle;
 	double delta_angle;
 
-	Entity(const Vec2D &, const Vec2D &, const Vec2D &);								   // objects
+	Entity(const std::string &, const Vec2D &pos = Vec2D(), const Vec2D &size = Vec2D());  // static objects
+	Entity(const Vec2D &, const Vec2D &, const Vec2D &);								   // dynamic objects
 	Entity(const std::string &, const Vec2D &, const Vec2D &, const Vec2D &, const int &); // characters
 	~Entity();
 };

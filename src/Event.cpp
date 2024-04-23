@@ -16,6 +16,10 @@ void Event::handleKeyboard()
 		case SDLK_RETURN:
 			handleEnter();
 			break;
+		case SDLK_ESCAPE:
+			ui->saveCurScreen();
+			std::swap(Game::state, Game::prev_state);
+			break;
 		default:
 			break;
 		}
@@ -59,7 +63,7 @@ void Event::handleMouse()
 
 void Event::handleTextInput()
 {
-	if (Game::state == start || Game::state == pause)
+	if (Game::state == ready || Game::state == pause)
 	{
 		if (e.type == SDL_TEXTINPUT || e.type == SDL_KEYDOWN)
 		{
@@ -92,12 +96,10 @@ void Event::handleLeftAlt()
 
 void Event::handleEnter()
 {
-	if (Game::state == start)
+	if (Game::state == ready)
 	{
 		if (!cur_txt_inp.empty())
 		{
-			while (high_scores.size() >= 7)
-				high_scores.erase(high_scores.begin());
 			high_scores.insert({0, cur_txt_inp});
 			std::vector<std::string> dt = {"Welcome " + cur_txt_inp + " "};
 			ui->setDynamicText(dt);
@@ -119,13 +121,20 @@ void Event::handleEnter()
 void Event::handleLeftClick()
 {
 	sound->playSoundEffect("lclick", general);
-	if (Game::state == start)
+	if (Game::state == ready)
 	{
 		activePassBox();
 	}
 	else if (Game::state == pause)
 	{
 	}
+}
+
+bool Event::isHoverOn(const Vec2D &pos, const Vec2D &size)
+{
+	if (mouse_pos.between(pos, pos + size))
+		return true;
+	return false;
 }
 
 void Event::activePassBox()
