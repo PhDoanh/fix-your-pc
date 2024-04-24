@@ -11,7 +11,7 @@ enum sound_chanels
 {
 	general,
 	player_channel,
-	enemy_channel,
+	enemy_channel
 };
 
 class Sound

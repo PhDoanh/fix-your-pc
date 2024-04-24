@@ -1,21 +1,25 @@
 #include <map>
 #include <vector>
+#include <fstream>
 #include <string>
+#include <numeric>
 #include "../inc/SDL.h"
 #include "util.hpp"
 
 #ifndef UI_HPP
 #define UI_HPP
 
-struct UIElement // using both text and img
+struct TextElement // using both text and img
 {
+	std::string text;
+	int font_size;
 	int align;
 	Vec2D pos;
 	Vec2D size;
-	int font_size;
+	Vec2D real_pos;
 	SDL_Color color;
-	UIElement(int align, int font_size = 0, SDL_Color color = Color::white(255), Vec2D pos = Vec2D(), Vec2D size = Vec2D())
-		: pos(pos), size(size), align(align), font_size(font_size), color(color) {}
+	TextElement(std::string text, int font_size, int align, Vec2D pos = Vec2D(), Vec2D size = Vec2D(), SDL_Color color = Color::white(255))
+		: text(text), font_size(font_size), align(align), pos(pos), size(size), color(color) {}
 };
 
 class UI
@@ -37,7 +41,6 @@ private:
 	SDL_FRect outer_pass_box, inner_pass_box;
 
 	// game start
-	Vec2D map_size;
 	std::vector<std::vector<int>> tilemap;
 
 	// game pause
@@ -46,14 +49,18 @@ private:
 	SDL_Texture *saved_screen;
 	Vec2D layout_pos, layout_size;
 	Vec2D margin, num_of_cells, cell_size;
-	std::map<std::string, UIElement *> elements;
 
 	// game over
 	int count_down_time;
 
 public:
+	std::map<std::string, TextElement *> options;
+
 	UI();  // constructor
 	~UI(); // destructor
+
+	void loadElements();
+	void deleteElements();
 
 	Vec2D getPassBoxPos() const;
 	Vec2D getPassBoxSize() const;
@@ -62,6 +69,7 @@ public:
 	void setPassBoxBorderColor(const SDL_Color &color = Color::ice_blue(255));
 	void setPassBoxColor(const SDL_Color &color = Color::ice_blue(255));
 	void setDynamicText(const std::vector<std::string> &);
+	void setShutdownTime(const int &);
 
 	void updateGameReady();
 	void drawGameReady();
@@ -82,6 +90,7 @@ public:
 	void updatePlayer();
 	void drawPlayer();
 	void saveCurScreen();
+	void drawHighScores();
 };
 
 extern UI *ui;

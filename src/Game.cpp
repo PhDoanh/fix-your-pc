@@ -107,40 +107,6 @@ void Game::loadMedia()
 	sound = new Sound();
 	event = new Event();
 	level = new Level();
-	std::string key, sentence, word;
-	int value;
-
-	// load levels
-	data.open("res/game_data/levels.txt");
-	while (getline(data, sentence, '.'))
-	{
-		std::queue<std::string> lv;
-		std::stringstream ss(sentence);
-		while (ss >> word)
-			lv.push(word);
-		lvs.push(lv);
-	}
-	data.close();
-
-	// load settings
-	data.open("res/game_data/settings.txt");
-	while (!data.eof())
-	{
-		data >> key >> value;
-		settings[key] = value;
-	}
-	data.close();
-
-	// load high scores
-	data.open("res/game_data/high_scores.txt");
-	while (!data.eof())
-	{
-		data >> key >> value;
-		high_scores.insert({value, key});
-	}
-	data.close();
-	while (high_scores.size() >= 5)
-		high_scores.erase(high_scores.begin());
 
 	// Load UI, UX
 	// screen->loadSprite("crash", "res/background/crash.png", Vec2D(5120, 2880));
@@ -149,10 +115,8 @@ void Game::loadMedia()
 	screen->loadSprite("stars", "res/background/stars.png", Vec2D(4096));
 	screen->loadSprite("full", "res/background/full.png", Vec2D(3840, 2400));
 	screen->loadSprite("full blur", "res/background/full_blur.png", Vec2D(3840, 2400));
-
-	key = "enemy";
 	for (int i = 1; i <= 50; i++)
-		screen->loadSprite(key + std::to_string(i), "res/enemy/" + key + " (" + std::to_string(i) + ").png", Vec2D(256, 256));
+		screen->loadSprite("enemy" + std::to_string(i), "res/enemy/enemy (" + std::to_string(i) + ").png", Vec2D(256, 256));
 	screen->loadSprite("arrow", "res/player/arrow.png", Vec2D(65, 91), 5, 5);
 	screen->loadSprite("beam", "res/player/beam.png", Vec2D(64, 44));
 	screen->loadSprite("link", "res/player/link.png", Vec2D(64));
@@ -163,16 +127,16 @@ void Game::loadMedia()
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
 	screen->loadSprite("bullet", "res/object/bullet.png", Vec2D(21, 28));
 	screen->loadSprite("game src", "res/object/game_src.png", Vec2D(148));
-	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 36, 48}); // main font
+	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 36, 48, 60}); // main font
 
 	sound->loadSoundEffect("rclick", "res/sound/rclick.wav");
 	sound->loadSoundEffect("lclick", "res/sound/lclick.wav");
 	sound->loadSoundEffect("error", "res/sound/Windows Error.wav");
-	sound->loadSoundEffect("unlock", "res/sound/Windows Unlock.wav");
+	sound->loadSoundEffect("startup", "res/sound/Windows Startup.wav");
 	sound->loadSoundEffect("critical stop", "res/sound/Windows Critical Stop.wav");
 	sound->loadSoundEffect("shutdown", "res/sound/Windows Shutdown.wav");
 	sound->loadSoundEffect("notify", "res/sound/Windows Notify System Generic.wav");
-	sound->loadSoundEffect("new level", "res/sound/Windows Balloon.wav");
+	sound->loadSoundEffect("balloon", "res/sound/Windows Balloon.wav");
 	sound->loadSoundEffect("cancel", "res/sound/cancel.wav");
 	sound->loadSoundEffect("typing", "res/sound/click.wav");
 	sound->loadSoundEffect("emp", "res/sound/emp.wav");
@@ -185,14 +149,14 @@ void Game::loadMedia()
 	sound->loadSoundEffect("spawn", "res/sound/spawn.wav");
 	sound->loadSoundEffect("target", "res/sound/target.wav");
 	sound->loadSoundEffect("health loss", "res/sound/breaking.wav");
+	sound->loadSoundEffect("locked", "res/sound/locked.wav");
+	sound->loadSoundEffect("unlocked", "res/sound/unlocked.wav");
 	sound->loadMusic("endure", "res/music/endure.ogg");
 	sound->loadMusic("orientation", "res/music/orientation.ogg");
+	sound->playSoundEffect("startup", general);
 
 	ui = new UI();
-	player = new Player("player", Vec2D(win_w / 2.0, win_h / 2.0), Vec2D(43, 60));
-	player->shield.time = 7000;		  // 7s
-	player->shield_state.time = 2000; // 2s
-									  // sound->playMusic("endure");
+	ui->loadElements();
 }
 
 void Game::quitSDL2()
@@ -208,25 +172,13 @@ void Game::quitSDL2()
 
 void Game::quitMedia()
 {
-	sound->deleteSoundEffects();
+	ui->deleteElements();
 	sound->deleteMusics();
+	sound->deleteSoundEffects();
 	screen->deleteTexts();
 	screen->deleteFonts();
 	screen->deleteSprites();
 
-	for (int i = 0; i < enemies.size(); i++)
-	{
-		delete enemies[i];
-		enemies[i] = nullptr;
-	}
-
-	data.open("res/game_data/high_scores.txt", std::ios::trunc | std::ios::out);
-	for (auto &&hs : high_scores)
-		data << hs.second << ' ' << hs.first << '\n';
-	data.close();
-
-	delete player;
-	player = nullptr;
 	delete ui;
 	ui = nullptr;
 	delete level;

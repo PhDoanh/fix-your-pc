@@ -17,6 +17,8 @@ void Event::handleKeyboard()
 			handleEnter();
 			break;
 		case SDLK_ESCAPE:
+			if (Game::state != pause)
+				sound->playSoundEffect("balloon", general);
 			ui->saveCurScreen();
 			std::swap(Game::state, Game::prev_state);
 			break;
@@ -48,7 +50,7 @@ void Event::handleMouse()
 			handleLeftClick();
 			break;
 		case SDL_BUTTON_RIGHT:
-			sound->playSoundEffect("rclick", general);
+			sound->playSoundEffect("rclick", player_channel);
 			break;
 		default:
 			break;
@@ -120,14 +122,11 @@ void Event::handleEnter()
 
 void Event::handleLeftClick()
 {
-	sound->playSoundEffect("lclick", general);
+	sound->playSoundEffect("lclick", player_channel);
 	if (Game::state == ready)
-	{
-		activePassBox();
-	}
+		activatePassBox();
 	else if (Game::state == pause)
-	{
-	}
+		activateOption();
 }
 
 bool Event::isHoverOn(const Vec2D &pos, const Vec2D &size)
@@ -137,11 +136,11 @@ bool Event::isHoverOn(const Vec2D &pos, const Vec2D &size)
 	return false;
 }
 
-void Event::activePassBox()
+void Event::activatePassBox()
 {
 	Vec2D pass_pos = ui->getPassBoxPos();
 	Vec2D pass_size = ui->getPassBoxSize();
-	if (mouse_pos.between(pass_pos, pass_pos + pass_size))
+	if (isHoverOn(pass_pos, pass_size))
 	{
 		SDL_StartTextInput();
 		ui->setPassBoxBorderColor(Color::black(255));
@@ -152,5 +151,107 @@ void Event::activePassBox()
 		SDL_StopTextInput();
 		ui->setPassBoxBorderColor(Color::ice_blue(255));
 		ui->setPassBoxColor(Color::ice_blue(255));
+	}
+}
+
+void Event::activateOption()
+{
+	for (auto &&option : ui->options)
+	{
+		if (isHoverOn(option.second->real_pos, option.second->size))
+		{
+			if (option.first == "3") // music down
+			{
+				int &vol = settings["musicVol"];
+				if (vol - 10 >= 0)
+					vol -= 10;
+				ui->options["4"]->text = std::to_string(vol) + "%";
+				Mix_VolumeMusic(vol * MIX_MAX_VOLUME / 100);
+			}
+			if (option.first == "5") // music up
+			{
+				int &vol = settings["musicVol"];
+				if (vol + 10 <= 100)
+					vol += 10;
+				ui->options["4"]->text = std::to_string(vol) + "%";
+				Mix_VolumeMusic(vol * MIX_MAX_VOLUME / 100);
+			}
+			if (option.first == "7") // sound down
+			{
+				int &vol = settings["soundVol"];
+				if (vol - 10 >= 0)
+					vol -= 10;
+				ui->options["8"]->text = std::to_string(vol) + "%";
+				for (auto &&sound : sounds)
+					Mix_VolumeChunk(sound.second, vol * MIX_MAX_VOLUME / 100);
+			}
+			if (option.first == "9") // sound up
+			{
+				int &vol = settings["soundVol"];
+				if (vol + 10 <= 100)
+					vol += 10;
+				ui->options["8"]->text = std::to_string(vol) + "%";
+				for (auto &&sound : sounds)
+					Mix_VolumeChunk(sound.second, vol * MIX_MAX_VOLUME / 100);
+			}
+			if (option.first == "11") // enable num
+			{
+				if (option.second->text == "[ ]")
+				{
+					settings["enableNum"] = 1;
+					option.second->text = "[x]";
+				}
+				else
+				{
+					settings["enableNum"] = 0;
+					option.second->text = "[ ]";
+				}
+			}
+			if (option.first == "13") // enable case
+			{
+				if (option.second->text == "[ ]")
+				{
+					settings["enableCaseSensitive"] = 1;
+					option.second->text = "[x]";
+				}
+				else
+				{
+					settings["enableCaseSensitive"] = 0;
+					option.second->text = "[ ]";
+				}
+			}
+			if (option.first == "15") // enable punct
+			{
+				if (option.second->text == "[ ]")
+				{
+					settings["enablePunct"] = 1;
+					option.second->text = "[x]";
+				}
+				else
+				{
+					settings["enablePunct"] = 0;
+					option.second->text = "[ ]";
+				}
+			}
+			if (option.first == "16") // custom text
+			{
+			}
+			if (option.first == "17") // resume
+			{
+				std::swap(Game::state, Game::prev_state);
+			}
+			if (option.first == "18") // lock screen
+			{
+				sound->playSoundEffect("locked", general);
+				ui->deleteElements();
+				ui->loadElements();
+			}
+			if (option.first == "19") // shutdown
+			{
+				sound->playSoundEffect("shutdown", general);
+				ui->setShutdownTime(3);
+				Game::state = over;
+			}
+		}
 	}
 }

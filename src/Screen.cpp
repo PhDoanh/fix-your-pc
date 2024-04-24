@@ -128,7 +128,7 @@ void Screen::loadFont(const std::string &name, const std::string &path, const st
 	info("done.\n");
 }
 
-Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const int &align, const int &font_size, const std::string &font_name, const bool &shaded_mode, const SDL_Color &txt_color, const SDL_Color &bg_color)
+SDL_FRect Screen::drawText(const std::string &txt, const Vec2D &pos, const int &align, const int &font_size, const std::string &font_name, const bool &shaded_mode, const SDL_Color &txt_color, const SDL_Color &bg_color)
 {
 	if (texts.find(txt) == texts.end())
 		texts[txt] = new Text();
@@ -191,7 +191,7 @@ Vec2D Screen::drawText(const std::string &txt, const Vec2D &pos, const int &alig
 	dst_rect.w = float(w_txt_box);
 	dst_rect.h = float(h_txt_box);
 	SDL_RenderCopyF(Game::renderer, texts[txt]->texture, nullptr, &dst_rect);
-	return Vec2D(w_txt_box, h_txt_box);
+	return dst_rect;
 }
 
 void Screen::deleteTexts()

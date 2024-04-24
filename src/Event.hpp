@@ -16,11 +16,7 @@ public:
 	bool is_txt_entered;
 	Vec2D mouse_pos;
 
-	Event()
-	{
-		is_txt_entered = false;
-		info("Event constructor called!\n");
-	}
+	Event() { info("Event constructor called!\n"); }
 	~Event() { info("Event destructor called!\n"); }
 
 	void handleKeyboard();
@@ -33,7 +29,8 @@ public:
 
 	bool isTextInputEmpty() { return cur_txt_inp.empty(); }
 	bool isHoverOn(const Vec2D &pos, const Vec2D &size);
-	void activePassBox();
+	void activatePassBox();
+	void activateOption();
 };
 
 extern Event *event;

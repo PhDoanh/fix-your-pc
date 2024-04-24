@@ -54,7 +54,7 @@ public:
 
 	// text
 	void loadFont(const std::string &, const std::string &, const std::initializer_list<int> &);
-	Vec2D drawText(const std::string &, const Vec2D &, const int &align = top_left, const int &font_size = 18, const std::string &font_name = "ui", const bool &shaded_mode = false, const SDL_Color &txt_color = Color::white(255), const SDL_Color &bg_color = Color::black(255));
+	SDL_FRect drawText(const std::string &, const Vec2D &, const int &align = top_left, const int &font_size = 18, const std::string &font_name = "ui", const bool &shaded_mode = false, const SDL_Color &txt_color = Color::white(255), const SDL_Color &bg_color = Color::black(255));
 	void deleteTexts();
 	void deleteFonts();
 
