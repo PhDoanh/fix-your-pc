@@ -29,7 +29,7 @@ UI::UI()
 	this->ava_size = sprites["avatar"]->real_size;
 	this->ava_pos = Vec2D((Game::win_w - ava_size.x) / 2.0, (Game::win_h / 3.0) - (ava_size.y / 2.0));
 
-	// pass word box
+	// password box
 	this->outer_pass_box.w = 0.25 * Game::win_w;
 	this->outer_pass_box.h = 30;
 	this->outer_pass_box.x = (Game::win_w - outer_pass_box.w) / 2.0;
@@ -38,7 +38,6 @@ UI::UI()
 	this->inner_pass_box.h = outer_pass_box.h - 4;
 	this->inner_pass_box.x = outer_pass_box.x + (outer_pass_box.w - inner_pass_box.w) / 2.0;
 	this->inner_pass_box.y = outer_pass_box.y + (outer_pass_box.h - inner_pass_box.h) / 2.0;
-	// this->opb_color = this->ipb_color = Color::ice_blue(255);
 
 	this->saved_screen = nullptr;
 	this->pause_bg = {0.0, 0.0, float(Game::win_w), float(Game::win_h)};
@@ -49,33 +48,34 @@ UI::UI()
 	this->cell_size.y = int(layout_size.y / num_of_cells.y);
 	this->layout_pos.x = margin.x + (layout_size.x - (num_of_cells.x * cell_size.x)) / 2.0;
 	this->layout_pos.y = margin.y + (layout_size.y - (num_of_cells.y * cell_size.y)) / 2.0;
-	// this->order = 1;
 	options["1"] = new TextElement("Settings", 48, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 0.5 * cell_size.y));
 
 	options["2"] = new TextElement("Music:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["3"] = new TextElement("-", 60, left, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 50, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["3"] = new TextElement("-", 60, left, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 50, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 	options["4"] = new TextElement("50%", 36, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["5"] = new TextElement("+", 60, right, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + cell_size.x - 50, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["5"] = new TextElement("+", 60, right, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + cell_size.x - 50, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
+
+	options["21"] = new TextElement("Custom music:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 2.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 
 	options["6"] = new TextElement("Sound:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["7"] = new TextElement("-", 60, left, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 50, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["7"] = new TextElement("-", 60, left, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 50, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 	options["8"] = new TextElement("50%", 36, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["9"] = new TextElement("+", 60, right, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + cell_size.x - 50, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["9"] = new TextElement("+", 60, right, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + cell_size.x - 50, layout_pos.y + 3.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["10"] = new TextElement("Numbers:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["11"] = new TextElement("[x]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["11"] = new TextElement("[x]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["12"] = new TextElement("Case Sensitive:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 5.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["13"] = new TextElement("[ ]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 5.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["13"] = new TextElement("[ ]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 5.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["14"] = new TextElement("Punctuations and Symbols:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 6.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["15"] = new TextElement("[ ]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 6.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["15"] = new TextElement("[ ]", 48, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 6.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["16"] = new TextElement("Custom text:", 36, left, Vec2D(layout_pos.x, layout_pos.y + 7.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 
-	options["17"] = new TextElement("Resume", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["18"] = new TextElement("Lock Screen", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 9.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	options["19"] = new TextElement("Shutdown", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	options["17"] = new TextElement("Resume", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
+	options["18"] = new TextElement("Lock Screen", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 9.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
+	options["19"] = new TextElement("Shutdown", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["20"] = new TextElement("High Scores", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 	// for (auto &&high_score : high_scores)
@@ -84,8 +84,48 @@ UI::UI()
 	// 	options[]=std::to_string(high_score.first), new TextElement(right, 36, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + cell_size.x, layout_pos.y + (order + 1) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 	// 	this->order++;
 	// }
+	over_infos["1"] = new TextElement("High Scores", 36, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	over_infos["2"] = new TextElement("True Typing Stats", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 
-	this->count_down_time = 33; // seconds
+	over_infos["3"] = new TextElement("Longest Streak:", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 5.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	over_infos["4"] = new TextElement("0", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 5.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+
+	over_infos["5"] = new TextElement("Current Streak:", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 6.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	over_infos["6"] = new TextElement("0", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 6.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+
+	over_infos["7"] = new TextElement("Accuracy:", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 7.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	over_infos["8"] = new TextElement("0", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 7.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+
+	over_infos["9"] = new TextElement("Words Per Minute", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+	over_infos["10"] = new TextElement("25", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+
+	// music path box
+	this->outer_music_path_box.w = cell_size.x - 25;
+	this->outer_music_path_box.h = cell_size.y - 25;
+	this->outer_music_path_box.x = layout_pos.x + cell_size.x + 0.5 * (cell_size.x - outer_music_path_box.w);
+	this->outer_music_path_box.y = layout_pos.y + 2 * cell_size.y + 0.5 * (cell_size.y - outer_music_path_box.h);
+	this->inner_music_path_box.w = outer_music_path_box.w - 4;
+	this->inner_music_path_box.h = outer_music_path_box.h - 4;
+	this->inner_music_path_box.x = outer_music_path_box.x + (outer_music_path_box.w - inner_music_path_box.w) / 2.0;
+	this->inner_music_path_box.y = outer_music_path_box.y + (outer_music_path_box.h - inner_music_path_box.h) / 2.0;
+
+	// txt path box
+	this->outer_txt_path_box.w = cell_size.x - 25;
+	this->outer_txt_path_box.h = cell_size.y - 25;
+	this->outer_txt_path_box.x = layout_pos.x + cell_size.x + 0.5 * (cell_size.x - outer_music_path_box.w);
+	this->outer_txt_path_box.y = layout_pos.y + 7 * cell_size.y + 0.5 * (cell_size.y - outer_music_path_box.h);
+	this->inner_txt_path_box.w = outer_txt_path_box.w - 4;
+	this->inner_txt_path_box.h = outer_txt_path_box.h - 4;
+	this->inner_txt_path_box.x = outer_txt_path_box.x + (outer_txt_path_box.w - inner_txt_path_box.w) / 2.0;
+	this->inner_txt_path_box.y = outer_txt_path_box.y + (outer_txt_path_box.h - inner_txt_path_box.h) / 2.0;
+
+	this->count_down_time = 18; // seconds
+	this->play_once = true;
+	this->shutdown = false;
+
+	// default paths
+	this->cur_music_path_txt = "res/music/orientation.ogg";
+	this->cur_txt_path_txt = "res/game_data/test.txt";
 }
 
 UI::~UI()
@@ -96,6 +136,12 @@ UI::~UI()
 	{
 		delete option.second;
 		option.second = nullptr;
+	}
+
+	for (auto &&over_info : over_infos)
+	{
+		delete over_info.second;
+		over_info.second = nullptr;
 	}
 
 	SDL_DestroyTexture(saved_screen);
@@ -113,39 +159,44 @@ void UI::loadElements()
 		"This is 1-health game, so be careful to play ",
 		"Press [Esc] to open setting ",
 		"Now enter your password "};
+	this->pass_box = false;
+	this->music_box = false;
+	this->txt_box = false;
 	this->opb_color = this->ipb_color = Color::ice_blue(255);
-	this->order = 1;
+	this->ompb_color = this->impb_color = Color::ice_blue(255);
+	this->otpb_color = this->itpb_color = Color::ice_blue(255);
+	this->order = 0;
 
-	this->tilemap = {
-		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
-		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-		{1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-	std::vector<int> idxs(50);
-	std::iota(idxs.begin(), idxs.end(), 1);
-	for (int y = 0; y < 9; y++)
-		for (int x = 0; x < 16; x++)
-		{
-			if (this->tilemap[y][x])
-			{
-				this->tilemap[y][x] = idxs[rand() % idxs.size()];
-				idxs.erase(std::find(idxs.begin(), idxs.end(), this->tilemap[y][x]));
-			}
-		}
-	for (int y = 0; y < 9; y++)
-		for (int x = 0; x < 16; x++)
-		{
-			if (this->tilemap[y][x])
-			{
-				Enemy *new_enemy = new Enemy("", "enemy" + std::to_string(this->tilemap[y][x]), Vec2D(x * 96, y * 96), Vec2D(medium), Vec2D(1.5));
-				enemies.emplace_back(new_enemy);
-			}
-		}
+	// this->tilemap = {
+	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+	// 	{1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
+	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+	// 	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+	// 	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+	// 	{1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+	// std::vector<int> idxs(50);
+	// std::iota(idxs.begin(), idxs.end(), 1);
+	// for (int y = 0; y < 9; y++)
+	// 	for (int x = 0; x < 16; x++)
+	// 	{
+	// 		if (this->tilemap[y][x])
+	// 		{
+	// 			this->tilemap[y][x] = idxs[rand() % idxs.size()];
+	// 			idxs.erase(std::find(idxs.begin(), idxs.end(), this->tilemap[y][x]));
+	// 		}
+	// 	}
+	// for (int y = 0; y < 9; y++)
+	// 	for (int x = 0; x < 16; x++)
+	// 	{
+	// 		if (this->tilemap[y][x])
+	// 		{
+	// 			Enemy *new_enemy = new Enemy("", "enemy" + std::to_string(this->tilemap[y][x]), Vec2D(x * 96, y * 96), Vec2D(medium), Vec2D(1.5));
+	// 			enemies.emplace_back(new_enemy);
+	// 		}
+	// 	}
 
 	// load settings
 	Game::data.open("res/game_data/settings.txt");
@@ -157,7 +208,7 @@ void UI::loadElements()
 	Game::data.close();
 
 	// load levels
-	Game::data.open("res/game_data/levels.txt");
+	Game::data.open(cur_txt_path_txt);
 	while (getline(Game::data, sentence, '.'))
 	{
 		std::queue<std::string> lv;
@@ -184,6 +235,16 @@ void UI::loadElements()
 	player = new Player("player", Vec2D(Game::win_w / 2.0, Game::win_h / 2.0), Vec2D(43, 60));
 	player->shield.time = 7000;		  // 7s
 	player->shield_state.time = 2000; // 2s
+
+	sound->loadMusic(cur_music_path_txt, cur_music_path_txt);
+	Mix_VolumeMusic(settings["musicVol"]);
+	for (auto &&sound : sounds)
+		Mix_VolumeChunk(sound.second, settings["soundVol"]);
+	options["4"]->text = std::to_string(settings["musicVol"]) + "%";
+	options["8"]->text = std::to_string(settings["soundVol"]) + "%";
+	options["11"]->text = settings["enableNum"] ? "[x]" : "[ ]";
+	options["13"]->text = settings["enablePunct"] ? "[x]" : "[ ]";
+	options["15"]->text = settings["enableCaseSensitive"] ? "[x]" : "[ ]";
 
 	Game::state = ready;
 	Game::prev_state = pause;
@@ -218,15 +279,29 @@ SDL_Color UI::getPassBoxBorderColor() const { return opb_color; }
 SDL_Color UI::getPassBoxColor() const { return ipb_color; }
 void UI::setPassBoxBorderColor(const SDL_Color &color) { opb_color = color; }
 void UI::setPassBoxColor(const SDL_Color &color) { ipb_color = color; }
-void UI::setDynamicText(const std::vector<std::string> &dt)
-{
-	dynamic_txt.clear();
-	for (int i = 0; i < dt.size(); i++)
-		dynamic_txt.push_back(dt[i]);
-	i = 0;
-	j = 1;
-}
-void UI::setShutdownTime(const int &shutdown_time) { count_down_time = shutdown_time; }
+void UI::turnOnPassBox() { pass_box = true; }
+void UI::turnOffPassBox() { pass_box = false; }
+bool UI::getPassBoxState() const { return pass_box; }
+
+Vec2D UI::getMusicPathBoxPos() const { return Vec2D(outer_music_path_box.x, outer_music_path_box.y); }
+Vec2D UI::getMusicPathBoxSize() const { return Vec2D(outer_music_path_box.w, outer_music_path_box.h); }
+SDL_Color UI::getMusicPathBoxBorderColor() const { return ompb_color; }
+SDL_Color UI::getMusicPathBoxColor() const { return impb_color; }
+void UI::setMusicPathBoxBorderColor(const SDL_Color &color) { ompb_color = color; }
+void UI::setMusicPathBoxColor(const SDL_Color &color) { impb_color = color; }
+void UI::turnOnMusicPathBox() { music_box = true; }
+void UI::turnOffMusicPathBox() { music_box = false; }
+bool UI::getMusicPathBoxState() const { return music_box; }
+
+Vec2D UI::getTextPathBoxPos() const { return Vec2D(outer_txt_path_box.x, outer_txt_path_box.y); }
+Vec2D UI::getTextPathBoxSize() const { return Vec2D(outer_txt_path_box.w, outer_txt_path_box.h); }
+SDL_Color UI::getTextPathBoxBorderColor() const { return otpb_color; }
+SDL_Color UI::getTextPathBoxColor() const { return itpb_color; }
+void UI::setTextPathBoxBorderColor(const SDL_Color &color) { otpb_color = color; }
+void UI::setTextPathBoxColor(const SDL_Color &color) { itpb_color = color; }
+void UI::turnOnTextPathBox() { txt_box = true; }
+void UI::turnOffTextPathBox() { txt_box = false; }
+bool UI::getTextPathBoxState() const { return txt_box; }
 
 void UI::updateGameReady()
 {
@@ -244,20 +319,21 @@ void UI::drawGameReady()
 	SDL_SetRenderDrawColor(Game::renderer, ipb_color.r, ipb_color.g, ipb_color.b, ipb_color.a);
 	SDL_RenderFillRectF(Game::renderer, &inner_pass_box);
 
-	// render dynamic text
 	if (i < dynamic_txt.size())
-		drawDynamicText();
+		drawDynamicText(cur_txt_pos);
 	else if (event->is_txt_entered)
 	{
 		sound->playSoundEffect("unlocked", general);
-		Game::state = start;
+		sound->playSoundEffect("spawn", enemy_channel);
+		sound->playMusic(cur_music_path_txt);
+		Game::state = play;
+		// event->is_txt_entered = false;
 	}
-	screen->drawText(cur_txt, cur_txt_pos, center, 24);
 
 	screen->drawText(
-		(!event->isTextInputEmpty()) ? std::string(event->cur_txt_inp.size(), '*') : "It's ok if type anything.",
+		(pass_box) ? std::string(event->cur_txt_inp.size(), '*') : "It's ok if type anything.",
 		Vec2D(inner_pass_box.x, inner_pass_box.y + inner_pass_box.h / 2.0), left, 18, "ui", false,
-		(!event->isTextInputEmpty()) ? Color::black(255) : Color::blue_gray(255));
+		(pass_box) ? Color::black(255) : Color::blue_gray(255));
 	drawPlayer();
 }
 
@@ -294,48 +370,76 @@ void UI::drawGamePlay()
 void UI::updateGamePause()
 {
 	updateBackground();
-	// for (auto &&option : options)
-	// {
-	// 	if (event->isHoverOn(option.second->real_pos, option.second->size))
-	// 		option.second->color = Color::light_orange(255);
-	// 	else
-	// 		option.second->color = Color::white(255);
-	// }
+	updateStates();
 	updatePlayer();
+	for (auto &&high_score : high_scores)
+		if (high_score.second == player->id)
+		{
+			high_scores.erase(high_score.first);
+			high_scores.insert({(player->score + player->num_of_chrs + player->true_chrs) / 3, player->id});
+			break;
+		}
 }
 
 void UI::drawGamePause()
 {
 	drawBackground();
-	drawRect(layout_pos, layout_size);
 
+	SDL_SetRenderDrawColor(Game::renderer, ompb_color.r, ompb_color.g, ompb_color.b, ompb_color.a);
+	SDL_RenderFillRectF(Game::renderer, &outer_music_path_box);
+	SDL_SetRenderDrawColor(Game::renderer, impb_color.r, impb_color.g, impb_color.b, impb_color.a);
+	SDL_RenderFillRectF(Game::renderer, &inner_music_path_box);
+	SDL_SetRenderDrawColor(Game::renderer, otpb_color.r, otpb_color.g, otpb_color.b, otpb_color.a);
+	SDL_RenderFillRectF(Game::renderer, &outer_txt_path_box);
+	SDL_SetRenderDrawColor(Game::renderer, itpb_color.r, itpb_color.g, itpb_color.b, itpb_color.a);
+	SDL_RenderFillRectF(Game::renderer, &inner_txt_path_box);
+
+	screen->drawText(
+		(music_box) ? event->cur_txt_inp : "Paste your music file path here.",
+		Vec2D(inner_music_path_box.x, inner_music_path_box.y + inner_music_path_box.h / 2.0), left, 18, "ui", false,
+		(music_box) ? Color::black(255) : Color::blue_gray(255));
+	screen->drawText(
+		(txt_box) ? event->cur_txt_inp : "Paste your text file path here.",
+		Vec2D(inner_txt_path_box.x, inner_txt_path_box.y + inner_txt_path_box.h / 2.0), left, 18, "ui", false,
+		(txt_box) ? Color::black(255) : Color::blue_gray(255));
+
+	// drawRect(layout_pos, layout_size);
 	for (auto &&option : options)
 	{
 		SDL_FRect rect = screen->drawText(option.second->text, option.second->pos, option.second->align, option.second->font_size, "ui", false, option.second->color);
 		option.second->real_pos = Vec2D(rect.x, rect.y);
 		option.second->size = Vec2D(rect.w, rect.h);
-		drawRect(option.second->real_pos, option.second->size);
+		// drawRect(option.second->real_pos, option.second->size);
 	}
+	drawHighScores(Vec2D(2, 2));
 
-	drawHighScores();
+	drawLine(Vec2D(layout_pos.x, layout_pos.y + cell_size.y), Vec2D(layout_pos.x + layout_size.x, layout_pos.y + cell_size.y));																								 // top break line
+	drawLine(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + cell_size.y + 0.5 * cell_size.y), Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y - 0.5 * cell_size.y)); // split line
+	drawLine(Vec2D(layout_pos.x + 0.25 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y), Vec2D(layout_pos.x + 0.75 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y));				 // bottom break line
+
 	drawPlayer();
 }
 
 void UI::updateGameOver()
 {
-	if (count_down_time > 0)
+	if (i >= dynamic_txt.size() || shutdown)
 	{
-		Uint64 cur_time = SDL_GetTicks64();
-		if (cur_time - last_trans_time > 1000)
+		if (count_down_time > 0)
 		{
-			count_down_time--;
-			last_trans_time = cur_time;
+			Uint64 cur_time = SDL_GetTicks64();
+			if (cur_time - last_trans_time > 1000)
+			{
+				count_down_time--;
+				last_trans_time = cur_time;
+			}
 		}
-
-		updateBackground();
+		else
+			Game::running = false;
 	}
-	else
-		Game::running = false;
+	updateBackground();
+	over_infos["4"]->text = std::to_string(player->score) + " chars";
+	over_infos["6"]->text = std::to_string(player->num_of_chrs) + " chars";
+	over_infos["8"]->text = std::to_string(player->true_chrs / (player->true_chrs + player->wrong_chrs) * 100) + "%";
 }
 
 void UI::drawGameOver()
@@ -343,33 +447,145 @@ void UI::drawGameOver()
 	if (count_down_time > 3)
 	{
 		drawBackground();
-		drawRect(layout_pos, layout_size);
+		// drawRect(layout_pos, layout_size);
 
-		screen->drawText(":)", Vec2D(), top_left, 48);
+		screen->drawSprite(*sprites["game src"], Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y), Vec2D(148), 1, top_mid);
+		for (auto &&over_info : over_infos)
+		{
+			SDL_FRect rect = screen->drawText(over_info.second->text, over_info.second->pos, over_info.second->align, over_info.second->font_size, "ui", false, over_info.second->color);
+			over_info.second->real_pos = Vec2D(rect.x, rect.y);
+			over_info.second->size = Vec2D(rect.w, rect.h);
+			// drawRect(over_info.second->real_pos, over_info.second->size);
+		}
+		drawHighScores(Vec2D(0, 5));
+		if (i < dynamic_txt.size())
+			drawDynamicText(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+		else
+			screen->drawText("Shutdown in " + std::to_string(count_down_time - 3) + "s", Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), center, 24);
+
+		// draw borders
+		drawLine(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y - 0.5 * cell_size.y)); // split line
+		drawLine(Vec2D(cur_txt_box.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y), Vec2D(cur_txt_box.x + cur_txt_box.w, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y));																   // break line
+		drawLine(Vec2D(layout_pos.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y), Vec2D(layout_pos.x + layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y));
 	}
 	else
 	{
+		if (play_once)
+		{
+			sound->playSoundEffect("shutdown", general);
+			play_once = false;
+		}
 	}
 }
 
-void UI::drawDynamicText(const Uint64 &delay_per_chr, const Uint64 &delay_per_str)
+void UI::saveCurScreen()
 {
-	Uint64 cur_render_time = SDL_GetTicks64();
-	if (cur_render_time - last_render_time >= render_time)
+	SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, Game::win_w, Game::win_h, 32, SDL_PIXELFORMAT_RGBA32);
+	SDL_RenderReadPixels(Game::renderer, nullptr, SDL_PIXELFORMAT_RGBA32, surface->pixels, surface->pitch);
+	saved_screen = SDL_CreateTextureFromSurface(Game::renderer, surface);
+	SDL_FreeSurface(surface);
+}
+
+void UI::setShutdownTime(const int &shutdown_time) { count_down_time = shutdown_time; }
+
+void UI::drawHighScores(const Vec2D &pos)
+{
+	for (auto &&high_score : high_scores)
 	{
-		cur_txt = dynamic_txt[i].substr(0, j - 1);
-		if (cur_txt == dynamic_txt[i].substr(0, dynamic_txt[i].size() - 1))
+		SDL_FRect rect1, rect2;
+		rect1 = screen->drawText(
+			" " + std::to_string(order + 1) + ". " + high_score.second,
+			Vec2D(layout_pos.x + pos.x / num_of_cells.x * layout_size.x, layout_pos.y + (order + pos.y) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y),
+			left, 36, "ui", false, (high_score.second == player->id) ? Color::light_orange(255) : Color::white(255));
+		rect2 = screen->drawText(
+			std::to_string(high_score.first) + " ",
+			Vec2D(layout_pos.x + (pos.x + 1) / num_of_cells.x * layout_size.x + cell_size.x, layout_pos.y + (order + pos.y) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y),
+			right, 36, "ui", false, (high_score.second == player->id) ? Color::light_orange(255) : Color::white(255));
+		// drawRect(Vec2D(rect1.x, rect1.y), Vec2D(rect1.w, rect1.h));
+		// drawRect(Vec2D(rect2.x, rect2.y), Vec2D(rect2.w, rect2.h));
+		order++;
+	}
+	order = 0;
+}
+
+void UI::setDynamicText(const std::vector<std::string> &dt)
+{
+	dynamic_txt.clear();
+	for (int i = 0; i < dt.size(); i++)
+		dynamic_txt.push_back(dt[i]);
+	i = 0;
+	j = 1;
+}
+
+void UI::drawDynamicText(const Vec2D &pos, const int &align, const int &font_size, const Uint64 &delay_per_chr, const Uint64 &delay_per_str)
+{
+	if (i < dynamic_txt.size())
+	{
+		Uint64 cur_render_time = SDL_GetTicks64();
+		if (cur_render_time - last_render_time >= render_time)
 		{
-			i++;
-			j = 1;
-			render_time = delay_per_str;
+			cur_txt = dynamic_txt[i].substr(0, j - 1);
+			if (cur_txt == dynamic_txt[i].substr(0, dynamic_txt[i].size() - 1))
+			{
+				i++;
+				j = 1;
+				render_time = delay_per_str;
+			}
+			else
+			{
+				j++;
+				render_time = delay_per_chr;
+			}
+			last_render_time = cur_render_time;
 		}
-		else
-		{
-			j++;
-			render_time = delay_per_chr;
-		}
-		last_render_time = cur_render_time;
+	}
+	cur_txt_box = screen->drawText(cur_txt, pos, align, font_size);
+}
+
+void UI::updateStates()
+{
+	for (auto &&option : options)
+		option.second->color = Color::white(255);
+
+	if (event->mouse_pos.y <= margin.y + 2 * cell_size.y) // music
+	{
+		options["2"]->color = options["3"]->color = options["4"]->color = options["5"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 3 * cell_size.y) // custom music
+	{
+		options["21"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 4 * cell_size.y) // sound
+	{
+		options["6"]->color = options["7"]->color = options["8"]->color = options["9"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 5 * cell_size.y) // number
+	{
+		options["10"]->color = options["11"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 6 * cell_size.y) // case
+	{
+		options["12"]->color = options["13"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 7 * cell_size.y) // punct
+	{
+		options["14"]->color = options["15"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 8 * cell_size.y) // custom text
+	{
+		options["16"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 9 * cell_size.y) // resume
+	{
+		options["17"]->color = Color::light_orange(255);
+	}
+	else if (event->mouse_pos.y <= margin.y + 10 * cell_size.y) // lock screen
+	{
+		options["18"]->color = Color::light_orange(255);
+	}
+	else // shutdown
+	{
+		options["19"]->color = Color::light_orange(255);
 	}
 }
 
@@ -434,7 +650,7 @@ void UI::updateEnemies()
 	{
 		if (lvs.empty()) // game over
 		{
-			log("end game!\n");
+			// Game::state = start;
 		}
 		else
 		{
@@ -476,6 +692,16 @@ void UI::updatePlayer()
 	{
 		player->goal_angle = -26;
 		player->updateRotation();
+		player->state = "arrow";
+
+		if (Game::state == pause)
+		{
+			for (auto &&option : options)
+			{
+				if (option.second->can_interact && event->isHoverOn(option.second->real_pos, option.second->size))
+					player->state = "link";
+			}
+		}
 	}
 	else // game play
 	{
@@ -489,7 +715,7 @@ void UI::updatePlayer()
 void UI::drawPlayer()
 {
 	if (Game::state == ready || Game::state == start || Game::state == pause)
-		screen->drawSprite(*sprites["arrow"], event->mouse_pos, player->size, 1, top_left, player->cur_frame, player->cur_layer, player->angle);
+		screen->drawSprite(*sprites[player->state], event->mouse_pos, player->size, 1, top_left, player->cur_frame, player->cur_layer, player->angle);
 	else // game play
 	{
 		for (int i = 0; i < player->bullets.size(); i++)
@@ -502,30 +728,4 @@ void UI::drawPlayer()
 		for (int i = 0; i < player->dead_zones.size(); i++)
 			screen->drawSprite(*sprites["emp"], player->dead_zones[i]->pos, player->dead_zones[i]->size, 1, top_left, 0, 0, player->dead_zones[i]->angle);
 	}
-}
-
-void UI::saveCurScreen()
-{
-	SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, Game::win_w, Game::win_h, 32, SDL_PIXELFORMAT_RGBA32);
-	SDL_RenderReadPixels(Game::renderer, nullptr, SDL_PIXELFORMAT_RGBA32, surface->pixels, surface->pitch);
-	saved_screen = SDL_CreateTextureFromSurface(Game::renderer, surface);
-	SDL_FreeSurface(surface);
-}
-
-void UI::drawHighScores()
-{
-	for (auto &&high_score : high_scores)
-	{
-		screen->drawText(
-			std::to_string(order) + ". " + high_score.second,
-			Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x, layout_pos.y + (order + 1) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y),
-			left, 36, "ui", false, Color::white(255));
-		screen->drawText(
-			std::to_string(high_score.first),
-			Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + cell_size.x, layout_pos.y + (order + 1) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y),
-			right, 36, "ui", false, Color::white(255));
-		// drawRect(high_score.second->real_pos, high_score.second->size);
-		order++;
-	}
-	order = 1;
 }

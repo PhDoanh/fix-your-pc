@@ -30,6 +30,8 @@ public:
 	bool isTextInputEmpty() { return cur_txt_inp.empty(); }
 	bool isHoverOn(const Vec2D &pos, const Vec2D &size);
 	void activatePassBox();
+	void activateMusicFileBox();
+	void activateTextFileBox();
 	void activateOption();
 };
 

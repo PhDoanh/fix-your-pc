@@ -71,6 +71,11 @@ void Event::handleTextInput()
 		{
 			if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_BACKSPACE && cur_txt_inp.size() > 0)
 				cur_txt_inp = cur_txt_inp.substr(0, cur_txt_inp.size() - 1);
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_v && SDL_GetModState() & KMOD_CTRL)
+			{
+				std::string tmp = SDL_GetClipboardText();
+				cur_txt_inp += tmp;
+			}
 			else if (e.type == SDL_TEXTINPUT && e.key.keysym.sym != SDLK_SPACE)
 				cur_txt_inp += e.text.text;
 		}
@@ -112,10 +117,31 @@ void Event::handleEnter()
 	}
 	else if (Game::state == play)
 	{
-		if (player->num_of_chrs >= 1)
+		if (player->num_of_chrs >= 10)
 		{
 			player->addDeadZone();
 			player->num_of_chrs = 0;
+		}
+	}
+	else if (Game::state == pause)
+	{
+		if (!cur_txt_inp.empty())
+		{
+			if (ui->getMusicPathBoxState() == true)
+			{
+				ui->cur_music_path_txt = cur_txt_inp;
+				sound->playSoundEffect("locked", general);
+				ui->deleteElements();
+				ui->loadElements();
+			}
+			if (ui->getTextPathBoxState() == true)
+			{
+				ui->cur_txt_path_txt = cur_txt_inp;
+				sound->playSoundEffect("locked", general);
+				ui->deleteElements();
+				ui->loadElements();
+			}
+			cur_txt_inp.clear();
 		}
 	}
 }
@@ -124,9 +150,15 @@ void Event::handleLeftClick()
 {
 	sound->playSoundEffect("lclick", player_channel);
 	if (Game::state == ready)
+	{
 		activatePassBox();
+	}
 	else if (Game::state == pause)
+	{
+		activateMusicFileBox();
+		activateTextFileBox();
 		activateOption();
+	}
 }
 
 bool Event::isHoverOn(const Vec2D &pos, const Vec2D &size)
@@ -145,12 +177,57 @@ void Event::activatePassBox()
 		SDL_StartTextInput();
 		ui->setPassBoxBorderColor(Color::black(255));
 		ui->setPassBoxColor(Color::white(255));
+		ui->turnOnPassBox();
 	}
 	else
 	{
 		SDL_StopTextInput();
 		ui->setPassBoxBorderColor(Color::ice_blue(255));
 		ui->setPassBoxColor(Color::ice_blue(255));
+		ui->turnOffPassBox();
+	}
+}
+
+void Event::activateMusicFileBox()
+{
+	Vec2D music_pos = ui->getMusicPathBoxPos();
+	Vec2D music_size = ui->getMusicPathBoxSize();
+	if (isHoverOn(music_pos, music_size))
+	{
+
+		SDL_StartTextInput();
+		ui->setMusicPathBoxBorderColor(Color::black(255));
+		ui->setMusicPathBoxColor(Color::white(255));
+		ui->turnOnMusicPathBox();
+	}
+	else
+	{
+		SDL_StopTextInput();
+		ui->setMusicPathBoxBorderColor(Color::ice_blue(255));
+		ui->setMusicPathBoxColor(Color::ice_blue(255));
+		ui->turnOffMusicPathBox();
+		cur_txt_inp.clear();
+	}
+}
+
+void Event::activateTextFileBox()
+{
+	Vec2D text_pos = ui->getTextPathBoxPos();
+	Vec2D text_size = ui->getTextPathBoxSize();
+	if (isHoverOn(text_pos, text_size))
+	{
+		SDL_StartTextInput();
+		ui->setTextPathBoxBorderColor(Color::black(255));
+		ui->setTextPathBoxColor(Color::white(255));
+		ui->turnOnTextPathBox();
+	}
+	else
+	{
+		SDL_StopTextInput();
+		ui->setTextPathBoxBorderColor(Color::ice_blue(255));
+		ui->setTextPathBoxColor(Color::ice_blue(255));
+		ui->turnOffTextPathBox();
+		cur_txt_inp.clear();
 	}
 }
 
@@ -233,22 +310,22 @@ void Event::activateOption()
 					option.second->text = "[ ]";
 				}
 			}
-			if (option.first == "16") // custom text
-			{
-			}
 			if (option.first == "17") // resume
 			{
 				std::swap(Game::state, Game::prev_state);
 			}
 			if (option.first == "18") // lock screen
 			{
+				sound->stopMusic();
 				sound->playSoundEffect("locked", general);
 				ui->deleteElements();
 				ui->loadElements();
 			}
 			if (option.first == "19") // shutdown
 			{
+				sound->stopMusic();
 				sound->playSoundEffect("shutdown", general);
+				ui->shutdown = true;
 				ui->setShutdownTime(3);
 				Game::state = over;
 			}

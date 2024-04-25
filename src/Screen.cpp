@@ -132,7 +132,7 @@ SDL_FRect Screen::drawText(const std::string &txt, const Vec2D &pos, const int &
 {
 	if (texts.find(txt) == texts.end())
 		texts[txt] = new Text();
-	if (txt != texts[txt]->prev_txt)
+	if (txt != texts[txt]->prev_txt || txt_color.r != texts[txt]->prev_txt_color.r || txt_color.g != texts[txt]->prev_txt_color.g || txt_color.b != texts[txt]->prev_txt_color.b || txt_color.a != texts[txt]->prev_txt_color.a)
 	{
 		SDL_Surface *surface = nullptr;
 		if (shaded_mode)
@@ -142,6 +142,7 @@ SDL_FRect Screen::drawText(const std::string &txt, const Vec2D &pos, const int &
 		texts[txt]->texture = SDL_CreateTextureFromSurface(Game::renderer, surface);
 		SDL_FreeSurface(surface);
 		texts[txt]->prev_txt = txt;
+		texts[txt]->prev_txt_color = txt_color;
 	}
 	int w_txt_box, h_txt_box;
 	SDL_QueryTexture(texts[txt]->texture, nullptr, nullptr, &w_txt_box, &h_txt_box);

@@ -47,9 +47,12 @@ class Player : public Entity
 private:
 public:
 	Time shield, shield_state;
+	std::string state;
 	int index; // using for nearest enemy index
-	int score;
-	int num_of_chrs;
+	int score; // longest streak
+	int true_chrs;	 // total true chars
+	int wrong_chrs;	 // total true + false
+	int num_of_chrs; // current streak
 	int num_of_dead_zones;
 	int cur_frame, cur_layer;
 	int max_frame, max_layer;

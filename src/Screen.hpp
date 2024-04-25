@@ -24,6 +24,7 @@ struct Text
 {
 	SDL_Texture *texture;
 	std::string prev_txt;
+	SDL_Color prev_txt_color;
 };
 
 enum aligns

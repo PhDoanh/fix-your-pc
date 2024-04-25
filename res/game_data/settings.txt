@@ -1,5 +1,5 @@
-soundVol 50
-musicVol 50
+soundVol 60
+musicVol 10
 enableNum 1
 enablePunct 0
 enableCaseSensitive 0

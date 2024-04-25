@@ -14,7 +14,7 @@ UI *ui = nullptr;
 Player *player = nullptr;
 std::vector<Enemy *> enemies;
 std::map<std::string, int> settings;
-std::multimap<int, std::string> high_scores;
+std::multimap<int, std::string, std::greater<int>> high_scores;
 std::queue<std::queue<std::string>> lvs;
 const Uint64 Enemy::spawn_time = 3000; // 3s
 Uint64 Enemy::last_spawn_time = SDL_GetTicks64();
@@ -152,7 +152,6 @@ void Game::loadMedia()
 	sound->loadSoundEffect("locked", "res/sound/locked.wav");
 	sound->loadSoundEffect("unlocked", "res/sound/unlocked.wav");
 	sound->loadMusic("endure", "res/music/endure.ogg");
-	sound->loadMusic("orientation", "res/music/orientation.ogg");
 	sound->playSoundEffect("startup", general);
 
 	ui = new UI();

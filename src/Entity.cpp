@@ -3,6 +3,7 @@
 #include "Screen.hpp"
 #include "Sound.hpp"
 #include "Event.hpp"
+#include "UI.hpp"
 
 int Enemy::count = 0;
 
@@ -38,6 +39,7 @@ Entity::~Entity() {}
 Player::Player(const std::string &id, const Vec2D &pos, const Vec2D &size, const Vec2D &speed, const int &health)
 	: Entity(id, pos, size, speed, health)
 {
+	this->state = "arrow";
 	this->index = -1;
 	this->score = 0;
 	this->num_of_chrs = 0;
@@ -122,6 +124,7 @@ void Player::attackNearestEnemy()
 			{
 				shootBullet();
 				num_of_chrs++;
+				true_chrs++;
 				enemy->name[enemy->name_index++] = ' ';
 				enemy->name_color = Color::light_orange(0);
 				event->cur_txt_inp.clear();
@@ -130,6 +133,7 @@ void Player::attackNearestEnemy()
 			{
 				sound->playSoundEffect("typing", player_channel);
 				num_of_chrs = 0;
+				wrong_chrs++;
 				event->cur_txt_inp.clear();
 			}
 		}
@@ -137,6 +141,8 @@ void Player::attackNearestEnemy()
 		moveBulletTo(enemy);
 	}
 	releaseDeadZone();
+	if (num_of_chrs > score)
+		score = num_of_chrs;
 }
 
 void Player::makeCircleOn(Enemy *enemy)
@@ -281,6 +287,15 @@ void Player::takeDamage()
 	{
 		sound->stopMusic();
 		sound->playSoundEffect("critical stop", general);
+		std::vector<std::string> dt = {
+			"Well... ",
+			"You failed to fix the PC ",
+			"Above is your achivements ",
+			"Whatever, if you see some \"real\" game bugs ",
+			"Contact me by above QRCode ",
+			"Thank for playing :) ",
+			"Shutdown in 15s "};
+		ui->setDynamicText(dt);
 		Game::state = over;
 	}
 	else
