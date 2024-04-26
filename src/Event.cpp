@@ -108,7 +108,7 @@ void Event::handleEnter()
 		if (!cur_txt_inp.empty())
 		{
 			high_scores.insert({0, cur_txt_inp});
-			std::vector<std::string> dt = {"Welcome " + cur_txt_inp + " "};
+			std::vector<std::string> dt = {"Welcome " + cur_txt_inp + " ", ""};
 			ui->setDynamicText(dt);
 			player->id = cur_txt_inp;
 			is_txt_entered = true;
