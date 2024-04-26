@@ -9,7 +9,7 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-struct TextElement // using both text and img
+struct TextElement
 {
 	bool can_interact;
 	std::string text;
@@ -31,7 +31,7 @@ private:
 	std::string cur_txt;
 	SDL_FRect cur_txt_box;
 	std::vector<std::string> dynamic_txt;
-	Uint64 last_render_time, render_time, last_trans_time, trans_time;
+	Uint64 last_render_time, render_time;
 
 	Vec2D goal_bg_pos, bg_pos, bg_size;	   // background 1
 	Vec2D goal_bg2_pos, bg2_pos, bg2_size; // background 2
@@ -50,7 +50,6 @@ private:
 	// game pause
 	int order;
 	SDL_FRect pause_bg;
-	SDL_Texture *saved_screen;
 	Vec2D layout_pos, layout_size;
 	Vec2D margin, num_of_cells, cell_size;
 	bool music_box, txt_box;
@@ -62,6 +61,11 @@ private:
 	// game over
 	int count_down_time;
 	bool play_once;
+
+	int trans_alpha;
+	SDL_Texture *trans_screen;
+	SDL_Texture *saved_screen;
+	Uint64 last_trans_time, trans_time;
 
 public:
 	bool shutdown;
@@ -129,6 +133,7 @@ public:
 	void setDynamicText(const std::vector<std::string> &);
 	void drawDynamicText(const Vec2D &, const int &align = 4, const int &font_size = 24, SDL_Color txt_color = Color::white(255), const Uint64 &delay_per_chr = 50, const Uint64 &delay_per_str = 2000);
 	void updateStates();
+	void drawTransScreen();
 };
 
 extern UI *ui;

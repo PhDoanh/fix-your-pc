@@ -141,8 +141,6 @@ void Player::attackNearestEnemy()
 		moveBulletTo(enemy);
 	}
 	releaseDeadZone();
-	if (num_of_chrs > score)
-		score = num_of_chrs;
 }
 
 void Player::makeCircleOn(Enemy *enemy)
@@ -278,7 +276,8 @@ void Player::updateRotation()
 
 void Player::updateScore()
 {
-	score += num_of_chrs;
+	if (num_of_chrs > score)
+		score = num_of_chrs;
 }
 
 void Player::takeDamage()
@@ -367,7 +366,9 @@ void Enemy::move()
 
 void Enemy::attack(Player *player)
 {
-	if (Rect::isCollide(player->pos, player->size, pos, size))
+	if (Rect::isPixelCollide(
+			sprites[player->state]->texture, {int(player->pos.x), int(player->pos.y), int(player->size.x), int(player->size.y)},
+			sprites[id]->texture, {int(pos.x), int(pos.y), int(size.x), int(size.y)}))
 		player->takeDamage();
 }
 

@@ -12,12 +12,13 @@ Event *event = nullptr;
 Level *level = nullptr;
 UI *ui = nullptr;
 Player *player = nullptr;
-std::vector<Enemy *> enemies;
-std::map<std::string, int> settings;
-std::multimap<int, std::string, std::greater<int>> high_scores;
-std::queue<std::queue<std::string>> lvs;
-Uint64 Enemy::spawn_time = 3000; // 3s
+Uint64 Enemy::spawn_time = 3000;
 Uint64 Enemy::last_spawn_time = SDL_GetTicks64();
+std::vector<Enemy *> enemies;
+std::vector<Enemy *> static_enemies;
+std::map<std::string, int> settings;
+std::queue<std::queue<std::string>> lvs;
+std::multimap<int, std::string, std::greater<int>> high_scores;
 float Game::fps = 60.0;
 int Game::state = ready;
 int Game::prev_state = pause;
@@ -34,8 +35,8 @@ void Game::handleEvent()
 	event->state = SDL_GetKeyboardState(nullptr);
 	while (SDL_PollEvent(&event->e))
 	{
-		if (event->e.type == SDL_KEYDOWN && event->e.key.keysym.sym == SDLK_F4)
-			running = false;
+		// if (event->e.type == SDL_KEYDOWN && event->e.key.keysym.sym == SDLK_F4)
+		// 	running = false;
 		event->handleMouse();
 		event->handleKeyboard();
 	}
@@ -121,7 +122,6 @@ void Game::loadMedia()
 	screen->loadSprite("beam", "res/player/beam.png", Vec2D(64, 44));
 	screen->loadSprite("link", "res/player/link.png", Vec2D(64));
 	screen->loadSprite("move", "res/player/move.png", Vec2D(64));
-	screen->loadSprite("unvail", "res/player/unavail.png", Vec2D(64));
 	screen->loadSprite("emp", "res/object/emp.png", Vec2D(256));
 	screen->loadSprite("reticle", "res/object/reticle.png", Vec2D(256));
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
@@ -152,7 +152,6 @@ void Game::loadMedia()
 	sound->loadSoundEffect("health loss", "res/sound/breaking.wav");
 	sound->loadSoundEffect("locked", "res/sound/locked.wav");
 	sound->loadSoundEffect("unlocked", "res/sound/unlocked.wav");
-	// sound->loadMusic("endure", "res/music/endure.ogg");
 	sound->playSoundEffect("startup", general);
 
 	ui = new UI();

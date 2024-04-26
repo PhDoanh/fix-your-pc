@@ -22,6 +22,8 @@ void Event::handleKeyboard()
 				if (Game::state != pause)
 					sound->playSoundEffect("balloon", general);
 				ui->saveCurScreen();
+				player->size = Vec2D(43, 60);
+				player->goal_angle = -26;
 				std::swap(Game::state, Game::prev_state);
 			}
 			break;
@@ -315,7 +317,10 @@ void Event::activateOption()
 			}
 			if (option.first == "17") // resume
 			{
+				player->size = Vec2D(43, 60);
+				player->goal_angle = -26;
 				std::swap(Game::state, Game::prev_state);
+				ui->saveCurScreen();
 			}
 			if (option.first == "18") // lock screen
 			{
@@ -323,12 +328,14 @@ void Event::activateOption()
 				sound->playSoundEffect("locked", general);
 				ui->deleteElements();
 				ui->loadElements();
+				ui->saveCurScreen();
 			}
 			if (option.first == "19") // shutdown
 			{
 				sound->stopMusic();
 				ui->shutdown = true;
 				ui->setShutdownTime(3);
+				ui->saveCurScreen();
 				Game::state = over;
 			}
 		}

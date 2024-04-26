@@ -9,14 +9,8 @@
 UI::UI()
 {
 	info("UI constructor called.\n");
-	// this->i = 0;
-	// this->j = 1;
+
 	this->cur_txt_pos = Vec2D(Game::win_w / 2.0, Game::win_h / 2.0 + 25);
-	// this->dynamic_txt = {
-	// 	"Hello there ",
-	// 	"This is 1-health game, so be careful to play ",
-	// 	"Press [Esc] to open setting ",
-	// 	"Now enter your password "};
 	this->last_render_time = this->last_trans_time = SDL_GetTicks64();
 
 	// background
@@ -40,6 +34,7 @@ UI::UI()
 	this->inner_pass_box.y = outer_pass_box.y + (outer_pass_box.h - inner_pass_box.h) / 2.0;
 
 	this->saved_screen = nullptr;
+	this->trans_screen = nullptr;
 	this->pause_bg = {0.0, 0.0, float(Game::win_w), float(Game::win_h)};
 	this->margin = Vec2D(100);
 	this->num_of_cells = Vec2D(4, 11);
@@ -78,12 +73,7 @@ UI::UI()
 	options["19"] = new TextElement("Shutdown", 36, center, Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), true);
 
 	options["20"] = new TextElement("High Scores", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x, layout_pos.y + 1.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	// for (auto &&high_score : high_scores)
-	// {
-	// 	options[]=std::to_string(order) + ". " + high_score.second, new TextElement(left, 36, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x, layout_pos.y + (order + 1) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	// 	options[]=std::to_string(high_score.first), new TextElement(right, 36, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + cell_size.x, layout_pos.y + (order + 1) / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	// 	this->order++;
-	// }
+
 	over_infos["1"] = new TextElement("High Scores", 36, center, Vec2D(layout_pos.x + 1.0 / num_of_cells.x * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 	over_infos["2"] = new TextElement("True Typing Stats", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 
@@ -163,37 +153,41 @@ void UI::loadElements()
 	this->ompb_color = this->impb_color = Color::ice_blue(255);
 	this->otpb_color = this->itpb_color = Color::ice_blue(255);
 	this->order = 0;
+	Level::level_order = 1;
+	Enemy::spawn_time = 3000;
+	Enemy::last_spawn_time = SDL_GetTicks64();
+	this->trans_alpha = 255;
 
-	// this->tilemap = {
-	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-	// 	{1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
-	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-	// 	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-	// 	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-	// 	{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-	// 	{1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-	// 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-	// std::vector<int> idxs(50);
-	// std::iota(idxs.begin(), idxs.end(), 1);
-	// for (int y = 0; y < 9; y++)
-	// 	for (int x = 0; x < 16; x++)
-	// 	{
-	// 		if (this->tilemap[y][x])
-	// 		{
-	// 			this->tilemap[y][x] = idxs[rand() % idxs.size()];
-	// 			idxs.erase(std::find(idxs.begin(), idxs.end(), this->tilemap[y][x]));
-	// 		}
-	// 	}
-	// for (int y = 0; y < 9; y++)
-	// 	for (int x = 0; x < 16; x++)
-	// 	{
-	// 		if (this->tilemap[y][x])
-	// 		{
-	// 			Enemy *new_enemy = new Enemy("", "enemy" + std::to_string(this->tilemap[y][x]), Vec2D(x * 96, y * 96), Vec2D(medium), Vec2D(1.5));
-	// 			enemies.emplace_back(new_enemy);
-	// 		}
-	// 	}
+	this->tilemap = {
+		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+		{1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
+		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+		{1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+	std::vector<int> idxs(50);
+	std::iota(idxs.begin(), idxs.end(), 1);
+	for (int y = 0; y < 9; y++)
+		for (int x = 0; x < 16; x++)
+		{
+			if (this->tilemap[y][x])
+			{
+				this->tilemap[y][x] = idxs[rand() % idxs.size()];
+				idxs.erase(std::find(idxs.begin(), idxs.end(), this->tilemap[y][x]));
+			}
+		}
+	for (int y = 0; y < 9; y++)
+		for (int x = 0; x < 16; x++)
+		{
+			if (this->tilemap[y][x])
+			{
+				Enemy *new_enemy = new Enemy("", "enemy" + std::to_string(this->tilemap[y][x]), Vec2D(x * 96, y * 96), Vec2D(medium), Vec2D(1.5));
+				static_enemies.emplace_back(new_enemy);
+			}
+		}
 
 	// load settings
 	Game::data.open("res/game_data/settings.txt");
@@ -268,6 +262,7 @@ void UI::deleteElements()
 		lvs.pop();
 	while (!level->lv.empty())
 		level->lv.pop();
+	sound->stopMusic();
 }
 
 Vec2D UI::getPassBoxPos() const { return Vec2D(outer_pass_box.x, outer_pass_box.y); }
@@ -321,10 +316,11 @@ void UI::drawGameReady()
 	else if (event->is_txt_entered)
 	{
 		sound->playSoundEffect("unlocked", general);
-		// sound->playSoundEffect("spawn", enemy_channel);
 		sound->playMusic(cur_music_path_txt);
+		ui->saveCurScreen();
+		player->size = Vec2D(43, 60);
+		player->goal_angle = -26;
 		Game::state = play;
-		// event->is_txt_entered = false;
 	}
 	cur_txt_box = screen->drawText(cur_txt, cur_txt_pos, center, 24);
 
@@ -332,6 +328,8 @@ void UI::drawGameReady()
 		(pass_box) ? std::string(event->cur_txt_inp.size(), '*') : "It's ok if type anything.",
 		Vec2D(inner_pass_box.x, inner_pass_box.y + inner_pass_box.h / 2.0), left, 18, "ui", false,
 		(pass_box) ? Color::black(255) : Color::blue_gray(255));
+
+	drawTransScreen();
 	drawPlayer();
 }
 
@@ -345,9 +343,11 @@ void UI::drawGameStart()
 {
 	drawBackground();
 
-	for (int i = 0; i < enemies.size(); i++)
-		screen->drawSprite(*sprites[enemies[i]->id], enemies[i]->pos, enemies[i]->size);
+	for (int i = 0; i < static_enemies.size(); i++)
+		screen->drawSprite(*sprites[static_enemies[i]->id], static_enemies[i]->pos, static_enemies[i]->size);
+	drawDynamicText(Vec2D(Game::win_w / 2.0, Game::win_h / 2.0), center, 36);
 
+	drawTransScreen();
 	drawPlayer();
 }
 
@@ -361,8 +361,11 @@ void UI::updateGamePlay()
 void UI::drawGamePlay()
 {
 	drawBackground();
-	drawDynamicText(Vec2D(Game::win_w / 2.0, Game::win_h / 2.0), center, 60, Color::light_orange(255));
 	drawEnemies();
+	drawDynamicText(Vec2D(Game::win_w / 2.0, Game::win_h / 2.0), center, 48, Color::white(255));
+	drawLine(Vec2D(cur_txt_box.x, cur_txt_box.y - 0.3 * cur_txt_box.h), Vec2D(cur_txt_box.x + cur_txt_box.w, cur_txt_box.y - 0.3 * cur_txt_box.h), Color::light_orange(255));
+	drawLine(Vec2D(cur_txt_box.x, cur_txt_box.y + cur_txt_box.h + 0.3 * cur_txt_box.h), Vec2D(cur_txt_box.x + cur_txt_box.w, cur_txt_box.y + cur_txt_box.h + 0.3 * cur_txt_box.h), Color::light_orange(255));
+	drawTransScreen();
 	drawPlayer();
 }
 
@@ -416,6 +419,7 @@ void UI::drawGamePause()
 	drawLine(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + cell_size.y + 0.5 * cell_size.y), Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y - 0.5 * cell_size.y)); // split line
 	drawLine(Vec2D(layout_pos.x + 0.25 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y), Vec2D(layout_pos.x + 0.75 * layout_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y));				 // bottom break line
 
+	drawTransScreen();
 	drawPlayer();
 }
 
@@ -468,6 +472,8 @@ void UI::drawGameOver()
 		drawLine(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y - 0.5 * cell_size.y)); // split line
 		drawLine(Vec2D(cur_txt_box.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y), Vec2D(cur_txt_box.x + cur_txt_box.w, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y));																   // break line
 		drawLine(Vec2D(layout_pos.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y), Vec2D(layout_pos.x + layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y));
+
+		drawTransScreen();
 	}
 	else
 	{
@@ -481,10 +487,15 @@ void UI::drawGameOver()
 
 void UI::saveCurScreen()
 {
-	SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, Game::win_w, Game::win_h, 32, SDL_PIXELFORMAT_RGBA32);
-	SDL_RenderReadPixels(Game::renderer, nullptr, SDL_PIXELFORMAT_RGBA32, surface->pixels, surface->pitch);
-	saved_screen = SDL_CreateTextureFromSurface(Game::renderer, surface);
-	SDL_FreeSurface(surface);
+	SDL_Surface *surface1 = SDL_CreateRGBSurfaceWithFormat(0, Game::win_w, Game::win_h, 32, SDL_PIXELFORMAT_RGBA32);
+	SDL_Surface *surface2 = SDL_CreateRGBSurfaceWithFormat(0, Game::win_w, Game::win_h, 23, SDL_PIXELFORMAT_RGBA32);
+	SDL_RenderReadPixels(Game::renderer, nullptr, SDL_PIXELFORMAT_RGBA32, surface1->pixels, surface1->pitch);
+	SDL_RenderReadPixels(Game::renderer, nullptr, SDL_PIXELFORMAT_RGBA32, surface2->pixels, surface2->pitch);
+	saved_screen = SDL_CreateTextureFromSurface(Game::renderer, surface1);
+	trans_screen = SDL_CreateTextureFromSurface(Game::renderer, surface2);
+	trans_alpha = 255;
+	SDL_FreeSurface(surface1);
+	SDL_FreeSurface(surface2);
 }
 
 void UI::setShutdownTime(const int &shutdown_time) { count_down_time = shutdown_time; }
@@ -590,6 +601,14 @@ void UI::updateStates()
 	}
 }
 
+void UI::drawTransScreen()
+{
+	SDL_SetTextureBlendMode(trans_screen, SDL_BLENDMODE_BLEND);
+	trans_alpha = (trans_alpha - 25 > 0) ? trans_alpha - 25 : 0;
+	SDL_SetTextureAlphaMod(trans_screen, trans_alpha);
+	SDL_RenderCopy(Game::renderer, trans_screen, nullptr, nullptr);
+}
+
 void UI::updateBackground()
 {
 	if (Game::state == ready || Game::state == start)
@@ -649,9 +668,20 @@ void UI::updateEnemies()
 	}
 	else // game play
 	{
-		if (lvs.empty()) // game over
+		if (lvs.empty() && enemies.empty()) // game over
 		{
-			// Game::state = start;
+			sound->stopMusic();
+			sound->playSoundEffect("notify", general);
+			saveCurScreen();
+			std::vector<std::string> dt = {
+				"Congratulations! ",
+				"You have fixed all your PC errors ",
+				"You can now turn off your PC ",
+				"Or play again by pressing [Esc] and selecting \"Lock Screen\" ",
+				"Thank you for playing ",
+				""};
+			setDynamicText(dt);
+			Game::state = start;
 		}
 		else
 		{
@@ -682,7 +712,7 @@ void UI::drawEnemies()
 				SDL_FRect rect = screen->drawText(enemies[i]->name, enemies[i]->name_pos, top_left, 18, "ui", true, enemies[i]->name_color);
 				enemies[i]->name_size = Vec2D(rect.w, rect.h);
 			}
-			drawLine(player->pos, enemies[i]->pos, (i != player->index) ? Color::white(0) : Color::red(0));
+			// drawLine(player->pos, enemies[i]->pos, (i != player->index) ? Color::white(0) : Color::red(0));
 		}
 	}
 }
@@ -691,18 +721,45 @@ void UI::updatePlayer()
 {
 	if (Game::state == ready || Game::state == start || Game::state == pause)
 	{
+		player->size = Vec2D(43, 60);
 		player->goal_angle = -26;
 		player->updateRotation();
 		player->state = "arrow";
 		if (Game::state == ready)
 			if (event->isHoverOn(getPassBoxPos(), getPassBoxSize()))
-				player->state = "link";
+			{
+				player->size = Vec2D(64, 44);
+				player->goal_angle = 0;
+				player->updateRotation();
+				player->state = "beam";
+			}
+		if (Game::state == start)
+		{
+			for (auto &&static_enemy : static_enemies)
+				if (Rect::isCollide(static_enemy->pos, static_enemy->size, player->pos, player->size))
+				{
+					player->size = Vec2D(64);
+					player->goal_angle = 0;
+					player->updateRotation();
+					player->state = "move";
+				}
+		}
 		if (Game::state == pause)
 		{
 			for (auto &&option : options)
 			{
 				if (option.second->can_interact && event->isHoverOn(option.second->real_pos, option.second->size))
+				{
+					player->size = Vec2D(64);
 					player->state = "link";
+				}
+			}
+			if (event->isHoverOn(getMusicPathBoxPos(), getMusicPathBoxSize()) || event->isHoverOn(getTextPathBoxPos(), getTextPathBoxSize()))
+			{
+				player->size = Vec2D(64, 44);
+				player->goal_angle = 0;
+				player->updateRotation();
+				player->state = "beam";
 			}
 		}
 	}

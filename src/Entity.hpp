@@ -102,5 +102,6 @@ public:
 
 extern Player *player;
 extern std::vector<Enemy *> enemies;
+extern std::vector<Enemy *> static_enemies;
 
 #endif // ENTITY_HPP
