@@ -127,7 +127,7 @@ public:
 	void setShutdownTime(const int &);
 	void drawHighScores(const Vec2D &);
 	void setDynamicText(const std::vector<std::string> &);
-	void drawDynamicText(const Vec2D &, const int &align = 4, const int &font_size = 24, const Uint64 &delay_per_chr = 50, const Uint64 &delay_per_str = 2000);
+	void drawDynamicText(const Vec2D &, const int &align = 4, const int &font_size = 24, SDL_Color txt_color = Color::white(255), const Uint64 &delay_per_chr = 50, const Uint64 &delay_per_str = 2000);
 	void updateStates();
 };
 

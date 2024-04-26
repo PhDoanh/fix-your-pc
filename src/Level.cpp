@@ -2,6 +2,9 @@
 #include "Game.hpp"
 #include "Entity.hpp"
 #include "UI.hpp"
+#include "Sound.hpp"
+
+int Level::level_order = 1;
 
 Level::Level()
 {
@@ -13,9 +16,24 @@ Level::~Level()
 	info("Level destructor called.\n");
 }
 
-// void Level::newLevel()
-// {
-// }
+void Level::newLevel()
+{
+	if (level_order > 1)
+	{
+		sound->playSoundEffect("spawn", general);
+		if (Enemy::spawn_time - 500 > 0)
+			Enemy::spawn_time -= 125;
+	}
+	std::vector<std::string> dt;
+	if (level_order == lvs.size())
+		dt = {"Final level ", ""};
+	else
+		dt = {"Level " + std::to_string(level_order) + " ", ""};
+	ui->setDynamicText(dt);
+	lv = lvs.front();
+	lvs.pop();
+	level_order++;
+}
 
 void Level::spawnEnemyPer(const int &spawn_time)
 {
@@ -60,10 +78,7 @@ void Level::spawnEnemyPer(const int &spawn_time)
 			lv.pop();
 		}
 		else // new level
-		{
-			lv = lvs.front();
-			lvs.pop();
-		}
+			newLevel();
 		Enemy::last_spawn_time = cur_time;
 	}
 }

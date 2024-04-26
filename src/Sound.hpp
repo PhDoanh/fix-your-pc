@@ -25,8 +25,8 @@ public:
 	void stopSoundEffect(int, int ms = 5);
 
 	void loadMusic(const std::string &, const std::string &);
-	void playMusic(const std::string &name, int loop = -1);
-	void stopMusic();
+	void playMusic(const std::string &name, int ms = 1000, int loop = -1);
+	void stopMusic(int ms = 1000);
 
 	void deleteSoundEffects();
 	void deleteMusics();

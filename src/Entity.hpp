@@ -81,7 +81,7 @@ class Enemy : public Entity
 private:
 public:
 	static int count;
-	static const Uint64 spawn_time;
+	static Uint64 spawn_time;
 	static Uint64 last_spawn_time;
 
 	std::string name;

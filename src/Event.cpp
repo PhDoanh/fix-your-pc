@@ -17,10 +17,13 @@ void Event::handleKeyboard()
 			handleEnter();
 			break;
 		case SDLK_ESCAPE:
-			if (Game::state != pause)
-				sound->playSoundEffect("balloon", general);
-			ui->saveCurScreen();
-			std::swap(Game::state, Game::prev_state);
+			if (Game::state != over)
+			{
+				if (Game::state != pause)
+					sound->playSoundEffect("balloon", general);
+				ui->saveCurScreen();
+				std::swap(Game::state, Game::prev_state);
+			}
 			break;
 		default:
 			break;
@@ -324,7 +327,6 @@ void Event::activateOption()
 			if (option.first == "19") // shutdown
 			{
 				sound->stopMusic();
-				sound->playSoundEffect("shutdown", general);
 				ui->shutdown = true;
 				ui->setShutdownTime(3);
 				Game::state = over;

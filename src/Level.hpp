@@ -10,12 +10,13 @@
 class Level
 {
 public:
+	static int level_order;
 	std::queue<std::string> lv;
 
 	Level();  // constructor
 	~Level(); // destructor
 
-	// void newLevel();
+	void newLevel();
 	void spawnEnemyPer(const int &);
 
 	// utils

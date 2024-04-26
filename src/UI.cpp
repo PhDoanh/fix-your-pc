@@ -321,7 +321,7 @@ void UI::drawGameReady()
 	else if (event->is_txt_entered)
 	{
 		sound->playSoundEffect("unlocked", general);
-		sound->playSoundEffect("spawn", enemy_channel);
+		// sound->playSoundEffect("spawn", enemy_channel);
 		sound->playMusic(cur_music_path_txt);
 		Game::state = play;
 		// event->is_txt_entered = false;
@@ -361,6 +361,7 @@ void UI::updateGamePlay()
 void UI::drawGamePlay()
 {
 	drawBackground();
+	drawDynamicText(Vec2D(Game::win_w / 2.0, Game::win_h / 2.0), center, 60, Color::light_orange(255));
 	drawEnemies();
 	drawPlayer();
 }
@@ -434,10 +435,10 @@ void UI::updateGameOver()
 		else
 			Game::running = false;
 	}
-	updateBackground();
 	over_infos["4"]->text = std::to_string(player->score) + " chars";
 	over_infos["6"]->text = std::to_string(player->num_of_chrs) + " chars";
 	over_infos["8"]->text = std::to_string(player->true_chrs / (player->true_chrs + player->wrong_chrs) * 100) + "%";
+	updateBackground();
 }
 
 void UI::drawGameOver()
@@ -459,9 +460,9 @@ void UI::drawGameOver()
 		}
 		drawHighScores(Vec2D(0, 5));
 		if (i < dynamic_txt.size())
-			drawDynamicText(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
+			drawDynamicText(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), center, 24, Color::light_orange(255));
 		else
-			screen->drawText("Shutdown in " + std::to_string(count_down_time - 3) + "s", Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), center, 24);
+			screen->drawText("Shutdown in " + std::to_string(count_down_time - 3) + "s", Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), center, 24, "ui", false, Color::light_orange(255));
 
 		// draw borders
 		drawLine(Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 4.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y), Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y + 10.0 / num_of_cells.y * layout_size.y - 0.5 * cell_size.y)); // split line
@@ -517,7 +518,7 @@ void UI::setDynamicText(const std::vector<std::string> &dt)
 	j = 1;
 }
 
-void UI::drawDynamicText(const Vec2D &pos, const int &align, const int &font_size, const Uint64 &delay_per_chr, const Uint64 &delay_per_str)
+void UI::drawDynamicText(const Vec2D &pos, const int &align, const int &font_size, SDL_Color txt_color, const Uint64 &delay_per_chr, const Uint64 &delay_per_str)
 {
 	if (i < dynamic_txt.size())
 	{
@@ -539,7 +540,7 @@ void UI::drawDynamicText(const Vec2D &pos, const int &align, const int &font_siz
 			last_render_time = cur_render_time;
 		}
 	}
-	cur_txt_box = screen->drawText(cur_txt, pos, align, font_size);
+	cur_txt_box = screen->drawText(cur_txt, pos, align, font_size, "ui", false, txt_color);
 }
 
 void UI::updateStates()
@@ -693,7 +694,9 @@ void UI::updatePlayer()
 		player->goal_angle = -26;
 		player->updateRotation();
 		player->state = "arrow";
-
+		if (Game::state == ready)
+			if (event->isHoverOn(getPassBoxPos(), getPassBoxSize()))
+				player->state = "link";
 		if (Game::state == pause)
 		{
 			for (auto &&option : options)

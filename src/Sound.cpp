@@ -42,14 +42,14 @@ void Sound::loadMusic(const std::string &name, const std::string &path)
 	info(path + " - done.\n");
 }
 
-void Sound::playMusic(const std::string &name, int loop)
+void Sound::playMusic(const std::string &name, int ms, int loop)
 {
-	Mix_PlayMusic(musics[name], loop);
+	Mix_FadeInMusic(musics[name], loop, ms);
 }
 
-void Sound::stopMusic()
+void Sound::stopMusic(int ms)
 {
-	Mix_HaltMusic();
+	Mix_FadeOutMusic(ms);
 }
 
 void Sound::deleteSoundEffects()
