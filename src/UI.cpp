@@ -96,9 +96,6 @@ UI::UI()
 	over_infos["7"] = new TextElement("Accuracy:", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 7.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 	over_infos["8"] = new TextElement("0", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 7.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
 
-	over_infos["9"] = new TextElement("Words Per Minute", 36, center, Vec2D(layout_pos.x + 2.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-	over_infos["10"] = new TextElement("25", 36, center, Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x + 0.5 * cell_size.x, layout_pos.y + 8.0 / num_of_cells.y * layout_size.y + 0.5 * cell_size.y));
-
 	// music path box
 	this->outer_music_path_box.w = cell_size.x - 25;
 	this->outer_music_path_box.h = cell_size.y - 25;
@@ -125,7 +122,7 @@ UI::UI()
 
 	// default paths
 	this->cur_music_path_txt = "res/music/orientation.ogg";
-	this->cur_txt_path_txt = "res/game_data/test.txt";
+	this->cur_txt_path_txt = "res/game_data/levels.txt";
 }
 
 UI::~UI()
@@ -329,6 +326,7 @@ void UI::drawGameReady()
 		Game::state = play;
 		// event->is_txt_entered = false;
 	}
+	cur_txt_box = screen->drawText(cur_txt, cur_txt_pos, center, 24);
 
 	screen->drawText(
 		(pass_box) ? std::string(event->cur_txt_inp.size(), '*') : "It's ok if type anything.",
@@ -449,7 +447,9 @@ void UI::drawGameOver()
 		drawBackground();
 		// drawRect(layout_pos, layout_size);
 
-		screen->drawSprite(*sprites["game src"], Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y), Vec2D(148), 1, top_mid);
+		screen->drawSprite(*sprites["smile"], Vec2D(layout_pos.x + 0.5 * layout_size.x, layout_pos.y), Vec2D(452, 222), 1, top_mid);
+		screen->drawSprite(*sprites["game src"], Vec2D(layout_pos.x + 3.0 / num_of_cells.x * layout_size.x, layout_pos.y + 9.0 / num_of_cells.y * layout_size.y), Vec2D(2 * cell_size.y), 1, center);
+
 		for (auto &&over_info : over_infos)
 		{
 			SDL_FRect rect = screen->drawText(over_info.second->text, over_info.second->pos, over_info.second->align, over_info.second->font_size, "ui", false, over_info.second->color);

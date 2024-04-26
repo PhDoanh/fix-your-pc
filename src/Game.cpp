@@ -127,6 +127,7 @@ void Game::loadMedia()
 	screen->loadSprite("avatar", "res/object/avatar.png", Vec2D(250));
 	screen->loadSprite("bullet", "res/object/bullet.png", Vec2D(21, 28));
 	screen->loadSprite("game src", "res/object/game_src.png", Vec2D(148));
+	screen->loadSprite("smile", "res/object/smile.png", Vec2D(452, 222));
 	screen->loadFont("ui", "res/SegUIVar.ttf", {18, 24, 36, 48, 60}); // main font
 
 	sound->loadSoundEffect("rclick", "res/sound/rclick.wav");
